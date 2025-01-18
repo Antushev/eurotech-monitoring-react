@@ -46,7 +46,8 @@ const App = () => {
   return (
     <>
       <ToastContainer />
-      <Menu />
+      <Menu
+      />
       <HelmetProvider>
         <Routes>
           <Route path={ AppRoute.Root } element={ <MonitoringPage /> } />
