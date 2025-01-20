@@ -42,6 +42,8 @@ import {
   Tooltip,
   Legend,
   Line,
+  ReferenceLine,
+  Label,
   Brush
 } from 'recharts';
 
@@ -57,12 +59,27 @@ const ProductMonitorPage = () => {
   const period = useSelector(getPeriod);
   const { id: idUser } = currentUser;
 
-  const dateStartLoadRef = useRef();
-  const dateEndLoadRef = useRef();
   const dateStartLoad = dayjs().add(-7, 'day');
   const dateEndLoad = dayjs().endOf('day');
   const [dateStart, setDateStart] = useState(dateStartLoad);
   const [dateEnd, setDateEnd] = useState(dateEndLoad);
+
+  const product = useSelector(getProductWithDetailStats);
+  const firms = useSelector(getAllFirms);
+  const { triggers, reports: reportsTriggers } = useSelector(getTriggersForProduct);
+
+  const [triggersActiveGraph, setTriggersActiveGraph] = useState([]);
+
+  const statsFirms = getStatsAboutFirms(product.stats, firms);
+  const datesStatsFirmsSet = statsFirms ? getDateStatsFirms(statsFirms) : [];
+  const dataGraph = datesStatsFirmsSet ? getStatsForGraph(datesStatsFirmsSet, statsFirms, firms, typeShowValue, period) : [];
+
+  const minValuesStats = getMinValuesStatsFirms(statsFirms, firms, typeShowValue);
+  const mainFirmMinValue = minValuesStats ? minValuesStats[0] : {};
+  const averageValuesStats = getAverageValuesStatsFirms(statsFirms, firms, typeShowValue);
+  const mainFirmAverageValue = averageValuesStats ? averageValuesStats[0] : {};
+  const maxValuesStats = getMaxValuesStatsFirms(statsFirms, firms, typeShowValue);
+  const mainFirmMaxValue = maxValuesStats ? maxValuesStats[0]: {};
 
   useEffect(() => {
     dispatch(fetchFirmsByIdUser(idUser));
@@ -80,27 +97,6 @@ const ProductMonitorPage = () => {
       dispatch(fetchTriggersForProduct({ idUser: currentUser.id, idProduct: Number(idProduct) }));
     }
   }, []);
-
-  const product = useSelector(getProductWithDetailStats);
-  const firms = useSelector(getAllFirms);
-  const { triggers, reports: reportsTriggers } = useSelector(getTriggersForProduct);
-
-  const statsFirms = getStatsAboutFirms(product.stats, firms);
-  const datesStatsFirmsSet = statsFirms ? getDateStatsFirms(statsFirms) : [];
-  const dataGraph = datesStatsFirmsSet ? getStatsForGraph(datesStatsFirmsSet, statsFirms, firms, typeShowValue, period) : [];
-
-  // WIP: ДОБАВИТЬ ВОЗМОЖНОСТЬ ВЫВЕСТИ ГРАФИКИ ТРИГГЕРОВ
-  // if (dataGraph.length !== 0) {
-  //  Object.assign(dataGraph[0], { ['Триггер 1']: 5500 });
-  //  Object.assign(dataGraph[dataGraph.length - 1], { ['Триггер 1']: 5500 });
-  // }
-
-  const minValuesStats = getMinValuesStatsFirms(statsFirms, firms, typeShowValue);
-  const mainFirmMinValue = minValuesStats ? minValuesStats[0] : {};
-  const averageValuesStats = getAverageValuesStatsFirms(statsFirms, firms, typeShowValue);
-  const mainFirmAverageValue = averageValuesStats ? averageValuesStats[0] : {};
-  const maxValuesStats = getMaxValuesStatsFirms(statsFirms, firms, typeShowValue);
-  const mainFirmMaxValue = maxValuesStats ? maxValuesStats[0]: {};
 
   if (product.stats?.length === 0) {
     return (
@@ -307,13 +303,15 @@ const ProductMonitorPage = () => {
                       }}
                     >
                       <CartesianGrid
-                        strokeDasharry="3 3"
+                        strokeDasharray="8 3"
                       />
                       <XAxis
+                        yAxisId={0}
                         dataKey="name"
-                        padding={{left: 50, right: 50}}
+                        padding={{left: 1, right: 50}}
                       />
-                      <YAxis />
+                      <YAxis
+                      />
                       <Tooltip />
                       <Legend />
                       {
@@ -331,6 +329,27 @@ const ProductMonitorPage = () => {
                                 strokeWidth={2}
                                 activeDot={{r: 8}}
                               />
+                            );
+                          }
+                        })
+                      }
+
+                      {
+                        triggers?.map((trigger) => {
+                          if (trigger?.compareType === 'VALUE' && triggersActiveGraph?.includes(trigger.id)) {
+                            return (
+                              <ReferenceLine
+                                y={ trigger.compareValue }
+                                yAxisId={0}
+                                strokeWidth={1}
+                                stroke={getFirmColor(trigger.firms[0], firms)}
+                                strokeDasharray="15 4"
+                              >
+                                <Label
+                                  value={`Триггер: ${trigger.name}`}
+                                  position="insideBottomLeft"
+                                />
+                              </ReferenceLine>
                             );
                           }
                         })
@@ -371,11 +390,9 @@ const ProductMonitorPage = () => {
                     <th className="product-monitor__table-th product-monitor__table-th--name">
                       Название
                     </th>
-
-                    {/* WIP: ДОБАВИТЬ ВОЗМОЖНОСТЬ ДОБАВЛЯТЬ ГРАФИКИ ТРИГГЕРОВ */}
-                    {/*<th className="product-monitor__table-th">*/}
-                    {/*  График*/}
-                    {/*</th>*/}
+                    <th className="product-monitor__table-th">
+                      График
+                    </th>
                     <th className="product-monitor__table-th">
                       Активность
                     </th>
@@ -395,10 +412,27 @@ const ProductMonitorPage = () => {
                                 { trigger.name }
                               </Link>
                             </td>
-                            {/* WIP: ДОБАВИТЬ ВОЗМОЖНОСТЬ ДОБАВЛЯТЬ ГРАФИКИ ТРИГГЕРОВ */}
-                            {/*<td className="product-monitor__table-td">*/}
-                            {/*  <input type="checkbox"/>*/}
-                            {/*</td>*/}
+                            <td className="product-monitor__table-td">
+                              {
+                                trigger.compareType === 'VALUE' ?
+                                <input
+                                  type="checkbox"
+                                  checked={triggersActiveGraph.includes(trigger.id)}
+                                  onChange={(evt) => {
+                                    if (evt.target.checked) {
+                                      const triggersActiveGraphNew = [...triggersActiveGraph, trigger.id];
+                                      setTriggersActiveGraph(triggersActiveGraphNew);
+                                    } else {
+                                      const triggersActiveGraphNew = triggersActiveGraph.filter((triggerActive) => {
+                                        return triggerActive !== trigger.id
+                                      });
+                                      setTriggersActiveGraph(triggersActiveGraphNew);
+                                    }
+                                  }}
+                                />
+                                  : <input type="checkbox" disabled={true} />
+                              }
+                            </td>
                             <td
                               className="product-monitor__table-td"
                               onClick={() => {
