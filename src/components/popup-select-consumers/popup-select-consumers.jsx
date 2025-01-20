@@ -14,8 +14,6 @@ import {
   getStatusLoadProducts
 } from '../../store/app-data/selectors.js';
 
-// WIP: ЗАМЕНИТЬ ДАННЫМИ ИЗ БАЗЫ ДАННЫХ
-import { firms as allFirms } from '../../utils/mocks.js';
 import * as dayjs from "dayjs";
 
 const PopupSelectConsumers = (props) => {
