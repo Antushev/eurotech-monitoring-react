@@ -184,6 +184,7 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   width: 400px;
 
   text-align: left;
+  vertical-align: middle;
 }
 
 .goods-table__th {

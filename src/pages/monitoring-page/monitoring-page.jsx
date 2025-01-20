@@ -241,9 +241,9 @@ const MonitoringPage = () => {
                             dateEnd: dayjs(date).endOf('day')
                           }));
 
-                          await dispatch(fetchCurrentProductById(currentProduct.idParent));
-
                           setIdLoadGroup(null);
+
+                          await dispatch(fetchCurrentProductById(currentProduct.idParent));
                         }}
                       >
                         {
