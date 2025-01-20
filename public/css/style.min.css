@@ -1174,7 +1174,7 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 }
 
 .modal {
-  width: 600px;
+  min-width: 600px;
   min-height: 400px;
   justify-content: flex-start;
 }
