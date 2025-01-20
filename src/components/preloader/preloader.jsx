@@ -4,11 +4,18 @@ const Preloader = (props) => {
   const {
     width,
     height,
-    color
+    color,
+    type
   } = props;
 
   return (
-    <svg width={width} height={height} viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg" stroke={color}>
+    <svg
+      className={`${type === 'GROUP' ? 'goods-table__icon' : ''}`}
+      width={width}
+      height={height}
+      viewBox="0 0 38 38"
+      stroke={color}
+    >
       <g fill="none" fillRule="evenodd">
         <g transform="translate(1 1)" strokeWidth="2">
           <circle strokeOpacity=".5" cx="18" cy="18" r="18"/>

@@ -44,6 +44,9 @@ const SET_INTERVAL_FETCH_DATA = 15000;
 const WIDTH_PRELOADER = 15;
 const HEIGHT_PRELOADER = 15;
 const COLOR_PRELOADER = '#000000';
+const WIDTH_PRELOADER_GROUP = 25;
+const HEIGHT_PRELOADER_GROUP = 25;
+const COLOR_PRELOADER_GROUP = '#000000';
 
 const MonitoringPage = () => {
   const dispatch = useDispatch();
@@ -90,6 +93,7 @@ const MonitoringPage = () => {
   const [selectFirmAddLink, setSelectFirmAddLink] = useState(null);
   const [selectProductForDialog, setSelectProductForDialog] = useState({});
   const [selectLinkForDialog, setSelectLinkForDialog] = useState({});
+  const [idLoadGroup, setIdLoadGroup] = useState(null);
 
   return (
     <>
@@ -260,6 +264,8 @@ const MonitoringPage = () => {
                             key={index}
                             className="goods-table__tr"
                             onClick={async () => {
+                              setIdLoadGroup(product.id);
+
                               await dispatch(fetchProductsWithSummaryDetail({
                                 idUser: currentUser.id,
                                 idParent: product.id,
@@ -269,6 +275,8 @@ const MonitoringPage = () => {
                               }));
 
                               await dispatch(setCurrentProduct(product));
+
+                              setIdLoadGroup(null);
                             }}
                           >
                             <td
@@ -280,9 +288,20 @@ const MonitoringPage = () => {
                                 setSelectProductForDialog(product);
                               }}
                             >
-                              <svg className="goods-table__icon" width="28" height="19" viewBox="0 0 28 19" fill="none">
-                                <path d="M25.0186 3.05707H14.8012L11.3954 0H2.88084C1.47009 0 0.326477 1.02651 0.326477 2.2928V16.0496C0.326477 17.3159 1.47009 18.3424 2.88084 18.3424H25.0186C26.4294 18.3424 27.573 17.3159 27.573 16.0496V5.34986C27.573 4.08357 26.4294 3.05707 25.0186 3.05707Z" fill="#141414"/>
-                              </svg>
+                              {
+                                idLoadGroup === product.id ?
+                                  <Preloader
+                                    key={product.id}
+                                    width={WIDTH_PRELOADER_GROUP}
+                                    height={HEIGHT_PRELOADER_GROUP}
+                                    color={COLOR_PRELOADER_GROUP}
+                                    type="GROUP"
+                                  />
+                                  :
+                                  <svg className="goods-table__icon" width="28" height="19" viewBox="0 0 28 19" fill="none">
+                                    <path d="M25.0186 3.05707H14.8012L11.3954 0H2.88084C1.47009 0 0.326477 1.02651 0.326477 2.2928V16.0496C0.326477 17.3159 1.47009 18.3424 2.88084 18.3424H25.0186C26.4294 18.3424 27.573 17.3159 27.573 16.0496V5.34986C27.573 4.08357 26.4294 3.05707 25.0186 3.05707Z" fill="#141414"/>
+                                  </svg>
+                              }
                               <span className="goods-table__text">{product.name}</span>
 
                               {

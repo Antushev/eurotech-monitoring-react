@@ -199,6 +199,10 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   path: #be1622;
 }
 
+.goods-table__text {
+  display: inline-block;
+}
+
 .goods-table__link {
   display: inline-block;
 
