@@ -274,6 +274,9 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   color: #8e1622;
 }
 
+.button--bottom {
+  margin-top: auto;
+}
 
 .last-action__block:not(:last-child) {
   margin-bottom: 30px;
@@ -347,6 +350,12 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 
 .input--select {
   padding: 0;
+
+  z-index: 1000;
+}
+
+.input--select-consumers {
+  max-width: 100%;
 }
 
 .input--line {
@@ -450,6 +459,10 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   margin: 0;
 
   list-style: none;
+}
+
+.toggle-data-list--margin-bottom {
+  margin-bottom: 15px;
 }
 
 .product-monitor__triggers-button {
@@ -1158,6 +1171,16 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 
 .icon:active path {
   fill: #8e1622;
+}
+
+.modal {
+  width: 600px;
+  min-height: 400px;
+  justify-content: flex-start;
+}
+
+.modal__text {
+  margin-bottom: 5px;
 }
 
 /*# sourceMappingURL=style.min.css.map */
