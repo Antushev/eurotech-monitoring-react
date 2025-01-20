@@ -231,6 +231,8 @@ const MonitoringPage = () => {
                       <td
                         className="goods-table__td"
                         onClick={async () => {
+                          setIdLoadGroup(currentProduct.id);
+
                           await dispatch(fetchProductsWithSummaryDetail({
                             idUser: currentUser.id,
                             idParent: currentProduct.idParent,
@@ -240,9 +242,28 @@ const MonitoringPage = () => {
                           }));
 
                           await dispatch(fetchCurrentProductById(currentProduct.idParent));
+
+                          setIdLoadGroup(null);
                         }}
                       >
-                        <svg className="goods-table__icon" width="26" height="18" viewBox="0 0 26 18" fill="none">
+                        {
+                          idLoadGroup === currentProduct.id
+                            ?
+                            <Preloader
+                              key={currentProduct.id}
+                              width={WIDTH_PRELOADER_GROUP}
+                              height={HEIGHT_PRELOADER_GROUP}
+                              color={COLOR_PRELOADER_GROUP}
+                              type="GROUP"
+                            />
+                            :
+                            <svg className="icon goods-table__icon" width="18" height="18" viewBox="0 0 22 22">
+                              <path d="M12.5757 19.895L11.4917 20.979C11.0327 21.438 10.2905 21.438 9.83643 20.979L0.344238 11.4917C-0.114746 11.0327 -0.114746 10.2905 0.344238 9.83643L9.83643 0.344238C10.2954 -0.114746 11.0376 -0.114746 11.4917 0.344238L12.5757 1.42822C13.0396 1.89209 13.0298 2.64893 12.5562 3.10303L6.67236 8.7085H20.7056C21.355 8.7085 21.8774 9.23096 21.8774 9.88037V11.4429C21.8774 12.0923 21.355 12.6147 20.7056 12.6147H6.67236L12.5562 18.2202C13.0347 18.6743 13.0444 19.4312 12.5757 19.895Z" fill="#BE1622"/>
+                            </svg>
+                        }
+
+
+                        <svg className="icon goods-table__icon" width="26" height="18" viewBox="0 0 26 18" fill="none">
                           <path d="M25.8508 10.6919L22.5816 16.5116C22.3272 16.9645 21.963 17.3403 21.5251 17.6014C21.0873 17.8626 20.5912 18 20.0863 18H2.03238C1.19627 18 0.675323 17.0581 1.0966 16.3081L4.36574 10.4884C4.62016 10.0355 4.98443 9.65971 5.42227 9.39857C5.8601 9.13742 6.3562 9 6.86111 9H24.915C25.7512 9 26.2721 9.94186 25.8508 10.6919ZM6.86111 7.5H21.6667V5.25C21.6667 4.00734 20.6966 3 19.5 3H12.2778L9.38889 0H2.16667C0.970035 0 0 1.00734 0 2.25V15.2834L3.11806 9.73256C3.8916 8.35547 5.32589 7.5 6.86111 7.5Z" fill="black"/>
                         </svg>
 
