@@ -4,29 +4,29 @@ import { toast } from 'react-toastify';
 import Select from 'react-select';
 import * as dayjs from "dayjs";
 
+import { TypeShowConditionValue } from '../../const.js';
+
 import {
   fetchFirmsByIdUser,
   fetchProductsWithSummaryDetail,
   setFirmsActiveByIdUser
 } from '../../store/api-actions.js';
+import { setTypeShowConditionValue } from '../../store/app-data/app-data.js';
 import {
   getCurrentUser,
   getStatusLoadFirms,
-  getStatusLoadProducts
+  getStatusLoadProducts,
+  getTypeShowConditionValue
 } from '../../store/app-data/selectors.js';
 
 import Preloader from '../preloader/preloader.jsx';
-
-const TypeShowConditionValue = {
-  VALUE: 'value',
-  PERCENT: 'percent'
-}
 
 const PopupSelectConsumers = (props) => {
   const dispatch = useDispatch();
 
   const { firms, currentProduct, setIsOpen } = props;
   const currentUser = useSelector(getCurrentUser);
+  const typeShowConditionValue = useSelector(getTypeShowConditionValue);
   const isLoadFirms = useSelector(getStatusLoadFirms);
   const isLoadProducts = useSelector(getStatusLoadProducts);
 
@@ -41,7 +41,6 @@ const PopupSelectConsumers = (props) => {
 
   const [firmsSelectOptions, setFirmsSelectOptions] = useState(getFirmFormatDataForSelect(firms));
   const [firmsSelect, setFirmsSelect] = useState(getFirmFormatDataForSelect(firms.filter((firm => firm.isSelect))));
-  const [typeShowConditionValue, setTypeShowConditionValue] = useState(TypeShowConditionValue.VALUE);
 
   const getValidateStatus = (firmsSelect) => {
    return firmsSelect.some((firm) => firm.value.isMain === true);
@@ -98,33 +97,33 @@ const PopupSelectConsumers = (props) => {
           }}
         />
 
-        {/*<p className="modal__text">*/}
-        {/*  Выберите способ расчёта разницы величин*/}
-        {/*</p>*/}
-        {/*<ul className="toggle-data-list toggle-data-list--margin-bottom">*/}
-        {/*  <li*/}
-        {/*    className={`toggle-data-list__item ${*/}
-        {/*      typeShowConditionValue === TypeShowConditionValue.VALUE && 'toggle-data-list__item--active'*/}
-        {/*    }`*/}
-        {/*    }*/}
-        {/*    onClick={() => {*/}
-        {/*      // WIP: ДОДЕЛАТЬ ОБРАБОТЧИКИ РЕДАКТИРОВАНИЯ ОТОБРАЖАЕМЫХ ЗНАЧЕНИЙ*/}
-        {/*    }}*/}
-        {/*  >*/}
-        {/*    Значения*/}
-        {/*  </li>*/}
-        {/*  <li*/}
-        {/*    className={`toggle-data-list__item ${*/}
-        {/*      typeShowConditionValue === TypeShowConditionValue.PERCENT && 'toggle-data-list__item--active'*/}
-        {/*    }`*/}
-        {/*    }*/}
-        {/*    onClick={() => {*/}
-        {/*      // WIP: ДОДЕЛАТЬ ОБРАБОТЧИКИ РЕДАКТИРОВАНИЯ ОТОБРАЖАЕМЫХ ЗНАЧЕНИЙ*/}
-        {/*    }}*/}
-        {/*  >*/}
-        {/*    Проценты*/}
-        {/*  </li>*/}
-        {/*</ul>*/}
+        <p className="modal__text">
+          Выберите способ отображения разницы величин
+        </p>
+        <ul className="toggle-data-list toggle-data-list--margin-bottom">
+          <li
+            className={`toggle-data-list__item ${
+              typeShowConditionValue === TypeShowConditionValue.VALUE && 'toggle-data-list__item--active'
+            }`
+            }
+            onClick={() => {
+              dispatch(setTypeShowConditionValue(TypeShowConditionValue.VALUE))
+            }}
+          >
+            Значения
+          </li>
+          <li
+            className={`toggle-data-list__item ${
+              typeShowConditionValue === TypeShowConditionValue.PERCENT && 'toggle-data-list__item--active'
+            }`
+            }
+            onClick={() => {
+              dispatch(setTypeShowConditionValue(TypeShowConditionValue.PERCENT))
+            }}
+          >
+            Проценты
+          </li>
+        </ul>
 
         <button
           disabled={isLoadProducts}

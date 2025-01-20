@@ -8,11 +8,13 @@ import {
   AppRoute,
   LocalStorageKey,
   TypeShowValue,
+  TypeShowConditionValue,
   Period
 } from '../../const';
 
 import {
   setTypeShowValue,
+  setTypeShowConditionValue,
   setPeriod
 } from '../../store/app-data/app-data.js';
 
@@ -34,6 +36,10 @@ const App = () => {
     localStorage.setItem(LocalStorageKey.TYPE_SHOW_VALUE, TypeShowValue.PRICE);
   }
 
+  if (!localStorage.getItem(LocalStorageKey.TYPE_SHOW_CONDITION_VALUE)) {
+    localStorage.setItem(LocalStorageKey.TYPE_SHOW_CONDITION_VALUE, TypeShowConditionValue.VALUE);
+  }
+
   if (!localStorage.getItem(LocalStorageKey.PERIOD)) {
     localStorage.setItem(LocalStorageKey.PERIOD, Period.DAY)
   }
@@ -42,6 +48,8 @@ const App = () => {
   dispatch(setPeriod(period));
   const typeShowValue = localStorage.getItem(LocalStorageKey.TYPE_SHOW_VALUE);
   dispatch(setTypeShowValue(typeShowValue));
+  const typeShowConditionValue = localStorage.getItem(LocalStorageKey.TYPE_SHOW_CONDITION_VALUE);
+  dispatch(setTypeShowConditionValue(typeShowConditionValue));
 
   return (
     <>

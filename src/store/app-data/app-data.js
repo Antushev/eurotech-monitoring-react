@@ -5,6 +5,7 @@ import {
   NameSpace,
   SortType,
   TypeShowValue,
+  TypeShowConditionValue,
   Period
 } from '../../const';
 
@@ -63,6 +64,7 @@ const initialState = {
   sortType: null,
   period: Period.DAY,
   typeShowValue: TypeShowValue.PRICE,
+  typeShowConditionValue: TypeShowConditionValue.VALUE,
   checkDataSyncUrlXMLForBitrix: {},
   settingsSyncBitrix: {},
   hasCreateNewProject: false,
@@ -133,6 +135,13 @@ export const appData = createSlice({
       state.typeShowValue = typeShowValue;
 
       localStorage.setItem(LocalStorageKey.TYPE_SHOW_VALUE, typeShowValue);
+    },
+    setTypeShowConditionValue: (state, action) => {
+      const typeShowConditionValue = action.payload;
+
+      state.typeShowConditionValue = typeShowConditionValue;
+
+      localStorage.setItem(LocalStorageKey.TYPE_SHOW_CONDITION_VALUE, typeShowConditionValue);
     },
     setCheckDataUrlXMLForBitrix: (state, action) => {
       state.checkDataSyncUrlXMLForBitrix = action.payload;
@@ -560,5 +569,6 @@ export const {
   setParseData,
   setPeriod,
   setTypeShowValue,
+  setTypeShowConditionValue,
   setCheckDataUrlXMLForBitrix
 } = appData.actions;

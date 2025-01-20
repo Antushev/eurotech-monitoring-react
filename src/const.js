@@ -31,12 +31,18 @@ export const SortType = {
 
 export const LocalStorageKey = {
   TYPE_SHOW_VALUE: 'type-show-value',
-  PERIOD: 'PERIOD'
+  TYPE_SHOW_CONDITION_VALUE: 'type-show-condition-value',
+  PERIOD: 'period'
 }
 
 export const TypeShowValue = {
   PRICE: 'PRICE',
   COUNT: 'COUNT'
+}
+
+export const TypeShowConditionValue = {
+  VALUE: 'VALUE',
+  PERCENT: 'PERCENT'
 }
 
 export const Period = {

@@ -100,6 +100,10 @@ export const getTypeShowValue = (state) => {
   return state[NameSpace.DATA].typeShowValue;
 }
 
+export const getTypeShowConditionValue = (state) => {
+  return state[NameSpace.DATA].typeShowConditionValue;
+}
+
 export const getCheckDataSyncUrlXMLForBitrix = (state) => {
   return state[NameSpace.DATA].checkDataSyncUrlXMLForBitrix;
 }

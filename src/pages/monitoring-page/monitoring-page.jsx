@@ -5,8 +5,8 @@ import * as dayjs from 'dayjs';
 
 import {
   AppRoute,
-  LocalStorageKey,
-  TypeShowValue
+  TypeShowValue,
+  TypeShowConditionValue
 } from '../../const.js';
 import {
   setCurrentProduct,
@@ -26,6 +26,7 @@ import {
   getCurrentProduct,
   getReports,
   getTypeShowValue,
+  getTypeShowConditionValue,
   getStatusLoadProducts
 } from '../../store/app-data/selectors.js';
 
@@ -44,12 +45,12 @@ const WIDTH_PRELOADER = 15;
 const HEIGHT_PRELOADER = 15;
 const COLOR_PRELOADER = '#000000';
 
-
 const MonitoringPage = () => {
   const dispatch = useDispatch();
   const currentUser = useSelector(getCurrentUser);
   const currentProduct = useSelector(getCurrentProduct);
   const typeShowValue = useSelector(getTypeShowValue);
+  const typeShowConditionValue = useSelector(getTypeShowConditionValue);
   const isLoadProducts = useSelector(getStatusLoadProducts);
 
   useEffect(() => {
@@ -403,8 +404,8 @@ const MonitoringPage = () => {
                                   }
 
                                   const compareValue = typeShowValue === TypeShowValue.PRICE
-                                    ? (stat.price - priceMainFirm).toFixed(2)?.toLocaleString()
-                                    : (stat.count - countMainFirm).toFixed(2)?.toLocaleString()
+                                    ? getCompareValue(stat.price, priceMainFirm, typeShowConditionValue)
+                                    : getCompareValue(stat.count, countMainFirm, typeShowConditionValue)
 
                                   if (isLoadProducts) {
                                     return (
@@ -443,22 +444,22 @@ const MonitoringPage = () => {
 
                                           {
                                             (typeShowValue === TypeShowValue.PRICE && compareValue < 0) &&
-                                            `(${compareValue.toLocaleString()})`
+                                            `(${compareValue.toLocaleString()}${typeShowConditionValue === TypeShowConditionValue.PERCENT ? '%' : ''})`
                                           }
 
                                           {
                                             (typeShowValue === TypeShowValue.PRICE && compareValue > 0) &&
-                                            `(+${compareValue.toLocaleString()})`
+                                            `(+${compareValue.toLocaleString()}${typeShowConditionValue === TypeShowConditionValue.PERCENT ? '%' : ''})`
                                           }
 
                                           {
                                             (typeShowValue === TypeShowValue.COUNT && compareValue < 0) &&
-                                            `(${compareValue.toLocaleString()})`
+                                            `(${compareValue.toLocaleString()}${typeShowConditionValue === TypeShowConditionValue.PERCENT ? '%' : ''})`
                                           }
 
                                           {
                                             (typeShowValue === TypeShowValue.COUNT && compareValue > 0) &&
-                                            `(+${compareValue.toLocaleString()})`
+                                            `(+${compareValue.toLocaleString()}${typeShowConditionValue === TypeShowConditionValue.PERCENT ? '%' : ''})`
                                           }
                                         </div>
                                       }
@@ -622,6 +623,12 @@ const getClassForCompareBlock = (compareValue, typeShowValue) => {
   }
 
   return 'goods-table__compare-text';
+}
+
+const getCompareValue = (value, mainValue, typeShowConditionValue) => {
+  return typeShowConditionValue === TypeShowConditionValue.PERCENT
+  ? (((value - mainValue) / mainValue) * 100).toFixed(2)
+    : (value - mainValue).toFixed(2).toLocaleString();
 }
 
 export default MonitoringPage;
