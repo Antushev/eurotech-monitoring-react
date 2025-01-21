@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import * as dayjs from 'dayjs';
+import debounce from 'debounce';
 
 import {
   AppRoute,
@@ -43,12 +44,18 @@ import DialogWindowEditLink from '../../components/dialog-window-edit-link/dialo
 import Preloader from '../../components/preloader/preloader.jsx';
 
 const SET_INTERVAL_FETCH_DATA = 15000;
+const TIMER_DEBOUNCE = 800;
 const WIDTH_PRELOADER = 15;
 const HEIGHT_PRELOADER = 15;
 const COLOR_PRELOADER = '#000000';
 const WIDTH_PRELOADER_GROUP = 25;
 const HEIGHT_PRELOADER_GROUP = 25;
 const COLOR_PRELOADER_GROUP = '#000000';
+
+const TypeSearch = {
+  ALL: 'all',
+  GROUP: 'group'
+}
 
 const MonitoringPage = () => {
   const dispatch = useDispatch();
@@ -58,6 +65,8 @@ const MonitoringPage = () => {
   const typeShowConditionValue = useSelector(getTypeShowConditionValue);
   const isShowNotifications = useSelector(getIsShowNotifications);
   const isLoadProducts = useSelector(getStatusLoadProducts);
+
+  const searchTextProductRef = useRef(null);
 
   useEffect(() => {
     dispatch(fetchFirmsByIdUser(currentUser.id));
@@ -76,6 +85,7 @@ const MonitoringPage = () => {
 
     return () => clearInterval(interval);
   }, []);
+
 
   const firms = useSelector(getAllFirms);
   const mainFirm = getMainFirm(firms);
@@ -96,6 +106,8 @@ const MonitoringPage = () => {
   const [selectProductForDialog, setSelectProductForDialog] = useState({});
   const [selectLinkForDialog, setSelectLinkForDialog] = useState({});
   const [idLoadGroup, setIdLoadGroup] = useState(null);
+  const [typeSearch, setTypeSearch] = useState(TypeSearch.GROUP);
+  const [isLoadSearch, setIsLoadSearch] = useState(false);
 
   return (
     <>
@@ -115,6 +127,8 @@ const MonitoringPage = () => {
                 defaultValue={dateFormat}
                 alt="Дата до"
                 onChange={async (evt) => {
+                  const name = searchTextProductRef.current.value;
+
                   setDate(dateRef.current.value);
 
                   await dispatch(fetchProductsWithSummaryDetail({
@@ -194,6 +208,114 @@ const MonitoringPage = () => {
                       Добавить товар
                     </button>
                   </li>
+                  <li className="buttons-list">
+                    <div className="search">
+                      <input
+                        disabled={isLoadSearch}
+                        ref={searchTextProductRef}
+                        className="search__input input input--search-field"
+                        type="text"
+                        placeholder="Поиск"
+                        onChange={debounce(async (evt) => {
+                          setIsLoadSearch(true);
+
+                          const name = evt.target.value;
+
+                          await dispatch(fetchProductsWithSummaryDetail({
+                            idUser: currentUser.id,
+                            idParent: typeSearch === TypeSearch.GROUP ? (currentProduct ? currentProduct.id : null) : false,
+                            withStats: 'summary',
+                            name: name && name !== '' ? name : null,
+                            dateStart: dayjs(date).startOf('day'),
+                            dateEnd: dayjs(date).endOf('day')
+                          }));
+
+                          setIsLoadSearch(false);
+                        }, TIMER_DEBOUNCE)}
+                      />
+
+                      {
+                        isLoadSearch
+                        ?
+                          <svg
+                            className="search__icon icon"
+                            width={WIDTH_PRELOADER}
+                            height={HEIGHT_PRELOADER}
+                            viewBox="0 0 38 38"
+                            stroke={COLOR_PRELOADER}
+                          >
+                            <g fill="none" fillRule="evenodd">
+                              <g transform="translate(1 1)" strokeWidth="2">
+                                <circle strokeOpacity=".5" cx="18" cy="18" r="18"/>
+                                <path d="M36 18c0-9.94-8.06-18-18-18">
+                                  <animateTransform
+                                    attributeName="transform"
+                                    type="rotate"
+                                    from="0 18 18"
+                                    to="360 18 18"
+                                    dur="1s"
+                                    repeatCount="indefinite"/>
+                                </path>
+                              </g>
+                            </g>
+                          </svg>
+                          :
+                          <svg className="search__icon icon" width="20" height="20" viewBox="0 0 20 20">
+                            <path d="M19.728 17.2913L15.8332 13.3971C15.6574 13.2214 15.4191 13.1237 15.1691 13.1237H14.5323C15.6105 11.7449 16.2512 10.0107 16.2512 8.12421C16.2512 3.63636 12.6142 0 8.12559 0C3.63698 0 0 3.63636 0 8.12421C0 12.612 3.63698 16.2484 8.12559 16.2484C10.0125 16.2484 11.747 15.6079 13.126 14.5298V15.1665C13.126 15.4165 13.2236 15.6547 13.3994 15.8305L17.2942 19.7246C17.6614 20.0918 18.2552 20.0918 18.6185 19.7246L19.7241 18.6193C20.0913 18.2521 20.0913 17.6584 19.728 17.2913ZM8.12559 13.1237C5.36367 13.1237 3.12523 10.8896 3.12523 8.12421C3.12523 5.36276 5.35977 3.12469 8.12559 3.12469C10.8875 3.12469 13.126 5.35885 13.126 8.12421C13.126 10.8857 10.8914 13.1237 8.12559 13.1237Z" fill="#141414" fill-opacity="0.9"/>
+                          </svg>
+                      }
+
+                      <ul className="search__list-params">
+                        <li
+                          className={`search__list-params-item ${typeSearch === TypeSearch.GROUP ? 'search__list-params-item--active' : ''}` }
+                          onClick={async () => {
+                            setTypeSearch(TypeSearch.GROUP);
+
+                            setIsLoadSearch(true);
+
+                            const name = searchTextProductRef.current.value;
+
+                            await dispatch(fetchProductsWithSummaryDetail({
+                              idUser: currentUser.id,
+                              idParent: currentProduct ? currentProduct.id : null,
+                              withStats: 'summary',
+                              name: name && name !== '' ? name : null,
+                              dateStart: dayjs(date).startOf('day'),
+                              dateEnd: dayjs(date).endOf('day')
+                            }));
+
+                            setIsLoadSearch(false);
+                          }}
+                        >
+                          в группе
+                        </li>
+                        <li
+                          className={`search__list-params-item ${typeSearch === TypeSearch.ALL ? 'search__list-params-item--active' : ''}`}
+                          onClick={async () => {
+                            setTypeSearch(TypeSearch.ALL);
+
+                            setIsLoadSearch(true);
+
+                            const name = searchTextProductRef.current.value;
+
+                            await dispatch(fetchProductsWithSummaryDetail({
+                              idUser: currentUser.id,
+                              idParent: name !== '' ? false : (currentProduct ? currentProduct.id : null),
+                              withStats: 'summary',
+                              name: name && name !== '' ? name : null,
+                              dateStart: dayjs(date).startOf('day'),
+                              dateEnd: dayjs(date).endOf('day')
+                            }));
+
+                            setIsLoadSearch(false);
+                          }}
+                        >
+                          везде
+                        </li>
+                      </ul>
+
+                    </div>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -227,12 +349,15 @@ const MonitoringPage = () => {
                     <td
                       className="goods-table__td"
                       onClick={async () => {
+                        const name = searchTextProductRef.current.value;
+
                         setIdLoadGroup(currentProduct.id);
 
                         await dispatch(fetchProductsWithSummaryDetail({
                           idUser: currentUser.id,
                           idParent: currentProduct.idParent,
                           withStats: 'summary',
+                          name: name && name !== '' ? name : null,
                           dateStart: dayjs(date).startOf('day'),
                           dateEnd: dayjs(date).endOf('day')
                         }));
@@ -268,10 +393,18 @@ const MonitoringPage = () => {
                   </tr>
               }
                 {
-                  products.length === 0
+                  products?.length === 0 || !products
                   ? <tr>
                       <td>
-                        <p>В данной группе нет товаров</p>
+                        {
+                          (searchTextProductRef?.current?.value !== '' && typeSearch === TypeSearch.GROUP)
+                          && <p>В данной группе по поисковой фразе <u>{searchTextProductRef?.current?.value}</u> ничего не найдено</p>
+                        }
+
+                        {
+                          (searchTextProductRef?.current?.value !== '' && typeSearch === TypeSearch.ALL)
+                          && <p>`При поиске по всем товарам ничего не найдено`</p>
+                        }
                       </td>
                   </tr> :
                   products.map((product, index) => {
@@ -281,11 +414,14 @@ const MonitoringPage = () => {
                           key={index}
                           className="goods-table__tr"
                           onClick={async () => {
-                            setIdLoadGroup(product.id);
+                            setIdLoadGroup(product.id)
+
+                            const name = searchTextProductRef.current.value;
 
                             await dispatch(fetchProductsWithSummaryDetail({
                               idUser: currentUser.id,
                               idParent: product.id,
+                              name: name && name !== '' ? name : null,
                               withStats: 'summary',
                               dateStart: dayjs(date).startOf('day'),
                               dateEnd: dayjs(date).endOf('day')

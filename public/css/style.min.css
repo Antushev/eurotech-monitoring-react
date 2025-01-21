@@ -154,7 +154,7 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 
 .goods-table__td,
 .goods-table__th {
-  min-width: 150px;
+  min-width: 100px;
 }
 
 .goods-table__td:hover .goods-table__text {
@@ -1230,6 +1230,60 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 
 .notifications {
   z-index: 1000;
+}
+
+.search {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+}
+
+.search__icon {
+  position: absolute;
+  right: 25px;
+}
+
+.search__list-params {
+  position: absolute;
+  right: 70px;
+  z-index: 500;
+
+  display: flex;
+  padding: 0;
+  margin: 0;
+
+  list-style: none;
+}
+
+.search__list-params-item {
+  color: #be1622;
+
+  cursor: pointer;
+}
+
+.search__list-params-item:not(:last-child) {
+  margin-right: 10px;
+}
+
+.search__list-params-item:hover {
+  text-decoration: underline;
+}
+
+.search__list-params-item--active {
+  font-weight: 500;
+
+  text-decoration: underline;
+}
+
+.input--search-field {
+  margin: 0;
+  padding-top: 5px;
+  padding-right: 10px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  width: 400px;
+  height: 40px;
 }
 
 /*# sourceMappingURL=style.min.css.map */
