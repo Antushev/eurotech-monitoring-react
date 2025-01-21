@@ -38,9 +38,10 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 }
 
 .page-content__header-block {
+  position: relative;
+
   display: flex;
   align-items: center;
-
 }
 
 .page-content__products {
@@ -81,15 +82,10 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 
 }
 
-.monitoring-block-left {
-  flex: 3 0 auto;
-  margin-right: 20px;
-}
-
 .goods-block {
   overflow: auto;
 
-  width: 1100px;
+  width: 100%;
   height: 78vh;
 
   scrollbar-gutter: stable;
@@ -101,10 +97,6 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   justify-content: space-between;
 
   margin-bottom: 10px;
-}
-
-.monitoring-block-right {
-  width: 450px;
 }
 
 .goods-table {
@@ -158,7 +150,7 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 
 .goods-table__td,
 .goods-table__th {
-  width: 150px;
+  min-width: 150px;
 }
 
 .goods-table__td:hover .goods-table__text {
@@ -181,7 +173,8 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 
 .goods-table__th:first-child,
 .goods-table__td:first-child {
-  width: 400px;
+  min-width: 400px;
+  max-width: 400px;
 
   text-align: left;
   vertical-align: middle;
@@ -251,9 +244,19 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   overflow: auto;
 }
 
+.last-action--notification {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  z-index: 1500;
+
+  width: 450px;
+
+  box-shadow:0 4px 10px rgba(190, 22, 34,.08)}
+}
+
 .last-action--integrations {
   padding: 0;
-  width: 100%;
 
   overflow: visible;
 }
@@ -619,6 +622,10 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   color: #ffffff;
 
   background-color: #203264;
+}
+
+.date-select--margin-right {
+  margin-right: 15px;
 }
 
 .date-select__input {
@@ -1166,8 +1173,16 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   border-bottom-right-radius: 10px;
 }
 
+.icon-block {
+  position: relative;
+}
+
 .icon {
   cursor: pointer;
+}
+
+.icon--active path{
+  fill: #be1622;
 }
 
 .icon:hover path {
@@ -1178,13 +1193,35 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   fill: #8e1622;
 }
 
+.icon-count {
+  position: absolute;
+  right: -10px; bottom: -3px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 18px;
+  height: 18px;
+
+  font-size: 10px;
+  color: #ffffff;
+
+  background-color: #be1622;
+
+  border-radius: 100%;
+}
+
 .modal {
-  min-width: 600px;
+  width: 600px;
   justify-content: flex-start;
 }
 
 .modal__text {
   margin-bottom: 5px;
+}
+
+.notifications {
+  z-index: 1000;
 }
 
 /*# sourceMappingURL=style.min.css.map */

@@ -45,6 +45,10 @@ export const TypeShowConditionValue = {
   PERCENT: 'PERCENT'
 }
 
+export const TypeLastActionBlock = {
+  NOTIFICATION: 'notification'
+}
+
 export const Period = {
   POINTS: null,
   DAY: 'day',

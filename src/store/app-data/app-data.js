@@ -65,6 +65,7 @@ const initialState = {
   period: Period.DAY,
   typeShowValue: TypeShowValue.PRICE,
   typeShowConditionValue: TypeShowConditionValue.VALUE,
+  isShowNotifications: false,
   checkDataSyncUrlXMLForBitrix: {},
   settingsSyncBitrix: {},
   hasCreateNewProject: false,
@@ -142,6 +143,9 @@ export const appData = createSlice({
       state.typeShowConditionValue = typeShowConditionValue;
 
       localStorage.setItem(LocalStorageKey.TYPE_SHOW_CONDITION_VALUE, typeShowConditionValue);
+    },
+    setIsShowNotifications: (state, action) => {
+      state.isShowNotifications = action.payload;
     },
     setCheckDataUrlXMLForBitrix: (state, action) => {
       state.checkDataSyncUrlXMLForBitrix = action.payload;
@@ -570,5 +574,6 @@ export const {
   setPeriod,
   setTypeShowValue,
   setTypeShowConditionValue,
+  setIsShowNotifications,
   setCheckDataUrlXMLForBitrix
 } = appData.actions;
