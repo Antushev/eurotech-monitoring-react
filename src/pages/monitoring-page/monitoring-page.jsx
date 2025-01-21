@@ -398,7 +398,7 @@ const MonitoringPage = () => {
                       <td>
                         {
                           (searchTextProductRef?.current?.value !== '' && typeSearch === TypeSearch.GROUP)
-                          && <p>В данной группе по поисковой фразе <u>{searchTextProductRef?.current?.value}</u> ничего не найдено</p>
+                          && <p>В данной группе товаров по поисковой фразе <u>{searchTextProductRef?.current?.value}</u> ничего не найдено</p>
                         }
 
                         {

@@ -358,6 +358,8 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   margin-bottom: 20px;
 
   border-radius: 10px;
+
+  border: 1px rgba(20, 20, 20, 0.2) solid;
 }
 
 .input--select {
@@ -640,7 +642,7 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 
   font-size: 18px;
 
-  border: none;
+  border: 1px rgba(20, 20, 20, 0.2) solid;
   background-color: #faf9f9;
 
   border-radius: 10px;
@@ -1216,7 +1218,7 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 }
 
 .modal {
-  width: 600px;
+  min-width: 600px;
   justify-content: flex-start;
 }
 
