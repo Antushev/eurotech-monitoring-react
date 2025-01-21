@@ -72,7 +72,7 @@ const PopupSelectConsumers = (props) => {
 
         <Select
           className="input input--select input--select-consumers input--margin-bottom"
-          maxMenuHeight={190}
+          maxMenuHeight={140}
           closeMenuOnSelect={false}
           cacheOptions
           isMulti={true}
