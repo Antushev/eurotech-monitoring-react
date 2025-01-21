@@ -1288,5 +1288,14 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   height: 40px;
 }
 
+.highlighter {
+  padding-right: 1px;
+  padding-left: 1px;
+  background-color: rgba(190, 22, 34, 0.4);
+
+  border-radius: 5px;
+}
+
+
 /*# sourceMappingURL=style.min.css.map */
 

@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import * as dayjs from 'dayjs';
 import debounce from 'debounce';
+import Highlighter from 'react-highlight-words';
 
 import {
   AppRoute,
@@ -397,13 +398,13 @@ const MonitoringPage = () => {
                   ? <tr>
                       <td>
                         {
-                          (searchTextProductRef?.current?.value !== '' && typeSearch === TypeSearch.GROUP)
-                          && <p>В данной группе товаров по поисковой фразе <u>{searchTextProductRef?.current?.value}</u> ничего не найдено</p>
+                          (searchTextProductRef?.current?.value !== '' && typeSearch === TypeSearch.GROUP && !isLoadSearch)
+                          && <p>В данной группе товаров по поисковой фразе <u><b>{searchTextProductRef?.current?.value}</b></u> ничего не найдено</p>
                         }
 
                         {
-                          (searchTextProductRef?.current?.value !== '' && typeSearch === TypeSearch.ALL)
-                          && <p>`При поиске по всем товарам ничего не найдено`</p>
+                          (searchTextProductRef?.current?.value !== '' && typeSearch === TypeSearch.ALL && !isLoadSearch)
+                          && <p>При поиске по всем товарам по поисковой фразе <u><b>{searchTextProductRef?.current?.value}</b></u> ничего не найдено</p>
                         }
                       </td>
                   </tr> :
@@ -455,7 +456,14 @@ const MonitoringPage = () => {
                                   <path d="M25.0186 3.05707H14.8012L11.3954 0H2.88084C1.47009 0 0.326477 1.02651 0.326477 2.2928V16.0496C0.326477 17.3159 1.47009 18.3424 2.88084 18.3424H25.0186C26.4294 18.3424 27.573 17.3159 27.573 16.0496V5.34986C27.573 4.08357 26.4294 3.05707 25.0186 3.05707Z" fill="#141414"/>
                                 </svg>
                             }
-                            <span className="goods-table__text">{product.name}</span>
+                            <span className="goods-table__text">
+                              <Highlighter
+                                highlightClassName="highlighter"
+                                searchWords={[searchTextProductRef?.current?.value]}
+                                autoEscape={true}
+                                textToHighlight={product?.name}
+                              />
+                            </span>
 
                             {
                               selectProductForDialog.id === product.id
@@ -489,7 +497,12 @@ const MonitoringPage = () => {
                           }}
                         >
                           <Link className="goods-table__link" to={`${AppRoute.Monitoring}/${product.id}`}>
-                            {product.name}
+                            <Highlighter
+                              highlightClassName="highlighter"
+                              searchWords={[searchTextProductRef?.current?.value]}
+                              autoEscape={true}
+                              textToHighlight={product?.name}
+                            />
                           </Link>
                           {
                             selectProductForDialog.id === product.id
