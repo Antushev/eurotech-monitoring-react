@@ -1224,6 +1224,10 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   margin-bottom: 5px;
 }
 
+.modal__text--no-margin-top {
+  margin-top: 0;
+}
+
 .notifications {
   z-index: 1000;
 }

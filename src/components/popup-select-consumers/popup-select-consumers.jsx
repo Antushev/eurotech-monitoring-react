@@ -4,18 +4,25 @@ import { toast } from 'react-toastify';
 import Select from 'react-select';
 import * as dayjs from "dayjs";
 
-import { TypeShowConditionValue } from '../../const.js';
+import {
+  TypeShowValue,
+  TypeShowConditionValue
+} from '../../const.js';
 
 import {
   fetchFirmsByIdUser,
   fetchProductsWithSummaryDetail,
   setFirmsActiveByIdUser
 } from '../../store/api-actions.js';
-import { setTypeShowConditionValue } from '../../store/app-data/app-data.js';
+import {
+  setTypeShowValue,
+  setTypeShowConditionValue
+} from '../../store/app-data/app-data.js';
 import {
   getCurrentUser,
   getStatusLoadFirms,
   getStatusLoadProducts,
+  getTypeShowValue,
   getTypeShowConditionValue
 } from '../../store/app-data/selectors.js';
 
@@ -26,6 +33,7 @@ const PopupSelectConsumers = (props) => {
 
   const { firms, currentProduct, setIsOpen } = props;
   const currentUser = useSelector(getCurrentUser);
+  const typeShowValue = useSelector(getTypeShowValue);
   const typeShowConditionValue = useSelector(getTypeShowConditionValue);
   const isLoadFirms = useSelector(getStatusLoadFirms);
   const isLoadProducts = useSelector(getStatusLoadProducts);
@@ -98,6 +106,34 @@ const PopupSelectConsumers = (props) => {
         />
 
         <p className="modal__text">
+          Выберите тип отображаемых величин
+        </p>
+        <ul className="toggle-data-list toggle-data-list--margin-bottom">
+          <li
+            className={`toggle-data-list__item ${
+              typeShowValue === TypeShowValue.PRICE && 'toggle-data-list__item--active'
+            }`
+            }
+            onClick={() => {
+              dispatch(setTypeShowValue(TypeShowValue.PRICE))
+            }}
+          >
+            Цены
+          </li>
+          <li
+            className={`toggle-data-list__item ${
+              typeShowValue === TypeShowValue.COUNT && 'toggle-data-list__item--active'
+            }`
+            }
+            onClick={() => {
+              dispatch(setTypeShowValue(TypeShowValue.COUNT))
+            }}
+          >
+            Остатки
+          </li>
+        </ul>
+
+        <p className="modal__text modal__text--no-margin-top">
           Выберите способ отображения разницы величин
         </p>
         <ul className="toggle-data-list toggle-data-list--margin-bottom">

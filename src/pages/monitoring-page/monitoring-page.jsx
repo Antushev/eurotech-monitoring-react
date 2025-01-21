@@ -11,7 +11,6 @@ import {
 } from '../../const.js';
 import {
   setCurrentProduct,
-  setTypeShowValue,
   setIsShowNotifications
 } from '../../store/app-data/app-data.js';
 import {
@@ -26,7 +25,6 @@ import {
   getAllFirms,
   getAllProducts,
   getCurrentProduct,
-  getReports,
   getTypeShowValue,
   getTypeShowConditionValue,
   getIsShowNotifications,
@@ -82,7 +80,6 @@ const MonitoringPage = () => {
   const firms = useSelector(getAllFirms);
   const mainFirm = getMainFirm(firms);
   const products = useSelector(getAllProducts);
-  const reports = useSelector(getReports);
 
   const dateFormat = dayjs().format('YYYY-MM-DD')
   const dateRef = useRef(dateFormat);
@@ -109,31 +106,6 @@ const MonitoringPage = () => {
           <h1 className="header header--1">Мониторинг</h1>
 
           <div className="page-content__header-block">
-            <ul className="toggle-data-list toggle-data-list--margin-right">
-              <li
-                className={`toggle-data-list__item ${
-                  typeShowValue === TypeShowValue.PRICE && 'toggle-data-list__item--active'
-                }`
-                }
-                onClick={() => {
-                  dispatch(setTypeShowValue(TypeShowValue.PRICE))
-                }}
-              >
-                Цены
-              </li>
-              <li
-                className={`toggle-data-list__item ${
-                  typeShowValue === TypeShowValue.COUNT && 'toggle-data-list__item--active'
-                }`
-                }
-                onClick={() => {
-                  dispatch(setTypeShowValue(TypeShowValue.COUNT));
-                }}
-              >
-                Остатки
-              </li>
-            </ul>
-
             <div className="date-select date-select--margin-right">
               <input
                 ref={dateRef}
