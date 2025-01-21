@@ -20,13 +20,13 @@ const LastActionNotification = (props) => {
   // WIP: ДОДЕЛАТЬ СКРЫТИЕ УВЕДОМЛЕНИЙ ПО КЛИКУ ВНЕ БЛОКА УВЕДОМЛЕНИЙ
   const useOutsideClick = (ref) => {
     useEffect(() => {
-      const handleClickOutside = (evt) => {
-        if (
-          !ref.current.contains(evt.target)
-        ) {
-          dispatch(setIsShowNotifications(false));
-        }
-      }
+      // const handleClickOutside = (evt) => {
+      //   if (
+      //     !ref.current.contains(evt.target)
+      //   ) {
+      //     dispatch(setIsShowNotifications(false));
+      //   }
+      // }
 
       const handleClickKeyboard = (evt) => {
         if (evt.key === 'Escape') {
@@ -34,11 +34,11 @@ const LastActionNotification = (props) => {
         }
       }
 
-      window.addEventListener('click', handleClickOutside);
+      // window.addEventListener('click', handleClickOutside);
       window.addEventListener('keydown', handleClickKeyboard);
 
       return () => {
-        removeEventListener('click', handleClickOutside);
+        // removeEventListener('click', handleClickOutside);
         removeEventListener('keydown', handleClickKeyboard);
       }
     }, []);
