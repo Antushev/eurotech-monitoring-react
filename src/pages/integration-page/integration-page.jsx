@@ -8,7 +8,10 @@ import {
   fetchReportsIntegrations,
   fetchStartSyncBitrix
 } from '../../store/api-actions.js';
-import { setCheckDataUrlXMLForBitrix } from '../../store/app-data/app-data.js';
+import {
+  setCheckDataUrlXMLForBitrix,
+  setIsShowNotifications
+} from '../../store/app-data/app-data.js';
 import {
   getCurrentUser,
   getSettingsSyncBitrix,
@@ -17,11 +20,15 @@ import {
   getStatusLoadSettingsSyncBitrix,
   getReportsIntegrations,
   getStatusLoadReportsIntegrations,
-  getStatusSyncBitrixProducts
+  getStatusSyncBitrixProducts,
+  getIsShowNotifications
 } from '../../store/app-data/selectors.js';
 
 import Preloader from './../../components/preloader/preloader.jsx';
 import * as dayjs from "dayjs";
+
+import LastActionNotification from "../../components/last-action/last-action.jsx";
+import {TypeLastActionBlock} from "../../const.js";
 
 const ID_FIRM_FOR_SYNC = 1;
 const INTERVAL_FETCH_DATA = 5000;
@@ -34,6 +41,7 @@ const IntegrationPage = () => {
   const dataCheckUrl = useSelector(getCheckDataSyncUrlXMLForBitrix);
   const isLoadReportsIntegrations = useSelector(getStatusLoadReportsIntegrations);
   const isSyncProducts = useSelector(getStatusSyncBitrixProducts);
+  const isShowNotifications = useSelector(getIsShowNotifications);
 
   useEffect(() => {
     dispatch(fetchSettingsSyncBitrix({
@@ -83,6 +91,28 @@ const IntegrationPage = () => {
       <section className="page-content page__content">
         <header className="page-content__header standart-block">
           <h1 className="header header--1">Настройки</h1>
+
+          <div className="page-content__header-block">
+            <div className="notifications icon-block">
+              <svg
+                className={`icon ${isShowNotifications ? 'icon--active' : ''}`}
+                width="24" height="27"
+                viewBox="0 0 24 27"
+                onClick={() => {
+                  dispatch(setIsShowNotifications(!isShowNotifications));
+                }}
+              >
+                <path d="M12 27C13.8921 27 15.427 25.4892 15.427 23.625H8.57305C8.57305 25.4892 10.1079 27 12 27ZM23.5387 19.1051C22.5037 18.0104 20.5671 16.3635 20.5671 10.9688C20.5671 6.87129 17.6486 3.59121 13.7132 2.78648V1.6875C13.7132 0.755684 12.9461 0 12 0C11.0539 0 10.2868 0.755684 10.2868 1.6875V2.78648C6.35145 3.59121 3.43288 6.87129 3.43288 10.9688C3.43288 16.3635 1.49628 18.0104 0.461286 19.1051C0.139858 19.4453 -0.00264152 19.8519 3.70385e-05 20.25C0.00592988 21.1148 0.695392 21.9375 1.71967 21.9375H22.2803C23.3046 21.9375 23.9946 21.1148 24 20.25C24.0026 19.8519 23.8601 19.4447 23.5387 19.1051Z" fill="#141414" fill-opacity="0.9"/>
+              </svg>
+
+              <div className="icon-count">24</div>
+
+              <LastActionNotification
+                type={ TypeLastActionBlock.NOTIFICATION }
+                isShow={ isShowNotifications }
+              />
+            </div>
+          </div>
         </header>
 
         <section className="integration">
@@ -361,7 +391,7 @@ const IntegrationPage = () => {
             <h2 className="header header--2 header--space-bottom">Логи</h2>
             {
               isLoadReportsIntegrations ? <Preloader color='#000000' /> : (
-                <aside className="last-action last-action--integrations standart-block">
+                <aside className="last-action last-action--integrations">
                   <div className="last-action__block">
                     {
                       reportsIntegrations.map((report) => {

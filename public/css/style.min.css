@@ -37,6 +37,10 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   align-items: center;
 }
 
+.page-content__header--triggers {
+  justify-content: space-between;
+}
+
 .page-content__header-block {
   position: relative;
 

@@ -1,14 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as dayjs from "dayjs";
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
-import { setIsShowNotifications } from '../../store/app-data/app-data.js';
+import { fetchReports } from '../../store/api-actions.js';
+import {
+  setIsShowNotifications,
+} from '../../store/app-data/app-data.js';
+import { getReports } from '../../store/app-data/selectors.js';
 
 import { TypeLastActionBlock } from '../../const.js';
 
+const INTERVAL_UPLOAD_REPORTS = 10000;
+
 const LastActionNotification = (props) => {
   const {
-    reports,
     type,
     isShow
   } = props;
@@ -16,6 +21,8 @@ const LastActionNotification = (props) => {
   const dispatch = useDispatch();
 
   const notificationsRef = useRef();
+
+  const reports = useSelector(getReports);
 
   // WIP: ДОДЕЛАТЬ СКРЫТИЕ УВЕДОМЛЕНИЙ ПО КЛИКУ ВНЕ БЛОКА УВЕДОМЛЕНИЙ
   const useOutsideClick = (ref) => {
@@ -46,6 +53,16 @@ const LastActionNotification = (props) => {
 
   useOutsideClick(notificationsRef);
 
+  useEffect(() => {
+    dispatch(fetchReports());
+
+    const interval = setInterval(() => {
+      dispatch(fetchReports());
+    }, INTERVAL_UPLOAD_REPORTS)
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <aside
       ref={ notificationsRef }
@@ -58,7 +75,7 @@ const LastActionNotification = (props) => {
 
       <div className="last-action__block">
         {
-          reports.map((report) => {
+          reports?.map((report) => {
             return (
               <>
                 <div className="last-action__date">

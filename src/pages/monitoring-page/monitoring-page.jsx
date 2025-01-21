@@ -171,7 +171,6 @@ const MonitoringPage = () => {
               <div className="icon-count">24</div>
 
               <LastActionNotification
-                reports={ reports }
                 type={ TypeLastActionBlock.NOTIFICATION }
                 isShow={ isShowNotifications }
               />
