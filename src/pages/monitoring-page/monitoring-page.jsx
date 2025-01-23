@@ -224,7 +224,7 @@ const MonitoringPage = () => {
 
                           await dispatch(fetchProductsWithSummaryDetail({
                             idUser: currentUser.id,
-                            idParent: typeSearch === TypeSearch.GROUP ? (currentProduct ? currentProduct.id : null) : false,
+                            idParent: typeSearch === TypeSearch.GROUP ? (currentProduct ? currentProduct.id : null) : (name !== '' ? false : currentProduct.id),
                             withStats: 'summary',
                             name: name && name !== '' ? name : null,
                             dateStart: dayjs(date).startOf('day'),
@@ -301,7 +301,7 @@ const MonitoringPage = () => {
 
                             await dispatch(fetchProductsWithSummaryDetail({
                               idUser: currentUser.id,
-                              idParent: name !== '' ? false : (currentProduct ? currentProduct.id : null),
+                              idParent: name ? (name !== '' ? false : null) : (currentProduct ? currentProduct.id : null),
                               withStats: 'summary',
                               name: name && name !== '' ? name : null,
                               dateStart: dayjs(date).startOf('day'),
@@ -345,7 +345,10 @@ const MonitoringPage = () => {
               </thead>
               <tbody>
               {
-                currentProduct !== null &&
+                (
+                  currentProduct !== null
+                  && typeSearch !== TypeSearch.ALL
+                ) &&
                   <tr className="goods-table__tr">
                     <td
                       className="goods-table__td"
