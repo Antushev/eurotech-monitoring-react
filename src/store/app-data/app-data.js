@@ -290,9 +290,13 @@ export const appData = createSlice({
       })
       .addCase(createLink.fulfilled, (state) => {
         state.hasLoadLink = false;
+
+        toast.success('Ссылка успешно добавлена!');
       })
       .addCase(createLink.rejected, (state) => {
         state.hasLoadLink = false;
+
+        toast.error('Произошла ошибка при добавлении ссылки');
       })
       // РЕДАКТИРОВАНИЕ ТЕКУЩЕЙ ССЫЛКИ
       .addCase(updateLink.pending, (state) => {
@@ -300,9 +304,13 @@ export const appData = createSlice({
       })
       .addCase(updateLink.fulfilled, (state, action) => {
         state.hasLoadLink = false;
+
+        toast.success('Ссылка успешно отредактирована!');
       })
       .addCase(updateLink.rejected, (state) => {
         state.hasLoadLink = false;
+
+        toast.error('Произошла ошибка при редактировании ссылки');
       })
       // УДАЛЕНИЕ ТЕКУЩЕЙ ССЫЛКИ
       .addCase(deleteLink.pending, (state) => {
@@ -312,8 +320,6 @@ export const appData = createSlice({
         const deleteLink = action.payload;
 
         const { id: idLink } = deleteLink;
-
-        console.log('Удалённая ссылка: ', idLink);
 
         state.products = state.products.map((product) => {
           const stats = product.stats?.map((stat) => {
@@ -337,9 +343,13 @@ export const appData = createSlice({
         })
 
         state.hasLoadLink = false;
+
+        toast.success('Ссылка успешно удалена!');
       })
       .addCase(deleteLink.rejected, (state) => {
         state.hasLoadLink = false;
+
+        toast.error('Произошла ошибка при удалении ссылки');
       })
       // ПОЛУЧЕНИЕ СПИСКА ТРИГГЕРОВ
       .addCase(fetchTriggers.pending, (state) => {
