@@ -1303,6 +1303,20 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   border-radius: 5px;
 }
 
+.link {
+  color: #be1622;
+
+  text-decoration: underline;
+}
+
+.input--color {
+  padding: 0;
+
+  border: none;
+
+  border-radius: 100px;
+}
+
 
 /*# sourceMappingURL=style.min.css.map */
 
