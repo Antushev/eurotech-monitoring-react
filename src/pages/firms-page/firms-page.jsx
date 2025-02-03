@@ -139,7 +139,7 @@ const FirmsPage = () => {
                           </td>
 
                           <td className="table__td">
-                            <a className="link" href={`${firm.site}`} target="_blank">
+                            <a className="link" href={`https://${firm.site}`} target="_blank">
                               { firm.site }
                             </a>
                           </td>
@@ -151,6 +151,9 @@ const FirmsPage = () => {
                               type="color"
                               name="color-firm"
                               value={firm.color}
+                              onChange={(evt) => {
+
+                              }}
                             />
                           </td>
 
