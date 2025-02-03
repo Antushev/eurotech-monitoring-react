@@ -1,4 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify';
 
 export const fetchFirmsByIdUser = createAsyncThunk(
   'data/fetchFirmsByIdUser',
@@ -10,7 +11,13 @@ export const fetchFirmsByIdUser = createAsyncThunk(
 export const updateFirm = createAsyncThunk(
   'data/updateFirm',
   async (firm, { extra: api }) => {
-    const { id: idFirm } = firm;
+    const { id: idFirm, isMain } = firm;
+
+    if (!isMain) {
+      toast.warning('Должна быть хотя бы одна основная фирма');
+
+      return false;
+    }
 
     const { data } = await api.put(`/firm/${idFirm}`, { ...firm });
 

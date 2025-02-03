@@ -1,5 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {toast} from 'react-toastify';
+import { toast } from 'react-toastify';
 import {
   LocalStorageKey,
   NameSpace,
@@ -170,17 +170,27 @@ export const appData = createSlice({
 
       })
       .addCase(updateFirm.fulfilled, (state, action) => {
-        const firm = action.payload;
+        const uploadFirm = action.payload;
+        const { isMain } = uploadFirm;
 
-        const indexFirm = state.firms.findIndex((searchFirm) => searchFirm.id === firm.id);
+        if (isMain) {
+          state.firms = state.firms.map((firm) => {
+            return {
+              ...firm,
+              isMain: false
+            }
+          });
+        }
+
+        const indexFirm = state.firms.findIndex((searchFirm) => searchFirm.id === uploadFirm.id);
 
         if (indexFirm !== -1) {
-          state.firms[indexFirm] = firm;
+          state.firms[indexFirm] = uploadFirm;
 
-          toast.success(`Фирма ${firm.name} успешно отредактирована`);
+          toast.success(`Фирма ${uploadFirm.name} успешно отредактирована`);
         }
       })
-      .addCase(updateFirm.rejected, (state) => {
+      .addCase(updateFirm.rejected, () => {
         toast.error('Произошла ошибка при редактировании фирмы');
       })
       // ВЫБОР АКТИВНЫХ ФИРМ ДЛЯ ОПРЕДЕЛЁННОГО ПОЛЬЗОВАТЕЛЯ
