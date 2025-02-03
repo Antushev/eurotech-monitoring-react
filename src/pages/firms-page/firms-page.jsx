@@ -86,6 +86,9 @@ const FirmsPage = () => {
             <table className="table">
               <thead className="table__thead">
               <tr className="table__tr">
+                <th className="table__th">
+                  ID
+                </th>
                 <th className="table__th table__th--name">
                   Имя
                 </th>
@@ -128,6 +131,9 @@ const FirmsPage = () => {
                     firms.map((firm) => {
                       return (
                         <tr key={firm.id} className="table__tr">
+                          <td className="table__td">
+                            {firm.id }
+                          </td>
                           <td className="table__td table__td--name">
                             <Link to={`/firm/${firm.id}/edit`}>
                               { firm.name }
