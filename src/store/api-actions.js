@@ -7,6 +7,17 @@ export const fetchFirmsByIdUser = createAsyncThunk(
     return data;
   });
 
+export const updateFirm = createAsyncThunk(
+  'data/updateFirm',
+  async (firm, { extra: api }) => {
+    const { id: idFirm } = firm;
+
+    const { data } = await api.put(`/firm/${idFirm}`, { ...firm });
+
+    return data;
+  }
+)
+
 export const setFirmsActiveByIdUser = createAsyncThunk(
   'data/setFirmsActiveByIdUser',
   async ({idUser, firms}, {extra: api}) => {

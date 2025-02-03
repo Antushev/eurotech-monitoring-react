@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {Link, NavLink} from "react-router-dom";
 import * as dayjs from "dayjs";
-
+import debounce from 'debounce';
 
 import {AppRoute, TypeLastActionBlock} from "../../const";
 
-import { fetchFirmsByIdUser } from "../../store/api-actions.js";
+import {
+  fetchFirmsByIdUser,
+  updateFirm
+} from "../../store/api-actions.js";
 import { setIsShowNotifications } from "../../store/app-data/app-data.js";
 import {
   getCurrentUser,
@@ -18,6 +21,7 @@ import {
 import LastActionNotification from "../../components/last-action/last-action.jsx";
 import Preloader from "../../components/preloader/preloader.jsx";
 
+const TIMER_DEBOUNCE = 1500;
 const WIDTH_PRELOADER = 15;
 const HEIGHT_PRELOADER = 15;
 const COLOR_PRELOADER = '#000000';
@@ -30,9 +34,11 @@ const FirmsPage = () => {
   const isLoadFirms = useSelector(getStatusLoadFirms);
   const isShowNotifications = useSelector(getIsShowNotifications);
 
+  const colorRef = useRef();
+
   useEffect(() => {
     dispatch(fetchFirmsByIdUser(currentUser.id));
-  }, [])
+  }, []);
 
   return (
     <>
@@ -152,14 +158,22 @@ const FirmsPage = () => {
 
                           <td className="table__td">
                             <input
+                              ref={ colorRef }
                               id="color-firm"
                               className="input input--color"
                               type="color"
                               name="color-firm"
-                              value={firm.color}
-                              onChange={(evt) => {
+                              defaultValue={ firm.color }
+                              onChange={debounce(async (evt) => {
+                                const color = evt.target.value;
 
-                              }}
+                                const newFirm = {
+                                  ...firm,
+                                  color
+                                }
+
+                                dispatch(updateFirm(newFirm));
+                              }, TIMER_DEBOUNCE)}
                             />
                           </td>
 

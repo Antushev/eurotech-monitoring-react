@@ -23,6 +23,7 @@ import {
   fetchAllProjects,
   fetchCurrentProductById,
   fetchFirmsByIdUser,
+  updateFirm,
   fetchParseData,
   fetchProductsGroups,
   fetchProductsWithSummaryDetail,
@@ -163,6 +164,24 @@ export const appData = createSlice({
       })
       .addCase(fetchFirmsByIdUser.rejected, (state) => {
         state.hasLoadFirms = false;
+      })
+      // РЕДАКТИРОВАНИЕ ФИРМЫ
+      .addCase(updateFirm.pending, (state) => {
+
+      })
+      .addCase(updateFirm.fulfilled, (state, action) => {
+        const firm = action.payload;
+
+        const indexFirm = state.firms.findIndex((searchFirm) => searchFirm.id === firm.id);
+
+        if (indexFirm !== -1) {
+          state.firms[indexFirm] = firm;
+
+          toast.success(`Фирма ${firm.name} успешно отредактирована`);
+        }
+      })
+      .addCase(updateFirm.rejected, (state) => {
+        toast.error('Произошла ошибка при редактировании фирмы');
       })
       // ВЫБОР АКТИВНЫХ ФИРМ ДЛЯ ОПРЕДЕЛЁННОГО ПОЛЬЗОВАТЕЛЯ
       .addCase(setFirmsActiveByIdUser.pending, (state) => {
