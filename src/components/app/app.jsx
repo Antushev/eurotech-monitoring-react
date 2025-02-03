@@ -8,11 +8,13 @@ import {
   AppRoute,
   LocalStorageKey,
   TypeShowValue,
+  TypeShowConditionValue,
   Period
 } from '../../const';
 
 import {
   setTypeShowValue,
+  setTypeShowConditionValue,
   setPeriod
 } from '../../store/app-data/app-data.js';
 
@@ -23,6 +25,7 @@ import ProductMonitorPage from './../../pages/product-monitor-page/product-monit
 import TriggersPage from './../../pages/triggers-page/triggers-page.jsx';
 import TriggerAddPage from './../../pages/trigger-add-page/trigger-add-page.jsx';
 import TriggerEditPage from './../../pages/trigger-edit-page/trigger-edit-page.jsx';
+import FirmsPage from './../../pages/firms-page/firms-page.jsx';
 import IntegrationPage from './../../pages/integration-page/integration-page.jsx';
 // import SettingsPage from '../../pages/NOT_settings-page/settings-page.jsx';
 import NotFoundPage from './../../pages/not-found-page/not-found-page.jsx';
@@ -34,6 +37,10 @@ const App = () => {
     localStorage.setItem(LocalStorageKey.TYPE_SHOW_VALUE, TypeShowValue.PRICE);
   }
 
+  if (!localStorage.getItem(LocalStorageKey.TYPE_SHOW_CONDITION_VALUE)) {
+    localStorage.setItem(LocalStorageKey.TYPE_SHOW_CONDITION_VALUE, TypeShowConditionValue.VALUE);
+  }
+
   if (!localStorage.getItem(LocalStorageKey.PERIOD)) {
     localStorage.setItem(LocalStorageKey.PERIOD, Period.DAY)
   }
@@ -42,6 +49,8 @@ const App = () => {
   dispatch(setPeriod(period));
   const typeShowValue = localStorage.getItem(LocalStorageKey.TYPE_SHOW_VALUE);
   dispatch(setTypeShowValue(typeShowValue));
+  const typeShowConditionValue = localStorage.getItem(LocalStorageKey.TYPE_SHOW_CONDITION_VALUE);
+  dispatch(setTypeShowConditionValue(typeShowConditionValue));
 
   return (
     <>
@@ -56,6 +65,7 @@ const App = () => {
           <Route path={ AppRoute.TriggerAdd } element={ <TriggerAddPage /> } />
           <Route path={ AppRoute.TriggerEdit } element={ <TriggerEditPage /> } />
           <Route path={ AppRoute.Triggers } element={ <TriggersPage /> } />
+          <Route path={ AppRoute.Firms } element={ <FirmsPage /> } />
           <Route path={ AppRoute.Settings } element={ <IntegrationPage /> } />
           <Route path='*' element={ <NotFoundPage /> } />
         </Routes>

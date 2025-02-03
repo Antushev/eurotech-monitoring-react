@@ -4,7 +4,7 @@ import { Link, NavLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as dayjs from 'dayjs';
 
-import { AppRoute } from '../../const';
+import {AppRoute, TypeLastActionBlock} from '../../const';
 
 import { fetchTriggers, updateTrigger } from '../../store/api-actions.js';
 import {
@@ -13,6 +13,11 @@ import {
   getStatusLoadTriggers
 } from '../../store/app-data/selectors.js';
 
+
+import { setIsShowNotifications } from "../../store/app-data/app-data.js";
+import { getIsShowNotifications } from '../../store/app-data/selectors.js';
+
+import LastActionNotification from "../../components/last-action/last-action.jsx";
 import Preloader from '../../components/preloader/preloader.jsx';
 
 const WIDTH_PRELOADER = 25;
@@ -25,6 +30,7 @@ const TriggersPage = () => {
   const currentUser = useSelector(getCurrentUser);
   const triggers = useSelector(getAllTriggers);
   const isLoadTriggers = useSelector(getStatusLoadTriggers);
+  const isShowNotifications = useSelector(getIsShowNotifications);
 
   useEffect(() => {
     dispatch(fetchTriggers(currentUser.id));
@@ -33,9 +39,31 @@ const TriggersPage = () => {
   return (
     <>
       <section className="page-content page__content">
-        <header className="page-content__header standart-block">
-          <h1
-            className="header header--1">Триггеры</h1>
+        <header className="page-content__header page-content__header--triggers standart-block">
+          <h1 className="header header--1">Триггеры</h1>
+
+          <div className="page-content__header-block">
+            <div className="notifications icon-block">
+              <svg
+                className={`icon ${isShowNotifications ? 'icon--active' : ''}`}
+                width="24" height="27"
+                viewBox="0 0 24 27"
+                onClick={() => {
+                  dispatch(setIsShowNotifications(!isShowNotifications));
+                }}
+              >
+                <path d="M12 27C13.8921 27 15.427 25.4892 15.427 23.625H8.57305C8.57305 25.4892 10.1079 27 12 27ZM23.5387 19.1051C22.5037 18.0104 20.5671 16.3635 20.5671 10.9688C20.5671 6.87129 17.6486 3.59121 13.7132 2.78648V1.6875C13.7132 0.755684 12.9461 0 12 0C11.0539 0 10.2868 0.755684 10.2868 1.6875V2.78648C6.35145 3.59121 3.43288 6.87129 3.43288 10.9688C3.43288 16.3635 1.49628 18.0104 0.461286 19.1051C0.139858 19.4453 -0.00264152 19.8519 3.70385e-05 20.25C0.00592988 21.1148 0.695392 21.9375 1.71967 21.9375H22.2803C23.3046 21.9375 23.9946 21.1148 24 20.25C24.0026 19.8519 23.8601 19.4447 23.5387 19.1051Z" fill="#141414" fill-opacity="0.9"/>
+              </svg>
+
+              {/*<div className="icon-count">24</div>*/}
+
+              <LastActionNotification
+                type={ TypeLastActionBlock.NOTIFICATION }
+                isShow={ isShowNotifications }
+              />
+            </div>
+          </div>
+
         </header>
 
         <section className="page-content__inner">

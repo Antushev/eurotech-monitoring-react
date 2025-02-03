@@ -11,6 +11,7 @@ export const AppRoute = {
   Triggers: '/triggers',
   TriggerAdd: '/trigger/add',
   TriggerEdit: '/trigger/:idTrigger/edit',
+  Firms: '/firms',
   Settings: '/settings/integrations'
 }
 
@@ -19,7 +20,8 @@ export const MenuItem = {
   Monitoring: 'Monitoring',
   Settings: 'Settings',
   Triggers: 'Triggers',
-  TriggersAdd: 'TriggersAdd'
+  TriggersAdd: 'TriggersAdd',
+  Firms: 'Firms'
 }
 
 export const SortType = {
@@ -31,12 +33,22 @@ export const SortType = {
 
 export const LocalStorageKey = {
   TYPE_SHOW_VALUE: 'type-show-value',
-  PERIOD: 'PERIOD'
+  TYPE_SHOW_CONDITION_VALUE: 'type-show-condition-value',
+  PERIOD: 'period'
 }
 
 export const TypeShowValue = {
   PRICE: 'PRICE',
   COUNT: 'COUNT'
+}
+
+export const TypeShowConditionValue = {
+  VALUE: 'VALUE',
+  PERCENT: 'PERCENT'
+}
+
+export const TypeLastActionBlock = {
+  NOTIFICATION: 'notification'
 }
 
 export const Period = {
