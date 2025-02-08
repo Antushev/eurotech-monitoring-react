@@ -12,6 +12,7 @@ export const AppRoute = {
   TriggerAdd: '/trigger/add',
   TriggerEdit: '/trigger/:idTrigger/edit',
   Firms: '/firms',
+  FirmAdd: '/firm/add',
   Settings: '/settings/integrations'
 }
 
@@ -21,7 +22,8 @@ export const MenuItem = {
   Settings: 'Settings',
   Triggers: 'Triggers',
   TriggersAdd: 'TriggersAdd',
-  Firms: 'Firms'
+  Firms: 'Firms',
+  FirmAdd: 'FirmAdd'
 }
 
 export const SortType = {
