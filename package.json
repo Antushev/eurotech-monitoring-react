@@ -5,7 +5,7 @@
   "scripts": {
     "build": "webpack",
     "deploy": "webpack && scp -r public/* u2860037@eurotech.antushev.com:www/eurotech.antushev.com/",
-    "start": "webpack-dev-server --open",
+    "start": "webpack-dev-server",
     "test": "npm run eslint && npm run test.jest",
     "test.jest": "jest",
     "eslint": "eslint src/"

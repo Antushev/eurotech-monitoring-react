@@ -223,8 +223,8 @@ const TriggerAddPage = () => {
             <h2 className="header header--2 header--space-bottom">Шаг 1. Базовые данные</h2>
 
             <div className="form-block">
-              <label className="trigger-add__input" for="trigger-name">
-                <span className="input__label-text">Название триггера</span>
+              <label className="label label--margin-right" for="trigger-name">
+                <span className="label__text">Название триггера</span>
                 <input
                   ref={nameTriggerRef}
                   id="name-trigger"
@@ -245,8 +245,8 @@ const TriggerAddPage = () => {
                 />
               </label>
 
-              <label className="trigger-add__input">
-                <span className="input__label-text">Тип срабатывания</span>
+              <label className="label label--margin-right">
+                <span className="label__text">Тип срабатывания</span>
                 <select
                   id="type-active"
                   className="input input--trigger"
@@ -268,7 +268,7 @@ const TriggerAddPage = () => {
               {
                 typeActive === 'IS_ACTIVE' &&
                 <label className="input--margin-right">
-                  <span className="input__label-text">Интервал срабатывания</span>
+                  <span className="label__text">Интервал срабатывания</span>
                   <select
                     id="active-interval"
                     className="input input--trigger input--margin-right"
@@ -294,7 +294,7 @@ const TriggerAddPage = () => {
               {
                 typeActive === 'IS_ACTIVE' &&
                 <label>
-                  <span className="input__label-text">Количество срабатываний</span>
+                  <span className="label__text">Количество срабатываний</span>
                   <input
                     id="active-count"
                     className="input input--trigger"
@@ -311,7 +311,7 @@ const TriggerAddPage = () => {
 
             <div className="form-block form-block--margin-bottom">
               <label>
-                <span className="input__label-text">Период действия</span>
+                <span className="label__text">Период действия</span>
                 <div className="date-select">
                   <input
                     className="date-select__input date-select__from"
