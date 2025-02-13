@@ -1,5 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {toast} from 'react-toastify';
+import { toast } from 'react-toastify';
 import {
   LocalStorageKey,
   NameSpace,
@@ -23,6 +23,7 @@ import {
   fetchAllProjects,
   fetchCurrentProductById,
   fetchFirmsByIdUser,
+  updateFirm,
   fetchParseData,
   fetchProductsGroups,
   fetchProductsWithSummaryDetail,
@@ -163,6 +164,34 @@ export const appData = createSlice({
       })
       .addCase(fetchFirmsByIdUser.rejected, (state) => {
         state.hasLoadFirms = false;
+      })
+      // РЕДАКТИРОВАНИЕ ФИРМЫ
+      .addCase(updateFirm.pending, (state) => {
+
+      })
+      .addCase(updateFirm.fulfilled, (state, action) => {
+        const uploadFirm = action.payload;
+        const { isMain } = uploadFirm;
+
+        if (isMain) {
+          state.firms = state.firms.map((firm) => {
+            return {
+              ...firm,
+              isMain: false
+            }
+          });
+        }
+
+        const indexFirm = state.firms.findIndex((searchFirm) => searchFirm.id === uploadFirm.id);
+
+        if (indexFirm !== -1) {
+          state.firms[indexFirm] = uploadFirm;
+
+          toast.success(`Фирма ${uploadFirm.name} успешно отредактирована`);
+        }
+      })
+      .addCase(updateFirm.rejected, () => {
+        toast.error('Произошла ошибка при редактировании фирмы');
       })
       // ВЫБОР АКТИВНЫХ ФИРМ ДЛЯ ОПРЕДЕЛЁННОГО ПОЛЬЗОВАТЕЛЯ
       .addCase(setFirmsActiveByIdUser.pending, (state) => {
