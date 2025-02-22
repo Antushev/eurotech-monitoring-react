@@ -1,4 +1,4 @@
-import {createSlice} from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import {
   LocalStorageKey,
@@ -23,6 +23,7 @@ import {
   fetchAllProjects,
   fetchCurrentProductById,
   fetchFirmsByIdUser,
+  createFirm,
   updateFirm,
   fetchParseData,
   fetchProductsGroups,
@@ -71,6 +72,7 @@ const initialState = {
   settingsSyncBitrix: {},
   hasCreateNewProject: false,
   hasDeleteAllData: false,
+  hasLoadFirm: false,
   hasLoadFirms: false,
   hasLoadProducts: false,
   hasLoadProduct: false,
@@ -164,6 +166,24 @@ export const appData = createSlice({
       })
       .addCase(fetchFirmsByIdUser.rejected, (state) => {
         state.hasLoadFirms = false;
+      })
+      // СОЗДАНИЕ НОВОЙ ФИРМЫ
+      .addCase(createFirm.pending, (state) => {
+        state.hasLoadFirm = true;
+      })
+      .addCase(createFirm.fulfilled, (state, action) => {
+        const firm = action.payload;
+
+        console.log(firm);
+
+        state.firms.push(firm);
+
+        state.hasLoadFirm = false;
+        toast.success(`Фирма ${firm.name} успешно добавлена`);
+      })
+      .addCase(createFirm.rejected, (state) => {
+        state.hasLoadFirm = false;
+        toast.error('Произошла ошибка при добавлении фирмы');
       })
       // РЕДАКТИРОВАНИЕ ФИРМЫ
       .addCase(updateFirm.pending, (state) => {

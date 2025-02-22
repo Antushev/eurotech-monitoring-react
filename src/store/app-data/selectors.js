@@ -44,6 +44,10 @@ export const getStatusLoadFirms = (state) => {
   return state[NameSpace.DATA].hasLoadFirms;
 }
 
+export const getStatusLoadFirm = (state) => {
+  return state[NameSpace.DATA].hasLoadFirm;
+}
+
 export const getStatusLoadProduct = (state) => {
   return state[NameSpace.DATA].hasLoadProduct;
 }

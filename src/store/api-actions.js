@@ -8,6 +8,19 @@ export const fetchFirmsByIdUser = createAsyncThunk(
     return data;
   });
 
+export const createFirm = createAsyncThunk(
+  'data/createFirm',
+  async (newFirmData, { extra: api }) => {
+    console.log(newFirmData);
+
+    const { firm, idUser } = newFirmData;
+
+    const { data } = await api.post(`/firm/${idUser}`, firm);
+
+    return data;
+  }
+)
+
 export const updateFirm = createAsyncThunk(
   'data/updateFirm',
   async (firm, { extra: api }) => {
@@ -184,8 +197,8 @@ export const createProject = createAsyncThunk(
 
 export const fetchParseData = createAsyncThunk(
   'data/getParseData',
-  async (link, {extra: api}) => {
-    const { data } = await api.post('/parser/', { link });
+  async (parseSettings, {extra: api}) => {
+    const { data } = await api.post('/parser/', parseSettings);
 
     return data;
   });
