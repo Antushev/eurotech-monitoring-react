@@ -13,6 +13,7 @@ export const AppRoute = {
   TriggerEdit: '/trigger/:idTrigger/edit',
   Firms: '/firms',
   FirmAdd: '/firm/add',
+  FirmEdit: '/firm/:idFirm/edit',
   Settings: '/settings/integrations'
 }
 

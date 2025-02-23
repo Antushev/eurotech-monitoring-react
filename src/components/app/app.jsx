@@ -27,6 +27,7 @@ import TriggerAddPage from './../../pages/trigger-add-page/trigger-add-page.jsx'
 import TriggerEditPage from './../../pages/trigger-edit-page/trigger-edit-page.jsx';
 import FirmsPage from './../../pages/firms-page/firms-page.jsx';
 import FirmAddPage from './../../pages/firm-add-page/firm-add-page.jsx';
+import FirmEditPage from './../../pages/firm-edit-page/firm-edit-page.jsx';
 import IntegrationPage from './../../pages/integration-page/integration-page.jsx';
 // import SettingsPage from '../../pages/NOT_settings-page/settings-page.jsx';
 import NotFoundPage from './../../pages/not-found-page/not-found-page.jsx';
@@ -67,6 +68,7 @@ const App = () => {
           <Route path={ AppRoute.TriggerEdit } element={ <TriggerEditPage /> } />
           <Route path={ AppRoute.Triggers } element={ <TriggersPage /> } />
           <Route path={ AppRoute.FirmAdd } element={ <FirmAddPage /> } />
+          <Route path={ AppRoute.FirmEdit } element={ <FirmEditPage />} />
           <Route path={ AppRoute.Firms } element={ <FirmsPage /> } />
           <Route path={ AppRoute.Settings } element={ <IntegrationPage /> } />
           <Route path='*' element={ <NotFoundPage /> } />

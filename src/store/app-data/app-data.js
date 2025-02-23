@@ -187,7 +187,7 @@ export const appData = createSlice({
       })
       // РЕДАКТИРОВАНИЕ ФИРМЫ
       .addCase(updateFirm.pending, (state) => {
-
+        state.hasLoadFirm = true;
       })
       .addCase(updateFirm.fulfilled, (state, action) => {
         const uploadFirm = action.payload;
@@ -202,16 +202,19 @@ export const appData = createSlice({
           });
         }
 
-        const indexFirm = state.firms.findIndex((searchFirm) => searchFirm.id === uploadFirm.id);
+        const indexFirm = state.firms.findIndex((searchFirm) => Number(searchFirm.id) === Number(uploadFirm.id));
 
         if (indexFirm !== -1) {
           state.firms[indexFirm] = uploadFirm;
-
-          toast.success(`Фирма ${uploadFirm.name} успешно отредактирована`);
         }
+
+        toast.success(`Фирма ${uploadFirm.name} успешно отредактирована`);
+
+        state.hasLoadFirm = false;
       })
       .addCase(updateFirm.rejected, () => {
         toast.error('Произошла ошибка при редактировании фирмы');
+        state.hasLoadFirm = false;
       })
       // ВЫБОР АКТИВНЫХ ФИРМ ДЛЯ ОПРЕДЕЛЁННОГО ПОЛЬЗОВАТЕЛЯ
       .addCase(setFirmsActiveByIdUser.pending, (state) => {

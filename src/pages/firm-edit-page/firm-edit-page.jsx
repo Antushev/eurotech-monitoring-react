@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import React, {useEffect, useRef, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import debounce from 'debounce';
+import debounce from "debounce";
 
-import { api } from '../../store';
-import { createFirm } from '../../store/api-actions.js';
-import { getCurrentUser, getStatusLoadFirm } from '../../store/app-data/selectors.js';
+import { api } from "../../store";
+import { updateFirm } from '../../store/api-actions.js';
+import { getCurrentUser, getStatusLoadFirm } from "../../store/app-data/selectors";
 
-import Preloader from '../../components/preloader/preloader.jsx';
+import Preloader from "../../components/preloader/preloader.jsx";
 
 const TIME_DEBOUNCE = 1000;
 const WIDTH_PRELOADER = 20;
@@ -18,16 +18,16 @@ const ID_EXTENSION = 'onomokkkcpppmahamebjnigokolhandd';
 const INTERVAL_CHECK_DATA_FROM_EXTENSION = 1000;
 
 const stagesInit = {
-  installPlugin: false,
-  urlSite: false,
-  urlProductCard: false,
-  elementsSite: false,
-  checked: false
+  installPlugin: true,
+  urlSite: true,
+  urlProductCard: true,
+  elementsSite: true,
+  checked: true
 }
 
-const FirmAddPage = () => {
+const FirmEditPage = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const { idFirm } = useParams();
 
   const isLoadFirm = useSelector(getStatusLoadFirm);
   const currentUser = useSelector(getCurrentUser);
@@ -39,6 +39,7 @@ const FirmAddPage = () => {
   const urlSiteRef = useRef('');
   const urlProductCardRef = useRef('');
 
+  const [currentFirm, setCurrentFirm] = useState(null);
   const [errorFirmName, setErrorFirmName] = useState(false);
   const [errorInn, setErrorInn] = useState(false);
   const [errorKpp, setErrorKpp] = useState(false);
@@ -49,7 +50,7 @@ const FirmAddPage = () => {
   const [isCheckUrlSite, setIsCheckUrlSite] = useState(false);
   const [isCheckUrlProductCard, setIsCheckUrlProductCard] = useState(false);
 
-  const [changeCompleteFromSite, setChangeCompleteFromSite] = useState(false);
+  const [changeCompleteFromSite, setChangeCompleteFromSite] = useState(true);
   const [priceChangeFromSite, setPriceChangeFromSite] = useState(null);
   const [priceSelectorFromSite, setPriceSelectorFromSite] = useState(null);
   const [countChangeFromSite, setCountChangeFromSite] = useState(null);
@@ -80,13 +81,6 @@ const FirmAddPage = () => {
     if (urlSiteRef.current.value === '') {
       toast.warning('Необходимо указать адрес сайта');
       setErrorUrlSite(true);
-
-      return false;
-    }
-
-    if (urlProductCardRef.current.value === '') {
-      toast.warning('Необходимо указать адрес карточки товара');
-      setErrorUrlProductCard(true);
 
       return false;
     }
@@ -213,6 +207,35 @@ const FirmAddPage = () => {
     }
   }
 
+  const listenerExtension = () => {
+    if (!stages.checked) {
+      return setInterval( () => {
+        addListenerDataFromExtension();
+      }, INTERVAL_CHECK_DATA_FROM_EXTENSION);
+    }
+
+    return null;
+  }
+
+  useEffect(() => {
+    const getFirmInfo = async () => {
+      const { data: firm } = await api.get(`/firm/${idFirm}`);
+
+      setCurrentFirm(firm);
+      firmNameRef.current['value'] = firm.name;
+      innRef.current['value'] = firm.inn;
+      kppRef.current['value'] = firm.kpp;
+      colorRef.current['value'] = firm.color;
+      urlSiteRef.current['value'] = firm.site;
+
+      setPriceSelectorFromSite(firm.priceDefaultSelector);
+      setCountSelectorFromSite(firm.countDefaultSelector);
+    }
+
+    getFirmInfo();
+
+  }, [])
+
   useEffect(() => {
     const checkInstallExtension = async (idExtension) => {
       return await chrome.runtime.sendMessage(idExtension, {message: "version"},
@@ -233,11 +256,7 @@ const FirmAddPage = () => {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval( () => {
-      addListenerDataFromExtension();
-    }, INTERVAL_CHECK_DATA_FROM_EXTENSION);
-
-    console.log(changeCompleteFromSite);
+    const interval = listenerExtension();
 
     return () => clearInterval(interval);
   }, [stages]);
@@ -245,7 +264,7 @@ const FirmAddPage = () => {
   return (
     <section className="page-content page__content">
       <header className="page-content__header standart-block">
-        <h1 className="header header--1">Создание конкурента</h1>
+        <h1 className="header header--1">Редактирование конкурента</h1>
       </header>
 
       <section className="page-content__inner firm-add">
@@ -338,6 +357,8 @@ const FirmAddPage = () => {
                   onClick={() => {
                     setStages({
                       ...stages,
+                      urlProductCard: false,
+                      elementsSite: false,
                       checked: false
                     })
                   }}
@@ -359,23 +380,23 @@ const FirmAddPage = () => {
                           <a className="firm-add__link" href="/other/eurotech-monitoring.zip">
                             {
                               !versionExtension &&
-                                <>
-                                  <svg className="icon firm-add__link-icon" width="25" height="25" viewBox="0 0 15 15">
-                                    <path d="M9.78628 5.93402C11.42 7.56942 11.3976 10.1914 9.79612 11.8017C9.79312 11.805 9.78956 11.8086 9.78628 11.8118L7.94878 13.6493C6.32812 15.27 3.69139 15.2698 2.07097 13.6493C0.450303 12.0289 0.450303 9.39191 2.07097 7.77152L3.08558 6.7569C3.35465 6.48784 3.81801 6.66667 3.83191 7.04691C3.84962 7.5315 3.93652 8.01835 4.09687 8.4885C4.15117 8.6477 4.11237 8.82379 3.99342 8.94273L3.63558 9.30058C2.86924 10.0669 2.84521 11.3147 3.60399 12.0886C4.37028 12.87 5.62978 12.8747 6.40194 12.1025L8.23944 10.2653C9.01029 9.49442 9.00707 8.24848 8.23944 7.48086C8.13825 7.37985 8.03631 7.30137 7.95668 7.24655C7.90035 7.20787 7.85384 7.15655 7.82086 7.09671C7.78788 7.03686 7.76934 6.97013 7.76673 6.90185C7.7559 6.61291 7.85827 6.31516 8.08659 6.08684L8.66229 5.51112C8.81325 5.36016 9.05008 5.34162 9.22513 5.46379C9.42561 5.60378 9.61338 5.76113 9.78628 5.93402ZM13.64 2.08014C12.0196 0.45969 9.38282 0.459471 7.76216 2.08014L5.92466 3.91764C5.92138 3.92092 5.91782 3.92447 5.91482 3.92775C4.3134 5.53808 4.29095 8.16005 5.92466 9.79545C6.09755 9.96834 6.28531 10.1257 6.48578 10.2657C6.66084 10.3878 6.89769 10.3693 7.04862 10.2183L7.62432 9.6426C7.85264 9.41428 7.95501 9.11653 7.94419 8.82759C7.94157 8.75931 7.92303 8.69258 7.89005 8.63273C7.85707 8.57289 7.81056 8.52158 7.75423 8.48289C7.67461 8.42807 7.57267 8.34959 7.47147 8.24859C6.70385 7.48096 6.70062 6.23502 7.47147 5.46417L9.30897 3.62694C10.0811 2.85478 11.3406 2.85943 12.1069 3.64089C12.8657 4.41472 12.8417 5.66252 12.0753 6.42886L11.7175 6.78671C11.5985 6.90565 11.5597 7.08175 11.614 7.24094C11.7744 7.71109 11.8613 8.19794 11.879 8.68253C11.8929 9.06277 12.3563 9.2416 12.6253 8.97254L13.6399 7.95792C15.2606 6.33756 15.2606 3.70053 13.64 2.08014Z" fill="#be1622"/>
-                                  </svg>
-                                  <span>Ссылка на скачивание</span>
-                                </>
+                              <>
+                                <svg className="icon firm-add__link-icon" width="25" height="25" viewBox="0 0 15 15">
+                                  <path d="M9.78628 5.93402C11.42 7.56942 11.3976 10.1914 9.79612 11.8017C9.79312 11.805 9.78956 11.8086 9.78628 11.8118L7.94878 13.6493C6.32812 15.27 3.69139 15.2698 2.07097 13.6493C0.450303 12.0289 0.450303 9.39191 2.07097 7.77152L3.08558 6.7569C3.35465 6.48784 3.81801 6.66667 3.83191 7.04691C3.84962 7.5315 3.93652 8.01835 4.09687 8.4885C4.15117 8.6477 4.11237 8.82379 3.99342 8.94273L3.63558 9.30058C2.86924 10.0669 2.84521 11.3147 3.60399 12.0886C4.37028 12.87 5.62978 12.8747 6.40194 12.1025L8.23944 10.2653C9.01029 9.49442 9.00707 8.24848 8.23944 7.48086C8.13825 7.37985 8.03631 7.30137 7.95668 7.24655C7.90035 7.20787 7.85384 7.15655 7.82086 7.09671C7.78788 7.03686 7.76934 6.97013 7.76673 6.90185C7.7559 6.61291 7.85827 6.31516 8.08659 6.08684L8.66229 5.51112C8.81325 5.36016 9.05008 5.34162 9.22513 5.46379C9.42561 5.60378 9.61338 5.76113 9.78628 5.93402ZM13.64 2.08014C12.0196 0.45969 9.38282 0.459471 7.76216 2.08014L5.92466 3.91764C5.92138 3.92092 5.91782 3.92447 5.91482 3.92775C4.3134 5.53808 4.29095 8.16005 5.92466 9.79545C6.09755 9.96834 6.28531 10.1257 6.48578 10.2657C6.66084 10.3878 6.89769 10.3693 7.04862 10.2183L7.62432 9.6426C7.85264 9.41428 7.95501 9.11653 7.94419 8.82759C7.94157 8.75931 7.92303 8.69258 7.89005 8.63273C7.85707 8.57289 7.81056 8.52158 7.75423 8.48289C7.67461 8.42807 7.57267 8.34959 7.47147 8.24859C6.70385 7.48096 6.70062 6.23502 7.47147 5.46417L9.30897 3.62694C10.0811 2.85478 11.3406 2.85943 12.1069 3.64089C12.8657 4.41472 12.8417 5.66252 12.0753 6.42886L11.7175 6.78671C11.5985 6.90565 11.5597 7.08175 11.614 7.24094C11.7744 7.71109 11.8613 8.19794 11.879 8.68253C11.8929 9.06277 12.3563 9.2416 12.6253 8.97254L13.6399 7.95792C15.2606 6.33756 15.2606 3.70053 13.64 2.08014Z" fill="#be1622"/>
+                                </svg>
+                                <span>Ссылка на скачивание</span>
+                              </>
 
                             }
 
                             {
                               versionExtension &&
-                                <>
-                                  <svg className="icon firm-add__link-icon" width="26" height="20" viewBox="0 0 26 20">
-                                    <path d="M8.87532 19.0563L0.750317 10.9313C0.262183 10.4432 0.262183 9.65174 0.750317 9.16355L2.51804 7.39578C3.00618 6.9076 3.79768 6.9076 4.28582 7.39578L9.75921 12.8691L21.4826 1.14578C21.9707 0.657645 22.7622 0.657645 23.2504 1.14578L25.0181 2.91355C25.5062 3.40169 25.5062 4.19314 25.0181 4.68133L10.6431 19.0564C10.1549 19.5445 9.36345 19.5445 8.87532 19.0563Z" fill="#6ace34"/>
-                                  </svg>
-                                  <span className="firm-add__link-text-green">Установлена последняя версия расширения</span>
-                                </>
+                              <>
+                                <svg className="icon firm-add__link-icon" width="26" height="20" viewBox="0 0 26 20">
+                                  <path d="M8.87532 19.0563L0.750317 10.9313C0.262183 10.4432 0.262183 9.65174 0.750317 9.16355L2.51804 7.39578C3.00618 6.9076 3.79768 6.9076 4.28582 7.39578L9.75921 12.8691L21.4826 1.14578C21.9707 0.657645 22.7622 0.657645 23.2504 1.14578L25.0181 2.91355C25.5062 3.40169 25.5062 4.19314 25.0181 4.68133L10.6431 19.0564C10.1549 19.5445 9.36345 19.5445 8.87532 19.0563Z" fill="#6ace34"/>
+                                </svg>
+                                <span className="firm-add__link-text-green">Установлена последняя версия расширения</span>
+                              </>
                             }
                           </a>
                         </div>
@@ -565,13 +586,11 @@ const FirmAddPage = () => {
                         className="button firm-add__button-start-extension"
                         type="button"
                         onClick={async () => {
-                          if (!stages.urlProductCard) {
+                          if (!stages.urlProductCard || urlProductCardRef.current.value === '') {
                             toast.warning('Пожалуйста, заполните поле ссылки на карточку товара');
 
                             return false;
                           }
-
-
 
                           setStages({
                             ...stages,
@@ -582,7 +601,7 @@ const FirmAddPage = () => {
                           await chrome.runtime.sendMessage(ID_EXTENSION, { message: 'open-for-add-firm' },
                             function(reply) {
                               return reply.response;
-                          });
+                            });
                         }}
                       >
                         <svg className="icon icon--white icon--margin-right" width="18" height="20" viewBox="0 0 18 20">
@@ -592,7 +611,7 @@ const FirmAddPage = () => {
                         Запустить расширение
                       </button>
                       {
-                        stages.urlProductCard &&
+                        stages.urlProductCard && !stages.checked &&
                         <ul className="firm-add__values-list">
                           {
                             priceChangeFromSite ?
@@ -677,13 +696,13 @@ const FirmAddPage = () => {
                         <div className="firm-add__info">
                           {
                             stages.checked ?
-                            <svg className="firm-add__icon" width="46" height="40" viewBox="0 0 26 20">
-                              <path d="M8.87532 19.0563L0.750317 10.9313C0.262183 10.4432 0.262183 9.65174 0.750317 9.16355L2.51804 7.39578C3.00618 6.9076 3.79768 6.9076 4.28582 7.39578L9.75921 12.8691L21.4826 1.14578C21.9707 0.657645 22.7622 0.657645 23.2504 1.14578L25.0181 2.91355C25.5062 3.40169 25.5062 4.19314 25.0181 4.68133L10.6431 19.0564C10.1549 19.5445 9.36345 19.5445 8.87532 19.0563Z" fill="#6ace34"/>
-                            </svg>
-                            :
-                            <svg className="firm-add__icon" width="46" height="46" viewBox="0 0 46 46">
-                            <path d="M46 23C46 35.7054 35.7017 46 23 46C10.2983 46 0 35.7054 0 23C0 10.3021 10.2983 0 23 0C35.7017 0 46 10.3021 46 23ZM23 27.6371C20.6439 27.6371 18.7339 29.5471 18.7339 31.9032C18.7339 34.2593 20.6439 36.1694 23 36.1694C25.3561 36.1694 27.2661 34.2593 27.2661 31.9032C27.2661 29.5471 25.3561 27.6371 23 27.6371ZM18.9497 12.3026L19.6376 24.9155C19.6698 25.5057 20.1578 25.9677 20.7489 25.9677H25.2511C25.8422 25.9677 26.3302 25.5057 26.3624 24.9155L27.0503 12.3026C27.0851 11.6651 26.5775 11.129 25.9391 11.129H20.0608C19.4224 11.129 18.9149 11.6651 18.9497 12.3026Z" fill="#BE1622"/>
-                            </svg>
+                              <svg className="firm-add__icon" width="46" height="40" viewBox="0 0 26 20">
+                                <path d="M8.87532 19.0563L0.750317 10.9313C0.262183 10.4432 0.262183 9.65174 0.750317 9.16355L2.51804 7.39578C3.00618 6.9076 3.79768 6.9076 4.28582 7.39578L9.75921 12.8691L21.4826 1.14578C21.9707 0.657645 22.7622 0.657645 23.2504 1.14578L25.0181 2.91355C25.5062 3.40169 25.5062 4.19314 25.0181 4.68133L10.6431 19.0564C10.1549 19.5445 9.36345 19.5445 8.87532 19.0563Z" fill="#6ace34"/>
+                              </svg>
+                              :
+                              <svg className="firm-add__icon" width="46" height="46" viewBox="0 0 46 46">
+                                <path d="M46 23C46 35.7054 35.7017 46 23 46C10.2983 46 0 35.7054 0 23C0 10.3021 10.2983 0 23 0C35.7017 0 46 10.3021 46 23ZM23 27.6371C20.6439 27.6371 18.7339 29.5471 18.7339 31.9032C18.7339 34.2593 20.6439 36.1694 23 36.1694C25.3561 36.1694 27.2661 34.2593 27.2661 31.9032C27.2661 29.5471 25.3561 27.6371 23 27.6371ZM18.9497 12.3026L19.6376 24.9155C19.6698 25.5057 20.1578 25.9677 20.7489 25.9677H25.2511C25.8422 25.9677 26.3302 25.5057 26.3624 24.9155L27.0503 12.3026C27.0851 11.6651 26.5775 11.129 25.9391 11.129H20.0608C19.4224 11.129 18.9149 11.6651 18.9497 12.3026Z" fill="#BE1622"/>
+                              </svg>
                           }
 
 
@@ -776,6 +795,7 @@ const FirmAddPage = () => {
                 }
 
                 const firm = {
+                  id: idFirm,
                   name: firmNameRef.current.value,
                   inn: innRef.current.value,
                   kpp: kppRef.current.value,
@@ -784,12 +804,10 @@ const FirmAddPage = () => {
                   priceDefaultSelector: priceSelectorFromSite,
                   countDefaultSelector: countSelectorFromSite,
                   valute: 'RUB',
-                  isMain: false
+                  isMain: currentFirm.isMain
                 }
 
-                await dispatch(createFirm({ firm: firm, idUser: currentUser.id }));
-
-                navigate('/firms');
+                await dispatch(updateFirm(firm));
               }}
             >
               {
@@ -799,7 +817,7 @@ const FirmAddPage = () => {
                     height={HEIGHT_PRELOADER}
                     color={COLOR_PRELOADER}
                   />
-                  : 'Добавить фирму'
+                  : 'Сохранить изменения'
               }
             </button>
           </div>
@@ -809,4 +827,4 @@ const FirmAddPage = () => {
   );
 }
 
-export default FirmAddPage;
+export default FirmEditPage;

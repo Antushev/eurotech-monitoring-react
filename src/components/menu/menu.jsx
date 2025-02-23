@@ -101,6 +101,7 @@ const Menu = () => {
             <NavLink to={ AppRoute.Firms }>
               <a className="menu-list__link" href="#">Конкуренты</a>
             </NavLink>
+            <div className="menu-list__additional-text">beta</div>
           </li>
         </ul>
 
