@@ -29,8 +29,6 @@ const PopupAddLink = (props) => {
     setIsOpen
   } = props;
 
-  console.log(firm);
-
   const currentUser = useSelector(getCurrentUser);
   const currentProduct = useSelector(getCurrentProduct);
   let parseData = useSelector(getParseData);
@@ -95,8 +93,6 @@ const PopupAddLink = (props) => {
                 style={parseData && typeof parseData.price ? styleButtonSuccess : styleButton}
                 className="button button--form-line"
                 onClick={async () => {
-                    console.log(firm);
-
                     const isHttps = inputRef.current.value.includes('https://');
                     const isFirmSite = inputRef.current.value.includes(`${firm.site}`);
                     if (!isHttps) {
