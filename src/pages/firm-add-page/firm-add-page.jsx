@@ -15,6 +15,7 @@ const WIDTH_PRELOADER = 20;
 const HEIGHT_PRELOADER = 20;
 const COLOR_PRELOADER = '#000000';
 const ID_EXTENSION = 'aepeghjdmhdnefpamgenkhfhdplchlpf';
+const INTERVAL_CHECK_INSTALL_EXTENSION = 1000;
 const INTERVAL_CHECK_DATA_FROM_EXTENSION = 1000;
 
 const stagesInit = {
@@ -227,7 +228,7 @@ const FirmAddPage = () => {
   useEffect(() => {
     const interval = setInterval(async () => {
       await checkInstallExtension(ID_EXTENSION);
-    }, 1000);
+    }, INTERVAL_CHECK_INSTALL_EXTENSION);
 
     return () => clearInterval(interval);
   }, []);
