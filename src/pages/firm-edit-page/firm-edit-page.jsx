@@ -236,23 +236,23 @@ const FirmEditPage = () => {
 
   }, [])
 
-  useEffect(() => {
-    const checkInstallExtension = async (idExtension) => {
-      return await chrome.runtime.sendMessage(idExtension, {message: "version"},
-        function (reply) {
-          if (reply.version && typeof reply.version !== 'undefined') {
-            setVersionExtension(reply.version);
-            setStages({
-              ...stages,
-              installPlugin: true
-            });
-          } else {
-            setVersionExtension(false);
-          }
-        });
-    }
+  const checkInstallExtension = async (idExtension) => {
+    return await chrome.runtime.sendMessage(idExtension, {message: "version"},
+      function (reply) {
+        if (reply.version && typeof reply.version !== 'undefined') {
+          setVersionExtension(reply.version);
+        } else {
+          setVersionExtension(false);
+        }
+      });
+  }
 
-    checkInstallExtension(ID_EXTENSION);
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      await checkInstallExtension(ID_EXTENSION);
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {

@@ -18,7 +18,7 @@ const ID_EXTENSION = 'aepeghjdmhdnefpamgenkhfhdplchlpf';
 const INTERVAL_CHECK_DATA_FROM_EXTENSION = 1000;
 
 const stagesInit = {
-  installPlugin: false,
+  installPlugin: true,
   urlSite: false,
   urlProductCard: false,
   elementsSite: false,
@@ -213,23 +213,23 @@ const FirmAddPage = () => {
     }
   }
 
-  useEffect(() => {
-    const checkInstallExtension = async (idExtension) => {
-      return await chrome.runtime.sendMessage(idExtension, {message: "version"},
-        function (reply) {
-          if (reply.version && typeof reply.version !== 'undefined') {
-            setVersionExtension(reply.version);
-            setStages({
-              ...stages,
-              installPlugin: true
-            });
-          } else {
-            setVersionExtension(false);
-          }
-        });
-    }
+  const checkInstallExtension = async (idExtension) => {
+    return await chrome.runtime.sendMessage(idExtension, {message: "version"},
+      function (reply) {
+        if (reply.version && typeof reply.version !== 'undefined') {
+          setVersionExtension(reply.version);
+        } else {
+          setVersionExtension(false);
+        }
+      });
+  }
 
-    checkInstallExtension(ID_EXTENSION);
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      await checkInstallExtension(ID_EXTENSION);
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -383,7 +383,7 @@ const FirmAddPage = () => {
                     </div>
 
                     {
-                      stages.installPlugin ?
+                      versionExtension ?
                         <div className="firm-add__progress progress">
                           <div className="progress__circle progress__circle--active progress__circle--animate-success">
                             <svg width="26" height="20" viewBox="0 0 26 20">
