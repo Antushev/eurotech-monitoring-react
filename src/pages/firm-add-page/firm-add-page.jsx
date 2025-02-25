@@ -10,7 +10,12 @@ import { api } from '../../store';
 import { createFirm } from '../../store/api-actions.js';
 import { getCurrentUser, getStatusLoadFirm } from '../../store/app-data/selectors.js';
 
-import { getDataExtension, CommandForGetDataExtension } from '../../services/chrome-extension.js';
+import {
+  CommandForGetDataExtension,
+  CommandForAction,
+  getDataExtension,
+  actionExtension
+} from '../../services/chrome-extension.js';
 
 import Preloader from '../../components/preloader/preloader.jsx';
 
@@ -566,18 +571,13 @@ const FirmAddPage = () => {
                             return false;
                           }
 
-
-
                           setStages({
                             ...stages,
                             checked: false
                           })
                           window.open(urlProductCardRef.current.value);
 
-                          await chrome.runtime.sendMessage(ID_EXTENSION, { message: 'open-for-add-firm' },
-                            function(reply) {
-                              return reply.response;
-                          });
+                          await actionExtension(CommandForAction.OPEN_OF_PRODUCT);
                         }}
                       >
                         <svg className="icon icon--white icon--margin-right" width="18" height="20" viewBox="0 0 18 20">
