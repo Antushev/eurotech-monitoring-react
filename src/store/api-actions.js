@@ -109,8 +109,6 @@ export const deleteProduct = createAsyncThunk(
 export const createLink = createAsyncThunk(
   'data/createLink',
   async (param, {extra: api}) => {
-    console.log(param);
-
     const { data } = await api.post('/link/', { ...param });
 
     return data;
@@ -127,8 +125,6 @@ export const updateLink = createAsyncThunk(
 export const deleteLink = createAsyncThunk(
   'data/deleteLink',
   async (idLink, { extra: api }) => {
-    console.log('ID ссылки', idLink);
-
     const { data } = await api.delete(`/link/${idLink}`);
 
     return data;
@@ -144,8 +140,6 @@ export const fetchTriggers = createAsyncThunk(
 export const fetchTriggersForProduct = createAsyncThunk(
   'data/fetchTriggersForProduct',
   async ({idUser, idProduct}, { extra: api }) => {
-    console.log(idUser, idProduct);
-
     const { data } = await api.get(`/triggers/${idUser}/product/${idProduct}`);
 
     return data;
@@ -245,8 +239,6 @@ export const setSettingsSyncBitrix = createAsyncThunk(
 
     const { data } = await api.post('/sync/bitrix/', { ...syncSettingsBitrix });
 
-    console.log(data);
-
     return data;
   }
 );
@@ -263,8 +255,6 @@ export const fetchReportsIntegrations = createAsyncThunk(
 export const fetchStartSyncBitrix = createAsyncThunk(
   'data/fetchStartSyncBitrix',
   async ({idUser, idFirm}, {extra: api}) => {
-    console.log('ACTION:', idUser, idFirm);
-
     const {data} = await api.post('/sync/bitrix/start', {idUser, idFirm});
 
     return data;

@@ -73,7 +73,6 @@ const IntegrationPage = () => {
   } = settingsSyncBitrix;
   const isSaveSettings = useSelector(getStatusLoadSettingsSyncBitrix);
   const reportsIntegrations = useSelector(getReportsIntegrations);
-  console.log(reportsIntegrations);
 
   const [isErrorInputLink, setIsErrorInputLink] = useState(false);
 
@@ -179,7 +178,6 @@ const IntegrationPage = () => {
                     `button integration__button integration__button--start ${ !url || !isActive ? 'button--disabled' : ''}`
                   }
                   onClick={() => {
-                    console.log(currentUser.id, ID_FIRM_FOR_SYNC);
                     dispatch(fetchStartSyncBitrix({
                       idUser: currentUser.id,
                       idFirm: ID_FIRM_FOR_SYNC

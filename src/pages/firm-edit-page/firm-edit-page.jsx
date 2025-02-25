@@ -4,6 +4,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import debounce from "debounce";
 
+import { ID_EXTENSION } from '../../const.js';
+
 import { api } from "../../store";
 import { updateFirm } from '../../store/api-actions.js';
 import { getCurrentUser, getStatusLoadFirm } from "../../store/app-data/selectors";
@@ -14,7 +16,6 @@ const TIME_DEBOUNCE = 1000;
 const WIDTH_PRELOADER = 20;
 const HEIGHT_PRELOADER = 20;
 const COLOR_PRELOADER = '#000000';
-const ID_EXTENSION = 'aepeghjdmhdnefpamgenkhfhdplchlpf';
 const INTERVAL_CHECK_DATA_FROM_EXTENSION = 1000;
 
 const stagesInit = {
@@ -553,9 +554,6 @@ const FirmEditPage = () => {
                         :
                         <div
                           className="firm-add__progress progress"
-                          onClick={(evt) => {
-                            console.log(evt.path);
-                          }}
                         >
                           <div className="progress__circle">
                             <svg width="15" height="19" viewBox="0 0 15 19">

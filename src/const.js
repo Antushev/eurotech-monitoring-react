@@ -1,3 +1,5 @@
+export const ID_EXTENSION = 'aepeghjdmhdnefpamgenkhfhdplchlpf';
+
 export const NameSpace = {
   DATA: 'DATA',
   PRODUCTS: 'PRODUCTS'
@@ -59,6 +61,11 @@ export const Period = {
   DAY: 'day',
   WEEK: 'week',
   MONTH: 'month'
+}
+
+export const MethodSelectData = {
+  DEFAULT: 'default',
+  EXTENSION: 'extension'
 }
 
 export const toastSettings = {

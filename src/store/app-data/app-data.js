@@ -152,6 +152,9 @@ export const appData = createSlice({
     },
     setCheckDataUrlXMLForBitrix: (state, action) => {
       state.checkDataSyncUrlXMLForBitrix = action.payload;
+    },
+    clearParseData: (state) => {
+      state.parseData = null;
     }
   },
   extraReducers(builder) {
@@ -173,8 +176,6 @@ export const appData = createSlice({
       })
       .addCase(createFirm.fulfilled, (state, action) => {
         const firm = action.payload;
-
-        console.log(firm);
 
         state.firms.push(firm);
 
@@ -502,7 +503,7 @@ export const appData = createSlice({
 
       })
       .addCase(createMarks.fulfilled, (state, action) => {
-        console.log('Товары записаны в базу данных: ', action.payload);
+
       })
       .addCase(createMarks.rejected, (state) => {
 
@@ -590,8 +591,6 @@ export const appData = createSlice({
         state.hasLoadSettingsSyncBitrix = true;
       })
       .addCase(setSettingsSyncBitrix.fulfilled, (state, action) => {
-        console.log(action.payload);
-
         state.settingsSyncBitrix = action.payload;
 
         state.hasLoadSettingsSyncBitrix = false;
@@ -637,5 +636,6 @@ export const {
   setTypeShowValue,
   setTypeShowConditionValue,
   setIsShowNotifications,
-  setCheckDataUrlXMLForBitrix
+  setCheckDataUrlXMLForBitrix,
+  clearParseData
 } = appData.actions;

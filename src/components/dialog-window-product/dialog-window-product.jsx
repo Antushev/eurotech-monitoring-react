@@ -82,7 +82,6 @@ const DialogWindowProduct = (props) => {
         <li
           className="dialog-list__item"
           onClick={async () => {
-            console.log('ID продукта для удаления: ', product.id);
             await dispatch(deleteProduct(product.id));
           }}
         >
