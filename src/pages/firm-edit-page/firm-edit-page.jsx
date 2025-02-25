@@ -240,15 +240,10 @@ const FirmEditPage = () => {
 
   }, [])
 
-  const checkInstallExtension = async (idExtension) => {
-    return await chrome.runtime.sendMessage(idExtension, {message: "version"},
-      function (reply) {
-        if (reply.version && typeof reply.version !== 'undefined') {
-          setVersionExtension(reply.version);
-        } else {
-          setVersionExtension(false);
-        }
-      });
+  const checkInstallExtension = async () => {
+    const version = await getDataExtension(CommandForGetDataExtension.GET_VERSION);
+
+    setVersionExtension(version);
   }
 
   useEffect(() => {

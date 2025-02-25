@@ -1,6 +1,7 @@
 import { ID_EXTENSION } from '../const.js';
 
 const CommandForGetDataExtension = {
+  GET_VERSION: 'version',
   GET_DATA_PRODUCT: 'site-check-for-data'
 }
 
