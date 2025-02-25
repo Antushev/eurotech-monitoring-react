@@ -6,6 +6,12 @@ import * as dayjs from "dayjs";
 import debounce from 'debounce';
 
 import { ID_EXTENSION, MethodSelectData } from '../../const.js';
+import {
+  getDataExtension,
+  actionExtension,
+  CommandForGetDataExtension,
+  CommandForAction
+} from '../../services/chrome-extension.js';
 
 import { api } from '../../store/index.js';
 
@@ -51,24 +57,11 @@ const PopupAddLink = (props) => {
 
   const inputRef = useRef();
 
-  const checkInstallExtension = async (idExtension) => {
-    return await chrome.runtime.sendMessage(idExtension, {message: "version"},
-      function (reply) {
-        if (reply.version && typeof reply.version !== 'undefined') {
-          setVersionExtension(reply.version);
-        } else {
-          setVersionExtension(null);
-        }
-      });
+  const checkInstallExtension = async () => {
+    const version = await getDataExtension(CommandForGetDataExtension.GET_VERSION);
+
+    setVersionExtension(version);
   }
-
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      await checkInstallExtension(ID_EXTENSION);
-    }, INTERVAL_CHECK_INSTALL_EXTENSION);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const loadLink = async (methodSelectData) => {
     setErrorParseData(null);
@@ -129,6 +122,48 @@ const PopupAddLink = (props) => {
       setIsLoadLinkConsumer(false);
     }
   }
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      await checkInstallExtension(ID_EXTENSION);
+    }, INTERVAL_CHECK_INSTALL_EXTENSION);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    actionExtension(CommandForAction.CLEAR_DATA);
+
+    return () => actionExtension(CommandForAction.CLEAR_DATA);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval( async () => {
+      if (methodSelectData === MethodSelectData.EXTENSION) {
+        const response = await getDataExtension(CommandForGetDataExtension.GET_DATA_PRODUCT);
+
+        console.log(response);
+
+        if (response) {
+          const { price } = response;
+
+          if (!price) {
+            setParseData(null);
+
+            return false;
+          }
+
+          setParseData(response);
+          return true;
+        }
+
+        setParseData(null);
+        return false;
+      }
+    }, 500);
+
+    return () => clearInterval(interval);
+  });
 
   return (
     <>
@@ -268,8 +303,15 @@ const PopupAddLink = (props) => {
                   </a>
 
                   <button
-                    disabled={ !versionExtension }
+                    disabled={ !versionExtension || !statusLink }
                     className={`button button--margin-right ${ !versionExtension ? 'button--disabled' : '' }`}
+                    onClick={async () => {
+                      if (!statusLink) {
+                        toast.warning('Пожалуйста, укажите корректную ссылку на карточку товара');
+                      }
+
+                     await actionExtension(CommandForAction.OPEN_OF_PRODUCT, { url: inputRef.current.value });
+                    }}
                   >
                     <svg className="icon icon--white icon--margin-right" width="18" height="20" viewBox="0 0 18 20">
                       <path d="M16.3161 8.42418L2.95858 0.527313C1.87328 -0.113999 0.211182 0.50834 0.211182 2.09454V17.8845C0.211182 19.3075 1.75564 20.1651 2.95858 19.4517L16.3161 11.5586C17.5076 10.8566 17.5114 9.12621 16.3161 8.42418Z" fill="white"/>
@@ -284,11 +326,11 @@ const PopupAddLink = (props) => {
             <div className="add-link-list__progress progress">
               <div
                 className={ `progress__circle ${
-                  parseData && parseData.price
+                  (parseData && parseData.price && statusLink)
                     ? 'progress__circle--active' : ''}` }
               >
                 {
-                  parseData && parseData.price ?
+                  (parseData && parseData.price && statusLink) ?
                   <svg width="26" height="20" viewBox="0 0 26 20">
                   <path d="M8.87532 19.0563L0.750317 10.9313C0.262183 10.4432 0.262183 9.65174 0.750317 9.16355L2.51804 7.39578C3.00618 6.9076 3.79768 6.9076 4.28582 7.39578L9.75921 12.8691L21.4826 1.14578C21.9707 0.657645 22.7622 0.657645 23.2504 1.14578L25.0181 2.91355C25.5062 3.40169 25.5062 4.19314 25.0181 4.68133L10.6431 19.0564C10.1549 19.5445 9.36345 19.5445 8.87532 19.0563Z" fill="#ffffff"/>
                   </svg> :
@@ -299,7 +341,7 @@ const PopupAddLink = (props) => {
 
               </div>
               {
-                parseData && parseData.price ?
+                (parseData && parseData.price && statusLink) ?
                 <div className="progress__line progress__line--active add-link-list__progress-line" />
                   :  <div className="progress__line add-link-list__progress-line" />
               }
@@ -360,10 +402,10 @@ const PopupAddLink = (props) => {
 
             <div className="progress">
               <div
-                className={ `progress__circle ${parseData && parseData.price ? 'progress__circle--active' : ''}` }
+                className={ `progress__circle ${(parseData && parseData.price && statusLink) ? 'progress__circle--active' : ''}` }
               >
                 {
-                  parseData && parseData.price ?
+                  (parseData && parseData.price && statusLink) ?
                     <svg width="26" height="20" viewBox="0 0 26 20">
                       <path d="M8.87532 19.0563L0.750317 10.9313C0.262183 10.4432 0.262183 9.65174 0.750317 9.16355L2.51804 7.39578C3.00618 6.9076 3.79768 6.9076 4.28582 7.39578L9.75921 12.8691L21.4826 1.14578C21.9707 0.657645 22.7622 0.657645 23.2504 1.14578L25.0181 2.91355C25.5062 3.40169 25.5062 4.19314 25.0181 4.68133L10.6431 19.0564C10.1549 19.5445 9.36345 19.5445 8.87532 19.0563Z" fill="#ffffff"/>
                     </svg> :
@@ -377,7 +419,7 @@ const PopupAddLink = (props) => {
           </li>
         </ul>
         <button
-          disabled={!parseData || !parseData?.price }
+          disabled={!parseData || !parseData?.price || !statusLink }
           className="button button--text-center"
           onClick={async () => {
             await dispatch(createLink({
@@ -385,7 +427,9 @@ const PopupAddLink = (props) => {
               idProduct: product.id,
               link: inputRef.current.value.trim(),
               price: parseData.price,
-              count: parseData.count
+              priceSelector: parseData.priceSelector ? parseData.priceSelector : null,
+              count: parseData.count,
+              countSelector: parseData.countSelector ? parseData.countSelector : null
             }));
             await dispatch(fetchProductsWithSummaryDetail({
               idUser: currentUser.id,

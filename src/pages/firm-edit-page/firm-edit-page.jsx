@@ -260,6 +260,12 @@ const FirmEditPage = () => {
     return () => clearInterval(interval);
   }, [stages]);
 
+  useEffect(() => {
+    actionExtension(CommandForAction.CLEAR_DATA);
+
+    return () => actionExtension(CommandForAction.CLEAR_DATA);
+  }, []);
+
   return (
     <section className="page-content page__content">
       <header className="page-content__header standart-block">

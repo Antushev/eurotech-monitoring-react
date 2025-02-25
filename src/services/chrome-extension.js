@@ -6,7 +6,8 @@ const CommandForGetDataExtension = {
 }
 
 const CommandForAction = {
-  OPEN_OF_PRODUCT: 'open-for-add-firm'
+  OPEN_OF_PRODUCT: 'open-for-add-firm',
+  CLEAR_DATA: 'clear-data-for-open'
 }
 
 const getDataExtension = async (command) => {
@@ -23,9 +24,13 @@ const getDataExtension = async (command) => {
   return false;
 }
 
-const actionExtension = async (command) => {
+const actionExtension = async (command, param = null) => {
   if (chrome.runtime.lastError) {
     console.log(chrome.runtime.lastError);
+  }
+
+  if (param?.url) {
+    window.open(param?.url);
   }
 
   await chrome.runtime.sendMessage(ID_EXTENSION, { message: command });
