@@ -10,6 +10,8 @@ import { api } from "../../store";
 import { updateFirm } from '../../store/api-actions.js';
 import { getCurrentUser, getStatusLoadFirm } from "../../store/app-data/selectors";
 
+import { CommandForGetDataExtension, getDataExtension } from '../../services/chrome-extension.js';
+
 import Preloader from "../../components/preloader/preloader.jsx";
 
 const TIME_DEBOUNCE = 1000;
@@ -166,11 +168,7 @@ const FirmEditPage = () => {
 
   const addListenerDataFromExtension = async () => {
     try {
-      if (chrome.runtime.lastError) {
-        console.log(chrome.runtime.lastError);
-      }
-
-      const response = await chrome.runtime.sendMessage(ID_EXTENSION, { message: 'site-check-for-data' });
+      const response = await getDataExtension(CommandForGetDataExtension.GET_DATA_PRODUCT);
 
       if (response) {
         const {
