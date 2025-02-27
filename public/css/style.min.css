@@ -1099,6 +1099,14 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   border: 1px solid rgba(255, 255, 255, 1);
 }
 
+.message--no-margin-top {
+  margin-top: 0;
+}
+
+.message--margin-bottom {
+  margin-bottom: 10px;
+}
+
 .integration {
   display: flex;
   flex-flow: row nowrap;
@@ -1447,6 +1455,10 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   margin-top: 0;
 }
 
+.modal__message-warning {
+  margin-bottom: 10px;
+}
+
 .notifications {
   z-index: 1000;
 }
@@ -1660,15 +1672,20 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 }
 
 .info-list__item:not(:last-child) {
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 }
 
 .info-list--margin-bottom {
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .info-list__icon {
+  width: 30px;
   margin-right: 5px;
+}
+
+.info-list__link-text {
+  margin-right: 3px;
 }
 
 @keyframes rotation {
