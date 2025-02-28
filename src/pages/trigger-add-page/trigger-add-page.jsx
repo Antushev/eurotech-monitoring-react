@@ -305,7 +305,7 @@ const TriggerAddPage = () => {
             <h2 className="header header--2 header--space-bottom">Шаг 2. Задайте сравниваемые объекты</h2>
 
             <div className="form-block">
-              <span className="form-block__trigger-text">Если у</span>
+              <span className="form-block__trigger-text">Если</span>
 
               <select
                 className="input input--trigger input--margin-right"
@@ -313,9 +313,10 @@ const TriggerAddPage = () => {
                   setTypeChangeProductsInGroup(evt.target.value);
                 }}
               >
-                <option value="PRODUCT">Товара</option>
-                {/*<option value="ALL_PRODUCT_IN_GROUP">Всех товаров в группе</option>*/}
-                {/*<option value="ONE_PRODUCT_IN_GROUP">Хотя бы у одного товара в группе</option>*/}
+                <option value="PRODUCT">у товара</option>
+                <option value="PRODUCTS_IN_GROUP">у товара в группе</option>
+                <option value="ALL_PRODUCT_IN_GROUP">у всех товаров в группе</option>
+                <option value="ONE_PRODUCT_IN_GROUP">хотя бы у одного товара в группе</option>
               </select>
 
               <AsyncSelect
@@ -323,7 +324,9 @@ const TriggerAddPage = () => {
                 isClearable
                 cacheOptions
                 defaultValue={defaultValueSelect}
-                loadOptions={ loadProducts }
+                loadOptions={ async (name) => {
+                  return await loadProducts(name, currentUser.id, typeChangeProductsInGroup);
+                }}
                 onChange={(product) => {
                   setProducts([product]);
                   if (!compareProducts) {
@@ -773,20 +776,33 @@ const TriggerAddPage = () => {
   );
 }
 
-const loadProducts = async (name) => {
-  const { data } = await api.post('/products/', {
-    idUser: null,
-    idParent: null,
-    name: name,
-    withStats: null,
-    dateStart: null,
-    dateEnd: null
-  });
+const loadProducts = async (name, idUser, typeChange = null) => {
+  console.log(typeChange);
 
-  return data.map((product) => {
+  if (typeChange === 'PRODUCT') {
+    const { data } = await api.post('/products/', {
+      idUser: null,
+      idParent: null,
+      name: name,
+      withStats: null,
+      dateStart: null,
+      dateEnd: null
+    });
+
+    return data.map((product) => {
+      return {
+        value: product.id,
+        label: product.name
+      }
+    });
+  }
+
+  const { data } = await api.get(`/products/only-groups/${idUser}/${name}`);
+
+  return data.map((group) => {
     return {
-      value: product.id,
-      label: product.name
+      value: group.id,
+      label: group.name
     }
   });
 }

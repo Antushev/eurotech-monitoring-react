@@ -76,7 +76,9 @@ export const fetchProductWithDetailStats = createAsyncThunk(
 export const fetchProductsGroups = createAsyncThunk(
   'data/fetchProductsGroups',
   async ({ idUser }, { extra: api }) => {
-    const { data } = await api.get(`/products/only-groups/${idUser}`);
+    const name = null;
+
+    const { data } = await api.get(`/products/only-groups/${idUser}/${name}`);
 
     return data;
   });
