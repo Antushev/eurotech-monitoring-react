@@ -769,7 +769,7 @@ const FirmEditPage = () => {
               </div>
 
               <div className="firm-add__video">
-                <video className="video" controls>
+                <video className="video" poster="/img/video-posters/add-firm-steps.png" controls>
                   <source src="/video/presentation.mp4" type="video/mp4"/>
 
                   Данное видео не поддерживается в вашем браузере
