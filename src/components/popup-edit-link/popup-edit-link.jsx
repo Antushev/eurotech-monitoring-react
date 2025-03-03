@@ -457,8 +457,11 @@ const PopupAddLink = (props) => {
               link: inputRef.current.value.trim(),
               price: parseData.price,
               priceSelector: parseData.priceSelector ? parseData.priceSelector : null,
+              priceTypeSelector: 'TEXT',
               count: parseData.count,
-              countSelector: parseData.countSelector ? parseData.countSelector : null
+              countSelector: parseData.countSelector ? parseData.countSelector : null,
+              countTypeSelector: 'TEXT',
+              valute: 'RUB'
             }));
 
             await dispatch(fetchProductsWithSummaryDetail({

@@ -398,8 +398,8 @@ const TriggerAddPage = () => {
               >
                 <option value="PRODUCT" selected={typeChangeProductsInGroup === 'PRODUCT'}>у товара</option>
                 <option value="PRODUCT_IN_GROUP" selected={typeChangeProductsInGroup === 'PRODUCTS_IN_GROUP'}>у товара в группе</option>
-                <option value="ALL_PRODUCT_IN_GROUP" selected={typeChangeProductsInGroup === 'ALL_PRODUCT_IN_GROUP'}>у всех товаров в группе</option>
-                <option value="ONE_PRODUCT_IN_GROUP" selected={typeChangeProductsInGroup === 'ONE_PRODUCT_IN_GROUP'}>хотя бы у одного товара в группе</option>
+                {/*<option value="ALL_PRODUCT_IN_GROUP" selected={typeChangeProductsInGroup === 'ALL_PRODUCT_IN_GROUP'}>у всех товаров в группе</option>*/}
+                {/*<option value="ONE_PRODUCT_IN_GROUP" selected={typeChangeProductsInGroup === 'ONE_PRODUCT_IN_GROUP'}>хотя бы у одного товара в группе</option>*/}
               </select>
 
               <AsyncSelect
