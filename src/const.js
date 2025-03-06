@@ -1,4 +1,4 @@
-export const ID_EXTENSION = 'aepeghjdmhdnefpamgenkhfhdplchlpf';
+export const ID_EXTENSION = 'afmiohgnklhpdcmiledcjbfdnlpnhdhb';
 
 export const NameSpace = {
   DATA: 'DATA',
