@@ -382,7 +382,7 @@ const FirmEditPage = () => {
 
                       <label className="label">
                         <div className="firm-add__link-extension">
-                          <a className="firm-add__link" href="/other/eurotech-monitoring.zip">
+                          <a className="firm-add__link" href="/other/eurotech-monitoring-v11.zip">
                             {
                               !versionExtension &&
                               <>

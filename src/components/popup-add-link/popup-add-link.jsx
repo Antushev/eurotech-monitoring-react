@@ -289,7 +289,7 @@ const PopupAddLink = (props) => {
               {
                 methodSelectData === MethodSelectData.EXTENSION &&
                 <div className="add-link-list__extension">
-                  <a className="add-link-list__link" href="/other/eurotech-monitoring.zip">
+                  <a className="add-link-list__link" href="/other/eurotech-monitoring-v11.zip">
                     {
                       (!versionExtension || false) &&
                       <>
