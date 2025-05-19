@@ -61,7 +61,6 @@ const PopupAddMarks = (props) => {
               const lines = textInput.current.value.split('\n').map((lineText) => {
                 return lineText.trim();
               });
-              console.log(lines);
               setMarks(lines);
             }}
           />

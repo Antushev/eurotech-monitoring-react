@@ -1,3 +1,5 @@
+export const ID_EXTENSION = 'afmiohgnklhpdcmiledcjbfdnlpnhdhb';
+
 export const NameSpace = {
   DATA: 'DATA',
   PRODUCTS: 'PRODUCTS'
@@ -13,6 +15,7 @@ export const AppRoute = {
   TriggerEdit: '/trigger/:idTrigger/edit',
   Firms: '/firms',
   FirmAdd: '/firm/add',
+  FirmEdit: '/firm/:idFirm/edit',
   Settings: '/settings/integrations'
 }
 
@@ -58,6 +61,11 @@ export const Period = {
   DAY: 'day',
   WEEK: 'week',
   MONTH: 'month'
+}
+
+export const MethodSelectData = {
+  DEFAULT: 'default',
+  EXTENSION: 'extension'
 }
 
 export const toastSettings = {

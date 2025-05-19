@@ -207,6 +207,35 @@ const TriggerAddPage = () => {
     fetchTrigger();
   }, []);
 
+  const loadProducts = async (name) => {
+    if (typeChangeProductsInGroup === 'PRODUCT') {
+      const { data } = await api.post('/products/', {
+        idUser: null,
+        idParent: null,
+        name: name,
+        withStats: null,
+        dateStart: null,
+        dateEnd: null
+      });
+
+      return data.map((product) => {
+        return {
+          value: product.id,
+          label: product.name
+        }
+      });
+    }
+
+    const { data } = await api.post(`/products/${currentUser.id}`);
+
+    return data.map((group) => {
+      return {
+        value: group.id,
+        label: group.name
+      }
+    });
+  }
+
   useEffect(() => {
     dispatch(fetchFirmsByIdUser(currentUser.id));
   }, []);
@@ -367,9 +396,10 @@ const TriggerAddPage = () => {
                   setTypeChangeProductsInGroup(evt.target.value);
                 }}
               >
-                <option value="PRODUCT" selected={typeChangeProductsInGroup === 'PRODUCT'}>Товара</option>
-                {/*<option value="ALL_PRODUCT_IN_GROUP" selected={typeChangeProductsInGroup === 'ALL_PRODUCT_IN_GROUP'}>Всех товаров в группе</option>*/}
-                {/*<option value="ONE_PRODUCT_IN_GROUP" selected={typeChangeProductsInGroup === 'ONE_PRODUCT_IN_GROUP'}>Хотя бы у одного товара в группе</option>*/}
+                <option value="PRODUCT" selected={typeChangeProductsInGroup === 'PRODUCT'}>у товара</option>
+                <option value="PRODUCT_IN_GROUP" selected={typeChangeProductsInGroup === 'PRODUCTS_IN_GROUP'}>у товара в группе</option>
+                {/*<option value="ALL_PRODUCT_IN_GROUP" selected={typeChangeProductsInGroup === 'ALL_PRODUCT_IN_GROUP'}>у всех товаров в группе</option>*/}
+                {/*<option value="ONE_PRODUCT_IN_GROUP" selected={typeChangeProductsInGroup === 'ONE_PRODUCT_IN_GROUP'}>хотя бы у одного товара в группе</option>*/}
               </select>
 
               <AsyncSelect
@@ -824,24 +854,6 @@ const TriggerAddPage = () => {
       </section>
     </section>
   );
-}
-
-const loadProducts = async (name) => {
-  const { data } = await api.post('/products/', {
-    idUser: null,
-    idParent: null,
-    name: name,
-    withStats: null,
-    dateStart: null,
-    dateEnd: null
-  });
-
-  return data.map((product) => {
-    return {
-      value: product.id,
-      label: product.name
-    }
-  });
 }
 
 const getIdProducts = (products) => {

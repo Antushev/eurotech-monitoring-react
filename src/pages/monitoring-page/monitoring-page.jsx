@@ -621,7 +621,7 @@ const MonitoringPage = () => {
 
                                     <span className="goods-table__number-value">
                                       {
-                                        typeShowValue === TypeShowValue.PRICE ? stat.price.toLocaleString() : stat.count.toLocaleString()
+                                        typeShowValue === TypeShowValue.PRICE ? stat.price.toLocaleString() : (stat.count ? stat.count.toLocaleString() : 0)
                                       }
                                     </span>
                                     {

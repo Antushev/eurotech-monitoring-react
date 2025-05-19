@@ -1,4 +1,4 @@
-import {createSlice} from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import {
   LocalStorageKey,
@@ -23,6 +23,7 @@ import {
   fetchAllProjects,
   fetchCurrentProductById,
   fetchFirmsByIdUser,
+  createFirm,
   updateFirm,
   fetchParseData,
   fetchProductsGroups,
@@ -71,6 +72,7 @@ const initialState = {
   settingsSyncBitrix: {},
   hasCreateNewProject: false,
   hasDeleteAllData: false,
+  hasLoadFirm: false,
   hasLoadFirms: false,
   hasLoadProducts: false,
   hasLoadProduct: false,
@@ -150,6 +152,9 @@ export const appData = createSlice({
     },
     setCheckDataUrlXMLForBitrix: (state, action) => {
       state.checkDataSyncUrlXMLForBitrix = action.payload;
+    },
+    clearParseData: (state) => {
+      state.parseData = null;
     }
   },
   extraReducers(builder) {
@@ -165,9 +170,25 @@ export const appData = createSlice({
       .addCase(fetchFirmsByIdUser.rejected, (state) => {
         state.hasLoadFirms = false;
       })
+      // СОЗДАНИЕ НОВОЙ ФИРМЫ
+      .addCase(createFirm.pending, (state) => {
+        state.hasLoadFirm = true;
+      })
+      .addCase(createFirm.fulfilled, (state, action) => {
+        const firm = action.payload;
+
+        state.firms.push(firm);
+
+        state.hasLoadFirm = false;
+        toast.success(`Фирма ${firm.name} успешно добавлена`);
+      })
+      .addCase(createFirm.rejected, (state) => {
+        state.hasLoadFirm = false;
+        toast.error('Произошла ошибка при добавлении фирмы');
+      })
       // РЕДАКТИРОВАНИЕ ФИРМЫ
       .addCase(updateFirm.pending, (state) => {
-
+        state.hasLoadFirm = true;
       })
       .addCase(updateFirm.fulfilled, (state, action) => {
         const uploadFirm = action.payload;
@@ -182,16 +203,19 @@ export const appData = createSlice({
           });
         }
 
-        const indexFirm = state.firms.findIndex((searchFirm) => searchFirm.id === uploadFirm.id);
+        const indexFirm = state.firms.findIndex((searchFirm) => Number(searchFirm.id) === Number(uploadFirm.id));
 
         if (indexFirm !== -1) {
           state.firms[indexFirm] = uploadFirm;
-
-          toast.success(`Фирма ${uploadFirm.name} успешно отредактирована`);
         }
+
+        toast.success(`Фирма ${uploadFirm.name} успешно отредактирована`);
+
+        state.hasLoadFirm = false;
       })
       .addCase(updateFirm.rejected, () => {
         toast.error('Произошла ошибка при редактировании фирмы');
+        state.hasLoadFirm = false;
       })
       // ВЫБОР АКТИВНЫХ ФИРМ ДЛЯ ОПРЕДЕЛЁННОГО ПОЛЬЗОВАТЕЛЯ
       .addCase(setFirmsActiveByIdUser.pending, (state) => {
@@ -479,7 +503,7 @@ export const appData = createSlice({
 
       })
       .addCase(createMarks.fulfilled, (state, action) => {
-        console.log('Товары записаны в базу данных: ', action.payload);
+
       })
       .addCase(createMarks.rejected, (state) => {
 
@@ -567,8 +591,6 @@ export const appData = createSlice({
         state.hasLoadSettingsSyncBitrix = true;
       })
       .addCase(setSettingsSyncBitrix.fulfilled, (state, action) => {
-        console.log(action.payload);
-
         state.settingsSyncBitrix = action.payload;
 
         state.hasLoadSettingsSyncBitrix = false;
@@ -614,5 +636,6 @@ export const {
   setTypeShowValue,
   setTypeShowConditionValue,
   setIsShowNotifications,
-  setCheckDataUrlXMLForBitrix
+  setCheckDataUrlXMLForBitrix,
+  clearParseData
 } = appData.actions;

@@ -1,29 +1,42 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 
-export const fetchFirmsByIdUser = createAsyncThunk(
-  'data/fetchFirmsByIdUser',
-  async (idUser, { extra: api}) => {
-    const { data } = await api.get(`/firms/${idUser}`);
+export const fetchFirmById = createAsyncThunk(
+  'data/fetchFirmById',
+  async (idFirm, { extra: api }) => {
+    const { data } = await api.get(`/firm/${idFirm}`);
+
+    return data;
+  }
+);
+
+export const createFirm = createAsyncThunk(
+  'data/createFirm',
+  async (newFirmData, { extra: api }) => {
+    const { firm, idUser } = newFirmData;
+
+    const { data } = await api.post(`/firm/${idUser}`, firm);
+
     return data;
   });
 
 export const updateFirm = createAsyncThunk(
   'data/updateFirm',
   async (firm, { extra: api }) => {
-    const { id: idFirm, isMain } = firm;
-
-    if (!isMain) {
-      toast.warning('Должна быть хотя бы одна основная фирма');
-
-      return false;
-    }
+    const { id: idFirm } = firm;
 
     const { data } = await api.put(`/firm/${idFirm}`, { ...firm });
 
     return data;
-  }
-)
+  });
+
+
+export const fetchFirmsByIdUser = createAsyncThunk(
+  'data/fetchFirmsByIdUser',
+  async (idUser, { extra: api}) => {
+    const { data } = await api.get(`/firms/${idUser}`);
+    return data;
+  });
 
 export const setFirmsActiveByIdUser = createAsyncThunk(
   'data/setFirmsActiveByIdUser',
@@ -63,7 +76,9 @@ export const fetchProductWithDetailStats = createAsyncThunk(
 export const fetchProductsGroups = createAsyncThunk(
   'data/fetchProductsGroups',
   async ({ idUser }, { extra: api }) => {
-    const { data } = await api.get(`/products/only-groups/${idUser}`);
+    const name = null;
+
+    const { data } = await api.get(`/products/only-groups/${idUser}/${name}`);
 
     return data;
   });
@@ -96,8 +111,6 @@ export const deleteProduct = createAsyncThunk(
 export const createLink = createAsyncThunk(
   'data/createLink',
   async (param, {extra: api}) => {
-    console.log(param);
-
     const { data } = await api.post('/link/', { ...param });
 
     return data;
@@ -114,8 +127,6 @@ export const updateLink = createAsyncThunk(
 export const deleteLink = createAsyncThunk(
   'data/deleteLink',
   async (idLink, { extra: api }) => {
-    console.log('ID ссылки', idLink);
-
     const { data } = await api.delete(`/link/${idLink}`);
 
     return data;
@@ -131,8 +142,6 @@ export const fetchTriggers = createAsyncThunk(
 export const fetchTriggersForProduct = createAsyncThunk(
   'data/fetchTriggersForProduct',
   async ({idUser, idProduct}, { extra: api }) => {
-    console.log(idUser, idProduct);
-
     const { data } = await api.get(`/triggers/${idUser}/product/${idProduct}`);
 
     return data;
@@ -184,8 +193,8 @@ export const createProject = createAsyncThunk(
 
 export const fetchParseData = createAsyncThunk(
   'data/getParseData',
-  async (link, {extra: api}) => {
-    const { data } = await api.post('/parser/', { link });
+  async (parseSettings, {extra: api}) => {
+    const { data } = await api.post('/parser/', parseSettings);
 
     return data;
   });
@@ -232,8 +241,6 @@ export const setSettingsSyncBitrix = createAsyncThunk(
 
     const { data } = await api.post('/sync/bitrix/', { ...syncSettingsBitrix });
 
-    console.log(data);
-
     return data;
   }
 );
@@ -250,8 +257,6 @@ export const fetchReportsIntegrations = createAsyncThunk(
 export const fetchStartSyncBitrix = createAsyncThunk(
   'data/fetchStartSyncBitrix',
   async ({idUser, idFirm}, {extra: api}) => {
-    console.log('ACTION:', idUser, idFirm);
-
     const {data} = await api.post('/sync/bitrix/start', {idUser, idFirm});
 
     return data;

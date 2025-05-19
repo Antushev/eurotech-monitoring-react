@@ -4,9 +4,6 @@ import { Provider } from 'react-redux';
 import { store } from './store/index';
 import { BrowserRouter } from 'react-router-dom';
 
-import HistoryRouter from './components/history-router/history-router.jsx';
-import browserHistory from './browser-history.js';
-
 import { App } from './components/app/app.jsx';
 
 const rootNode = document.querySelector('#root');

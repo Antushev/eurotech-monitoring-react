@@ -28,7 +28,6 @@ const PopupEditProduct = (props) => {
     dispatch(fetchProductsGroups({idUser: currentUser.id}))
   }, []);
 
-
   const groups = useSelector(getGroups);
   const isLoadProduct = useSelector(getStatusLoadProduct);
   const inputNameRef = useRef();
