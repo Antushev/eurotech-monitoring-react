@@ -176,7 +176,7 @@ const MonitoringPage = () => {
             <div className="page-content__detalisation-block goods-stat-detalisation standart-block">
               <div className="goods-stat-detalisation__header">
                 <div className="goods-stat-detalisation__header-block">
-                  <h2 className="header header--2">Статистика</h2>
+                  <h2 className="header header--2">Сводная статистика</h2>
 
                   <label
                     className="goods-stat-detalisation__date label__text"
@@ -197,6 +197,128 @@ const MonitoringPage = () => {
                   </svg>
                 </div>
               </div>
+
+              <ul className="detalisation-list goods-stat-detalisation__change-goods">
+                <li className="detalisation-list__item detalisation-list__item--active">Все товары</li>
+                <li className="detalisation-list__item">Избранные товары</li>
+              </ul>
+
+              <ul className="goods-stat-list goods-stat-detalisation__list">
+                <li className="goods-stat-list__item">
+                  <div className="goods-stat-list__name-block">
+                    <div className="goods-stat-list__name">Гидромоток BMH-250</div>
+                    <div className="goods-stat-list__firm">
+                      Аркаим - Насосы и моторы
+                    </div>
+                  </div>
+
+                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
+                    +43,14%
+                  </div>
+                </li>
+
+                <li className="goods-stat-list__item">
+                  <div className="goods-stat-list__name-block">
+                    <div className="goods-stat-list__name">Распределитель 1P40</div>
+                    <div className="goods-stat-list__firm">
+                      Промснаб - Распределители и клапаны
+                    </div>
+                  </div>
+
+                  <div className="goods-stat-list__stat goods-stat-list__stat--red">
+                    -9,83%
+                  </div>
+                </li>
+
+                <li className="goods-stat-list__item">
+                  <div className="goods-stat-list__name-block">
+                    <div className="goods-stat-list__name">Маслоохладитель CSL1</div>
+                    <div className="goods-stat-list__firm">
+                      А1Гидро - Маслоохладители
+                    </div>
+                  </div>
+
+                  <div className="goods-stat-list__stat goods-stat-list__stat--red">
+                    -54,01%
+                  </div>
+                </li>
+
+                <li className="goods-stat-list__item">
+                  <div className="goods-stat-list__name-block">
+                    <div className="goods-stat-list__name">Реле давления 54764VDFSO</div>
+                    <div className="goods-stat-list__firm">
+                      ООО ТЕХНОКОМ - Измерительная аппаратура
+                    </div>
+                  </div>
+
+                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
+                    +1,75%
+                  </div>
+                </li>
+
+                <li className="goods-stat-list__item">
+                  <div className="goods-stat-list__name-block">
+                    <div className="goods-stat-list__name">Реле давления 54764VDFSO</div>
+                    <div className="goods-stat-list__firm">
+                      ООО ТЕХНОКОМ - Измерительная аппаратура
+                    </div>
+                  </div>
+
+                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
+                    +1,75%
+                  </div>
+                </li>
+                <li className="goods-stat-list__item">
+                  <div className="goods-stat-list__name-block">
+                    <div className="goods-stat-list__name">Реле давления 54764VDFSO</div>
+                    <div className="goods-stat-list__firm">
+                      ООО ТЕХНОКОМ - Измерительная аппаратура
+                    </div>
+                  </div>
+
+                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
+                    +1,75%
+                  </div>
+                </li>
+                <li className="goods-stat-list__item">
+                  <div className="goods-stat-list__name-block">
+                    <div className="goods-stat-list__name">Реле давления 54764VDFSO</div>
+                    <div className="goods-stat-list__firm">
+                      ООО ТЕХНОКОМ - Измерительная аппаратура
+                    </div>
+                  </div>
+
+                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
+                    +1,75%
+                  </div>
+                </li>
+                <li className="goods-stat-list__item">
+                  <div className="goods-stat-list__name-block">
+                    <div className="goods-stat-list__name">Реле давления 54764VDFSO</div>
+                    <div className="goods-stat-list__firm">
+                      ООО ТЕХНОКОМ - Измерительная аппаратура
+                    </div>
+                  </div>
+
+                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
+                    +1,75%
+                  </div>
+                </li>
+                <li className="goods-stat-list__item">
+                  <div className="goods-stat-list__name-block">
+                    <div className="goods-stat-list__name">Реле давления 54764VDFSO</div>
+                    <div className="goods-stat-list__firm">
+                      ООО ТЕХНОКОМ - Измерительная аппаратура
+                    </div>
+                  </div>
+
+                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
+                    +1,75%
+                  </div>
+                </li>
+              </ul>
+
+              <div className="goods-stat-detalisation__more">Показать больше товаров</div>
             </div>
           </section>
 
