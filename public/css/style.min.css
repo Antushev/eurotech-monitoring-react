@@ -176,7 +176,7 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 }
 
 .goods-stat-detalisation {
-  max-height: 682.29px;
+  max-height: 700px;
 
   overflow: auto;
 }
@@ -920,6 +920,7 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 }
 
 .firms-summary-stats__item {
+  flex: 1 0 auto;
   display: flex;
   flex-flow: column nowrap;
   justify-content: center;
