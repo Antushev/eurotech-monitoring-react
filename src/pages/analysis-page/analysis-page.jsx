@@ -79,7 +79,7 @@ const AnalysisPage = (props) => {
           </div>
         </header>
 
-        <div className="page-content__inner page-content__inner--main">
+        <div className="page-content__inner page-content__inner--analyse">
           <section className="products standart-block page-content__products">
             <h2 className="header header--2 header--space-bottom">Маркировки</h2>
 
