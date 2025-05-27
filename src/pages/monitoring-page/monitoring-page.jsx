@@ -92,7 +92,7 @@ const MonitoringPage = () => {
   const mainFirm = getMainFirm(firms);
   const products = useSelector(getAllProducts);
 
-  const dateFormat = dayjs().format('YYYY-MM-DD')
+  const dateFormat = dayjs().format('YYYY-MM-DD');
   const dateFromRef = useRef(dateFormat);
   const dateToRef = useRef(dateFormat);
 
@@ -131,14 +131,12 @@ const MonitoringPage = () => {
                 onChange={async (evt) => {
                   const name = searchTextProductRef.current.value;
 
-                  setDate(dateFromRef.current.value);
-
                   await dispatch(fetchProductsWithSummaryDetail({
                     idUser: currentUser.id,
                     idParent: currentProduct !== null ? currentProduct.id : null,
                     withStats: 'summary',
-                    dateStart: dayjs(evt.target.value).startOf('day'),
-                    dateEnd: dayjs(evt.target.value).endOf('day')
+                    dateStart: dayjs(dateFromRef.current.value).startOf('day'),
+                    dateEnd: dayjs(dateToRef.current.value).endOf('day')
                   }));
               }}
               />
@@ -159,8 +157,8 @@ const MonitoringPage = () => {
                     idUser: currentUser.id,
                     idParent: currentProduct !== null ? currentProduct.id : null,
                     withStats: 'summary',
-                    dateStart: dayjs(evt.target.value).startOf('day'),
-                    dateEnd: dayjs(evt.target.value).endOf('day')
+                    dateStart: dayjs(dateFromRef.current.value).startOf('day'),
+                    dateEnd: dayjs(dateToRef.current.value).endOf('day')
                   }));
                 }}
               />
