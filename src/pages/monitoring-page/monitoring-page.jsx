@@ -93,7 +93,8 @@ const MonitoringPage = () => {
   const products = useSelector(getAllProducts);
 
   const dateFormat = dayjs().format('YYYY-MM-DD')
-  const dateRef = useRef(dateFormat);
+  const dateFromRef = useRef(dateFormat);
+  const dateToRef = useRef(dateFormat);
 
   const [date, setDate] = useState(dateFormat);
   const [isOpenPopupAddGroup, setIsOpenPopupAddGroup] = useState(false);
@@ -120,8 +121,30 @@ const MonitoringPage = () => {
 
           <div className="page-content__header-block">
             <div className="date-select date-select--margin-right">
+             <input
+                ref={dateFromRef}
+                className="date-select__input"
+                name="date-select"
+                type="date"
+                defaultValue={dateFormat}
+                alt="Дата от"
+                onChange={async (evt) => {
+                  const name = searchTextProductRef.current.value;
+
+                  setDate(dateFromRef.current.value);
+
+                  await dispatch(fetchProductsWithSummaryDetail({
+                    idUser: currentUser.id,
+                    idParent: currentProduct !== null ? currentProduct.id : null,
+                    withStats: 'summary',
+                    dateStart: dayjs(evt.target.value).startOf('day'),
+                    dateEnd: dayjs(evt.target.value).endOf('day')
+                  }));
+              }}
+              />
+              <span className="date-select__line"></span>
               <input
-                ref={dateRef}
+                ref={dateToRef}
                 className="date-select__input"
                 name="date-select"
                 type="date"
@@ -130,7 +153,7 @@ const MonitoringPage = () => {
                 onChange={async (evt) => {
                   const name = searchTextProductRef.current.value;
 
-                  setDate(dateRef.current.value);
+                  setDate(dateToRef.current.value);
 
                   await dispatch(fetchProductsWithSummaryDetail({
                     idUser: currentUser.id,
@@ -167,9 +190,25 @@ const MonitoringPage = () => {
         </header>
         <div className="page-content__inner page-content__inner--main">
           <section className="page-content__inline-blocks page-content__inline-blocks--margin-bottom">
-            <div className="page-content__index-block goods-index-block standart-block">
-              <div className="goods-index-block__header">
-                <h2 className="header header--2">Сводная статистика</h2>
+            <div className="page-content__common-block goods-index-block">
+              <ul className="goods-common-stat page-content__goods-common-stat">
+                <li className="goods-common-stat__item standart-block">
+                  <h3 className="header header--3">Цены</h3>
+                </li>
+
+                <li className="goods-common-stat__item standart-block">
+                  <h3 className="header header--3">Наличие</h3>
+                </li>
+
+                <li className="goods-common-stat__item standart-block">
+                  <h3 className="header header--3">Заполнение</h3>
+                </li>
+              </ul>
+
+              <div className="goods-index-block standart-block page-content__goods-index-block">
+                <div className="goods-index-block__header">
+                  <h2 className="header header--2">Индекс роста</h2>
+                </div>
               </div>
             </div>
 
