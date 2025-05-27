@@ -666,13 +666,13 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   margin-bottom: 25px;
 }
 
-.page-content__feature-block {
+.page-content__index-block {
   flex: 7 0 auto;
   margin-right: 25px;
 }
 
 .page-content__detalisation-block {
-  flex: 3 0 auto;
+  flex: 1 0 auto;
 }
 
 .page-content__alert {

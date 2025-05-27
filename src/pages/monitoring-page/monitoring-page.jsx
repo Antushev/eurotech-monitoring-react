@@ -167,16 +167,16 @@ const MonitoringPage = () => {
         </header>
         <div className="page-content__inner page-content__inner--main">
           <section className="page-content__inline-blocks page-content__inline-blocks--margin-bottom">
-            <div className="page-content__feature-block goods-feature-block standart-block">
-              <div className="goods-feature-block__header">
-                <h2 className="header header--2">Избранные товары</h2>
+            <div className="page-content__index-block goods-index-block standart-block">
+              <div className="goods-index-block__header">
+                <h2 className="header header--2">Сводная статистика</h2>
               </div>
             </div>
 
             <div className="page-content__detalisation-block goods-stat-detalisation standart-block">
               <div className="goods-stat-detalisation__header">
                 <div className="goods-stat-detalisation__header-block">
-                  <h2 className="header header--2">Сводная статистика</h2>
+                  <h2 className="header header--2">Динамика</h2>
 
                   <label
                     className="goods-stat-detalisation__date label__text"
@@ -324,9 +324,17 @@ const MonitoringPage = () => {
 
           <section className="goods-block standart-block">
             <div className="goods-block__header">
-              <h2 className="header header--2">
-                Таблица {typeShowValue === TypeShowValue.PRICE ? 'цен' : 'остатков'} на {dayjs(date).format('DD.MM.YYYY')}
-              </h2>
+              <div className="goods-block__header-block">
+                <h2 className="header header--2">
+                  Таблица {typeShowValue === TypeShowValue.PRICE ? 'цен' : 'остатков'} на {dayjs(date).format('DD.MM.YYYY')}
+                </h2>
+
+                <ul className="detalisation-list">
+                  <li className="detalisation-list__item detalisation-list__item--active">все товары</li>
+                  <li className="detalisation-list__item">избранные товары</li>
+                </ul>
+              </div>
+
               <div>
                 <ul className="buttons-list">
                   <li className="buttons-list__item">
