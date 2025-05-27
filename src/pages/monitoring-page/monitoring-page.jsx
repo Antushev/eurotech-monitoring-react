@@ -4,6 +4,9 @@ import { Link } from 'react-router-dom';
 import * as dayjs from 'dayjs';
 import debounce from 'debounce';
 import Highlighter from 'react-highlight-words';
+import { truncate } from '../../utils/common.js';
+
+import { api } from '../../store/index.js';
 
 import {
   AppRoute,
@@ -69,6 +72,11 @@ const MonitoringPage = () => {
 
   const searchTextProductRef = useRef(null);
 
+  const [productsWithDetalisationStat, setProductsWithDetalisationStat] = useState([]);
+  const [isLoadProductWithDetalisationStat, setIsLoadProductWithDetalisationStat] = useState(false);
+  const [typeValue, setTypeValue] = useState('price'); // price, count
+  const [typeCalculateValue, setTypeCalculateValue] = useState('percent'); // percent, value
+
   useEffect(() => {
     dispatch(fetchFirmsByIdUser(currentUser.id));
     dispatch(fetchProductsWithSummaryDetail({
@@ -85,6 +93,21 @@ const MonitoringPage = () => {
     }, SET_INTERVAL_FETCH_DATA);
 
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    setIsLoadProductWithDetalisationStat(true);
+
+    const fetchData = async () => {
+      // const getParams = `dataFrom=${param.dateFrom}&dateTo=${param.dateTo}&sort=${param.sort}&typeValue=${typeValue}&typeValueCalculate=${typeValueCalculate}`
+
+      const { data } = await api.get(`/stat-detalisation/?dateFrom='2025-04-15'&dateTo='2025-05-22'&sort=DESC&typeValue=price&typeValueCalculate=percent`);
+
+      setProductsWithDetalisationStat(data);
+      setIsLoadProductWithDetalisationStat(false);
+    }
+
+    fetchData();
   }, []);
 
 
@@ -135,8 +158,8 @@ const MonitoringPage = () => {
                     idUser: currentUser.id,
                     idParent: currentProduct !== null ? currentProduct.id : null,
                     withStats: 'summary',
-                    dateStart: dayjs(dateFromRef.current.value).startOf('day'),
-                    dateEnd: dayjs(dateToRef.current.value).endOf('day')
+                    dateStart: dayjs(dateFromRef.current.value).startOf('day').format('YYYY-MM-DD'),
+                    dateEnd: dayjs(dateToRef.current.value).endOf('day').format('YYYY-MM-DD')
                   }));
               }}
               />
@@ -157,8 +180,8 @@ const MonitoringPage = () => {
                     idUser: currentUser.id,
                     idParent: currentProduct !== null ? currentProduct.id : null,
                     withStats: 'summary',
-                    dateStart: dayjs(dateFromRef.current.value).startOf('day'),
-                    dateEnd: dayjs(dateToRef.current.value).endOf('day')
+                    dateStart: dayjs(dateFromRef.current.value).startOf('day').format('YYYY-MM-DD'),
+                    dateEnd: dayjs(dateToRef.current.value).endOf('day').format('YYYY-MM-DD')
                   }));
                 }}
               />
@@ -205,7 +228,7 @@ const MonitoringPage = () => {
 
               <div className="goods-index-block standart-block page-content__goods-index-block">
                 <div className="goods-index-block__header">
-                  <h2 className="header header--2">Индекс роста</h2>
+                  <h2 className="header header--2">Индекс роста цен за 2025 год</h2>
                 </div>
               </div>
             </div>
@@ -213,7 +236,7 @@ const MonitoringPage = () => {
             <div className="page-content__detalisation-block goods-stat-detalisation standart-block">
               <div className="goods-stat-detalisation__header">
                 <div className="goods-stat-detalisation__header-block">
-                  <h2 className="header header--2">Динамика</h2>
+                  <h2 className="header header--2">Динамика изменения цен</h2>
 
                   <label
                     className="goods-stat-detalisation__date label__text"
@@ -240,122 +263,40 @@ const MonitoringPage = () => {
                 <li className="detalisation-list__item">Избранные товары</li>
               </ul>
 
-              <ul className="goods-stat-list goods-stat-detalisation__list">
-                <li className="goods-stat-list__item">
-                  <div className="goods-stat-list__name-block">
-                    <div className="goods-stat-list__name">Гидромоток BMH-250</div>
-                    <div className="goods-stat-list__firm">
-                      Аркаим - Насосы и моторы
-                    </div>
-                  </div>
+              {
+                isLoadProductWithDetalisationStat ?
+                  <Preloader width={25} height={25} color="#000000"/>
+                  :
+                  <ul className="goods-stat-list goods-stat-detalisation__list">
+                    {
+                      productsWithDetalisationStat.map((product) => {
+                        return <li className="goods-stat-list__item">
+                          <div className="goods-stat-list__name-block">
+                            <div className="goods-stat-list__name">
+                              <Link className="link-reset" to={`${AppRoute.Monitoring}/${product.idProduct}`}>
+                                { truncate(product.productName, 40) }
+                              </Link>
+                            </div>
+                            <div className="goods-stat-list__firm">
+                              <Link to={`/firm/${product.idFirm}/edit`} className="link-reset">
+                                { product.firmName }
+                              </Link> - { product.parentFolder.name }
+                            </div>
+                          </div>
 
-                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
-                    +43,14%
-                  </div>
-                </li>
+                          <div className={`goods-stat-list__stat goods-stat-list__stat--${product.stat.percent > 0 ? 'green' : 'red'}`}>
+                            { product.stat.percent }%
+                          </div>
+                        </li>
+                      })
+                    }
+                  </ul>
+              }
 
-                <li className="goods-stat-list__item">
-                  <div className="goods-stat-list__name-block">
-                    <div className="goods-stat-list__name">Распределитель 1P40</div>
-                    <div className="goods-stat-list__firm">
-                      Промснаб - Распределители и клапаны
-                    </div>
-                  </div>
-
-                  <div className="goods-stat-list__stat goods-stat-list__stat--red">
-                    -9,83%
-                  </div>
-                </li>
-
-                <li className="goods-stat-list__item">
-                  <div className="goods-stat-list__name-block">
-                    <div className="goods-stat-list__name">Маслоохладитель CSL1</div>
-                    <div className="goods-stat-list__firm">
-                      А1Гидро - Маслоохладители
-                    </div>
-                  </div>
-
-                  <div className="goods-stat-list__stat goods-stat-list__stat--red">
-                    -54,01%
-                  </div>
-                </li>
-
-                <li className="goods-stat-list__item">
-                  <div className="goods-stat-list__name-block">
-                    <div className="goods-stat-list__name">Реле давления 54764VDFSO</div>
-                    <div className="goods-stat-list__firm">
-                      ООО ТЕХНОКОМ - Измерительная аппаратура
-                    </div>
-                  </div>
-
-                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
-                    +1,75%
-                  </div>
-                </li>
-
-                <li className="goods-stat-list__item">
-                  <div className="goods-stat-list__name-block">
-                    <div className="goods-stat-list__name">Реле давления 54764VDFSO</div>
-                    <div className="goods-stat-list__firm">
-                      ООО ТЕХНОКОМ - Измерительная аппаратура
-                    </div>
-                  </div>
-
-                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
-                    +1,75%
-                  </div>
-                </li>
-                <li className="goods-stat-list__item">
-                  <div className="goods-stat-list__name-block">
-                    <div className="goods-stat-list__name">Реле давления 54764VDFSO</div>
-                    <div className="goods-stat-list__firm">
-                      ООО ТЕХНОКОМ - Измерительная аппаратура
-                    </div>
-                  </div>
-
-                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
-                    +1,75%
-                  </div>
-                </li>
-                <li className="goods-stat-list__item">
-                  <div className="goods-stat-list__name-block">
-                    <div className="goods-stat-list__name">Реле давления 54764VDFSO</div>
-                    <div className="goods-stat-list__firm">
-                      ООО ТЕХНОКОМ - Измерительная аппаратура
-                    </div>
-                  </div>
-
-                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
-                    +1,75%
-                  </div>
-                </li>
-                <li className="goods-stat-list__item">
-                  <div className="goods-stat-list__name-block">
-                    <div className="goods-stat-list__name">Реле давления 54764VDFSO</div>
-                    <div className="goods-stat-list__firm">
-                      ООО ТЕХНОКОМ - Измерительная аппаратура
-                    </div>
-                  </div>
-
-                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
-                    +1,75%
-                  </div>
-                </li>
-                <li className="goods-stat-list__item">
-                  <div className="goods-stat-list__name-block">
-                    <div className="goods-stat-list__name">Реле давления 54764VDFSO</div>
-                    <div className="goods-stat-list__firm">
-                      ООО ТЕХНОКОМ - Измерительная аппаратура
-                    </div>
-                  </div>
-
-                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
-                    +1,75%
-                  </div>
-                </li>
-              </ul>
-
-              <div className="goods-stat-detalisation__more">Показать больше товаров</div>
+              {
+                productsWithDetalisationStat.length !== 0 &&
+                  <div className="goods-stat-detalisation__more">Показать больше товаров</div>
+              }
             </div>
           </section>
 
