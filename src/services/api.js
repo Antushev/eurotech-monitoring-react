@@ -22,7 +22,7 @@ export const createApi = (onUnauthorized) => {
   const onFail = (error) => {
     const { response } = error;
 
-    if (response.status === Error.UNAUTHORIZED) {
+    if (response?.status === Error.UNAUTHORIZED) {
       onUnauthorized();
 
       throw error;

@@ -5,6 +5,7 @@ import * as dayjs from 'dayjs';
 import debounce from 'debounce';
 import Highlighter from 'react-highlight-words';
 import { truncate } from '../../utils/common.js';
+import { toast } from 'react-toastify';
 
 import { api } from '../../store/index.js';
 
@@ -43,6 +44,7 @@ import PopupEditProduct from '../../components/popup-edit-product/popup-edit-pro
 import PopupSelectConsumers from '../../components/popup-select-consumers/popup-select-consumers.jsx';
 import PopupAddLink from '../../components/popup-add-link/popup-add-link.jsx';
 import PopupEditLink from '../../components/popup-edit-link/popup-edit-link.jsx';
+import PopupStatDetalisation from '../../components/popup-stat-detalisation/popup-stat-detalisation.jsx';
 import DialogWindowProduct from '../../components/dialog-window-product/dialog-window-product.jsx';
 import DialogWindowEditLink from '../../components/dialog-window-edit-link/dialog-window-edit-link.jsx';
 import Preloader from '../../components/preloader/preloader.jsx';
@@ -71,11 +73,15 @@ const MonitoringPage = () => {
   const isLoadProducts = useSelector(getStatusLoadProducts);
 
   const searchTextProductRef = useRef(null);
+  const dateFormat = dayjs().format('YYYY-MM-DD');
+  const dateFromRef = useRef(dateFormat);
+  const dateToRef = useRef(dateFormat);
 
   const [productsWithDetalisationStat, setProductsWithDetalisationStat] = useState([]);
   const [isLoadProductWithDetalisationStat, setIsLoadProductWithDetalisationStat] = useState(false);
   const [typeValue, setTypeValue] = useState('price'); // price, count
-  const [typeCalculateValue, setTypeCalculateValue] = useState('percent'); // percent, value
+  const [typeValueCalculate, setTypeValueCalculate] = useState('value'); // percent, value
+  const [sortStatDetalisation, setSortStatDetalisation] = useState('ASC');
 
   useEffect(() => {
     dispatch(fetchFirmsByIdUser(currentUser.id));
@@ -101,23 +107,20 @@ const MonitoringPage = () => {
     const fetchData = async () => {
       // const getParams = `dataFrom=${param.dateFrom}&dateTo=${param.dateTo}&sort=${param.sort}&typeValue=${typeValue}&typeValueCalculate=${typeValueCalculate}`
 
-      const { data } = await api.get(`/stat-detalisation/?dateFrom='2025-04-15'&dateTo='2025-05-22'&sort=DESC&typeValue=price&typeValueCalculate=percent`);
+      const { data } = await api.get(`/stat-detalisation/?dateFrom='2025-01-01'&dateTo='2025-05-28'&sort=${sortStatDetalisation}&typeValue=${typeValue}&typeValueCalculate=${typeValueCalculate}`);
 
       setProductsWithDetalisationStat(data);
       setIsLoadProductWithDetalisationStat(false);
     }
-
-    fetchData();
+      fetchData().catch(() => {
+        toast.warning('Не удалось обновить данные, проверьте подключение к Интернету');
+      });
   }, []);
 
 
   const firms = useSelector(getAllFirms);
   const mainFirm = getMainFirm(firms);
   const products = useSelector(getAllProducts);
-
-  const dateFormat = dayjs().format('YYYY-MM-DD');
-  const dateFromRef = useRef(dateFormat);
-  const dateToRef = useRef(dateFormat);
 
   const [date, setDate] = useState(dateFormat);
   const [isOpenPopupAddGroup, setIsOpenPopupAddGroup] = useState(false);
@@ -126,6 +129,7 @@ const MonitoringPage = () => {
   const [isOpenPopupSelectConsumers, setIsOpenPopupSelectConsumers] = useState(false);
   const [isOpenPopupAddLink, setIsOpenPopupAddLink] = useState(false);
   const [isOpenPopupEditLink, setIsOpenPopupEditLink] = useState(false);
+  const [isOpenPopupStatDetalisation, setIsOpenPopupStatDetalisation] = useState(false);
   const [selectProductAddLink, setSelectProductAddLink] = useState(null);
   const [selectFirmAddLink, setSelectFirmAddLink] = useState(null);
   const [selectProductForDialog, setSelectProductForDialog] = useState({});
@@ -252,7 +256,16 @@ const MonitoringPage = () => {
                 </div>
 
                 <div className="goods-stat-detalisation__settings">
-                  <svg className="icon" width="26" height="26" viewBox="0 0 26 26" fill="none">
+                  <svg
+                    className="icon"
+                    width="26"
+                    height="26"
+                    viewBox="0 0 26 26"
+                    fill="none"
+                    onClick={() => {
+                      setIsOpenPopupStatDetalisation(true);
+                    }}
+                  >
                     <path d="M24.7133 16.1242L22.4674 14.8347C22.6941 13.6185 22.6941 12.371 22.4674 11.1548L24.7133 9.86533C24.9717 9.71856 25.0877 9.41453 25.0033 9.13147C24.4181 7.26534 23.4217 5.57745 22.1195 4.17261C21.9191 3.9577 21.5922 3.90528 21.3392 4.05205L19.0933 5.34156C18.1496 4.53431 17.0635 3.91052 15.8878 3.50165V0.927868C15.8878 0.634321 15.6822 0.377467 15.3922 0.314564C13.4574 -0.115273 11.4751 -0.0943054 9.6351 0.314564C9.34514 0.377467 9.13952 0.634321 9.13952 0.927868V3.50689C7.96912 3.921 6.88306 4.54479 5.93408 5.3468L3.69343 4.05729C3.4351 3.91052 3.1135 3.9577 2.91316 4.17786C1.61095 5.57745 0.614523 7.26534 0.0293192 9.13671C-0.0603066 9.41977 0.0609519 9.7238 0.319285 9.87058L2.5652 11.1601C2.3385 12.3762 2.3385 13.6238 2.5652 14.8399L0.319285 16.1294C0.0609519 16.2762 -0.0550345 16.5802 0.0293192 16.8633C0.614523 18.7294 1.61095 20.4173 2.91316 21.8221C3.1135 22.0371 3.44037 22.0895 3.69343 21.9427L5.93935 20.6532C6.88306 21.4605 7.96912 22.0842 9.1448 22.4931V25.0721C9.1448 25.3657 9.35041 25.6225 9.64037 25.6854C11.5752 26.1153 13.5576 26.0943 15.3975 25.6854C15.6875 25.6225 15.8931 25.3657 15.8931 25.0721V22.4931C17.0635 22.079 18.1496 21.4552 19.0985 20.6532L21.3445 21.9427C21.6028 22.0895 21.9244 22.0423 22.1247 21.8221C23.4269 20.4226 24.4234 18.7347 25.0086 16.8633C25.0877 16.575 24.9717 16.271 24.7133 16.1242ZM12.5137 17.1883C10.1887 17.1883 8.29599 15.3064 8.29599 12.9948C8.29599 10.6831 10.1887 8.80123 12.5137 8.80123C14.8387 8.80123 16.7314 10.6831 16.7314 12.9948C16.7314 15.3064 14.8387 17.1883 12.5137 17.1883Z" fill="#BE1622"/>
                   </svg>
                 </div>
@@ -274,7 +287,7 @@ const MonitoringPage = () => {
                           <div className="goods-stat-list__name-block">
                             <div className="goods-stat-list__name">
                               <Link className="link-reset" to={`${AppRoute.Monitoring}/${product.idProduct}`}>
-                                { truncate(product.productName, 40) }
+                                { truncate(product.productName, 30) }
                               </Link>
                             </div>
                             <div className="goods-stat-list__firm">
@@ -285,7 +298,7 @@ const MonitoringPage = () => {
                           </div>
 
                           <div className={`goods-stat-list__stat goods-stat-list__stat--${product.stat.percent > 0 ? 'green' : 'red'}`}>
-                            { product.stat.percent }%
+                            { product.stat.value > 0 ? `+${ product.stat.value }` : product.stat.value } руб.
                           </div>
                         </li>
                       })
@@ -870,6 +883,13 @@ const MonitoringPage = () => {
             stats={selectLinkForDialog}
             setIsOpen={setIsOpenPopupEditLink}
           />
+      }
+
+      {
+        isOpenPopupStatDetalisation &&
+        <PopupStatDetalisation
+          setIsOpen={ setIsOpenPopupStatDetalisation }
+        />
       }
 
     </>

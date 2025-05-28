@@ -29,7 +29,7 @@ const PopupAddMarks = (props) => {
   return (
     <>
       <div className="background-black" />
-      <div className="modal">
+      <div className="modal modal--add-mark">
         <div
           className="modal__close"
           onClick={() => {setIsOpen(false)}}
