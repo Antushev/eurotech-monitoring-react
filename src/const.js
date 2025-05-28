@@ -39,7 +39,8 @@ export const SortType = {
 export const LocalStorageKey = {
   TYPE_SHOW_VALUE: 'type-show-value',
   TYPE_SHOW_CONDITION_VALUE: 'type-show-condition-value',
-  PERIOD: 'period'
+  PERIOD: 'period',
+  SETTINGS_DETALISATION_IN_MONITORING_PAGE: 'settings-detalisation-in-monitoring-page'
 }
 
 export const TypeShowValue = {
@@ -80,4 +81,14 @@ export const toastSettings = {
   pauseOnHover: true,
   theme: 'light',
   transition: 'flip'
+}
+
+export const TypeValueStatDetalisation = {
+  PRICE: 'PRICE',
+  COUNT: 'COUNT'
+}
+
+export const TypeValueCalculateStatDetalisation = {
+  PERCENT: 'PERCENT',
+  VALUE: 'VALUE'
 }

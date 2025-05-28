@@ -1,8 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AsyncSelect  from 'react-select';
+import {
+  TypeValueStatDetalisation,
+  TypeValueCalculateStatDetalisation
+} from '../../const.js';
+import { setLocalStorageStatDetalisationInMonitoringPage } from '../../services/local-storage.js';
 
 const PopupStatDetalisation = (props) => {
-  const { setIsOpen } = props;
+  const {
+    typeValue,
+    typeValueCalculate,
+    setTypeValue,
+    setTypeValueCalculate,
+    setIsOpen,
+    fetchData
+  } = props;
+
+  const [typeValueInner, setTypeValueInner] = useState(typeValue);
+  const [typeValueCalculateInner, setTypeValueCalculateInner] = useState(typeValueCalculate);
 
   return (
     <>
@@ -38,10 +53,22 @@ const PopupStatDetalisation = (props) => {
               Рассчитываемая величина
             </p>
             <ul className="toggle-data-list">
-              <li className="toggle-data-list__item toggle-data-list__item--active">
+              <li
+                className={`toggle-data-list__item
+                ${typeValueInner === TypeValueStatDetalisation.PRICE ? 'toggle-data-list__item--active' : ''}`}
+                onClick={() => {
+                  setTypeValueInner(TypeValueStatDetalisation.PRICE);
+                }}
+              >
                 Цены
               </li>
-              <li className="toggle-data-list__item">
+              <li
+                className={`toggle-data-list__item
+                ${typeValueInner === TypeValueStatDetalisation.COUNT ? 'toggle-data-list__item--active' : ''}`}
+                onClick={() => {
+                  setTypeValueInner(TypeValueStatDetalisation.COUNT);
+                }}
+              >
                 Остатки
               </li>
             </ul>
@@ -52,10 +79,21 @@ const PopupStatDetalisation = (props) => {
               Отображаемые значения
             </p>
             <ul className="toggle-data-list">
-              <li className="toggle-data-list__item toggle-data-list__item--active">
+              <li className={`toggle-data-list__item
+               ${typeValueCalculateInner === TypeValueCalculateStatDetalisation.PERCENT ? 'toggle-data-list__item--active' : ''}`}
+                onClick={() => {
+                  setTypeValueCalculateInner(TypeValueCalculateStatDetalisation.PERCENT);
+                }}
+              >
                 %
               </li>
-              <li className="toggle-data-list__item">
+              <li
+                className={`toggle-data-list__item
+                ${typeValueCalculateInner === TypeValueCalculateStatDetalisation.VALUE ? 'toggle-data-list__item--active' : ''}`}
+                onClick={() => {
+                  setTypeValueCalculateInner(TypeValueCalculateStatDetalisation.VALUE);
+                }}
+              >
                 руб./шт.
               </li>
             </ul>
@@ -102,6 +140,14 @@ const PopupStatDetalisation = (props) => {
         <button
           className="button button--text-center"
           type="button"
+          onClick={async () => {
+            await setTypeValue(typeValueInner);
+            await setTypeValueCalculate(typeValueCalculateInner);
+            setLocalStorageStatDetalisationInMonitoringPage(typeValueInner, typeValueCalculate, null);
+            fetchData(typeValueInner, typeValueCalculateInner);
+
+            setIsOpen(false);
+          }}
         >
           Сохранить
         </button>
