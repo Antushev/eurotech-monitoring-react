@@ -143,7 +143,7 @@ const PopupStatDetalisation = (props) => {
           onClick={async () => {
             await setTypeValue(typeValueInner);
             await setTypeValueCalculate(typeValueCalculateInner);
-            setLocalStorageStatDetalisationInMonitoringPage(typeValueInner, typeValueCalculate, null);
+            setLocalStorageStatDetalisationInMonitoringPage(typeValueInner, typeValueCalculateInner, null);
             fetchData(typeValueInner, typeValueCalculateInner);
 
             setIsOpen(false);

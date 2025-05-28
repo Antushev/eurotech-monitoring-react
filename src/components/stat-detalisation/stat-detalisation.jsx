@@ -91,7 +91,7 @@ const StatDetalisation = (props) => {
                     typeValueCalculate === TypeValueCalculateStatDetalisation.VALUE &&
                     <div className={`goods-stat-list__stat goods-stat-list__stat--${product.stat.value > 0 ? 'green' : 'red'}`}>
                       { product.stat.value > 0 ? `+${ product.stat.value }` : product.stat.value }
-                      { typeValue === TypeValueStatDetalisation.PRICE ? 'руб.' : 'шт.'}
+                      { typeValue === TypeValueStatDetalisation.PRICE ? ' руб.' : ' шт.'}
                     </div>
                   }
 
