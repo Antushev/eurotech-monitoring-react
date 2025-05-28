@@ -152,7 +152,7 @@ const ProductMonitorPage = () => {
                 }));
               }}
             />
-            <span> - </span>
+            <span className="date-select__line"></span>
             <input
               className="date-select__input date-select__to"
               name="date-select"
