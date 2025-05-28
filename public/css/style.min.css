@@ -574,6 +574,10 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   max-width: 800px;
 }
 
+.modal--link {
+  max-width: 800px;
+}
+
 .modal--settings-monitoring-table {
   width: 650px;
 }

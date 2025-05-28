@@ -107,7 +107,7 @@ const MonitoringPage = () => {
     const fetchData = async () => {
       // const getParams = `dataFrom=${param.dateFrom}&dateTo=${param.dateTo}&sort=${param.sort}&typeValue=${typeValue}&typeValueCalculate=${typeValueCalculate}`
 
-      const { data } = await api.get(`/stat-detalisation/?dateFrom='2025-01-01'&dateTo='2025-05-28'&sort=${sortStatDetalisation}&typeValue=${typeValue}&typeValueCalculate=${typeValueCalculate}`);
+      const { data } = await api.get(`/stat-detalisation/?dateFrom='2025-05-01'&dateTo='2025-05-28'&sort=${sortStatDetalisation}&typeValue=${typeValue}&typeValueCalculate=${typeValueCalculate}`);
 
       setProductsWithDetalisationStat(data);
       setIsLoadProductWithDetalisationStat(false);
