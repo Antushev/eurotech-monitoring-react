@@ -10,6 +10,8 @@ import { setLocalStorageStatDetalisationInMonitoringPage } from '../../services/
 
 const PopupStatDetalisation = (props) => {
   const {
+    dateFrom,
+    dateTo,
     firmsSelect,
     allFirms,
     typeValue,
@@ -162,7 +164,7 @@ const PopupStatDetalisation = (props) => {
             setTypeValueCalculate(typeValueCalculateInner);
             setLocalStorageStatDetalisationInMonitoringPage(typeValueInner, typeValueCalculateInner, null, firmsSelect);
             const idFirmsSelect = getIdFirmsSelect(firmsSelect);
-            fetchData(typeValueInner, typeValueCalculateInner, 1, idFirmsSelect, false);
+            fetchData(dateFrom, dateTo, typeValueInner, typeValueCalculateInner, 1, idFirmsSelect, false);
             setPage(1);
 
             setIsOpen(false);

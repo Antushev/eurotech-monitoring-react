@@ -76,10 +76,8 @@ const MonitoringPage = () => {
   const isLoadProducts = useSelector(getStatusLoadProducts);
 
   const searchTextProductRef = useRef(null);
-  const dateFormat = dayjs().format('YYYY-MM-DD');
-  const dateFromRef = useRef(dateFormat);
-  const dateToRef = useRef(dateFormat);
-
+  const dateFromRef = useRef(dayjs().subtract(7, 'day').format('YYYY-MM-DD'));
+  const dateToRef = useRef(dayjs().format('YYYY-MM-DD'));
 
   // For StatDetalisationComponent
   const defaultSettingsStatDetalisation = getLocalStorageStatDetalisationInMonitoringPage();
@@ -110,13 +108,12 @@ const MonitoringPage = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const fetchDataStatDetalisation = async (typeValueFetch, typeValueCalculateFetch, page = 1, idFirms = null, otherComponent = false) => {
-    console.log(idFirms);
-
+  const fetchDataStatDetalisation = async (dateFrom, dateTo, typeValueFetch, typeValueCalculateFetch, page = 1, idFirms = null, otherComponent = false) => {
     if (!otherComponent) {
       setIsLoadProductWithDetalisationStat(true);
     }
-    const url = `/stat-detalisation/?dateFrom='2025-05-01'&dateTo='2025-05-28'&sort=${sortStatDetalisation}&typeValue=${typeValueFetch}&typeValueCalculate=${typeValueCalculateFetch}&page=${page}&idFirms=${idFirms}`
+
+    const url = `/stat-detalisation/?dateFrom=${dateFrom}&dateTo=${dateTo}&sort=${sortStatDetalisation}&typeValue=${typeValueFetch}&typeValueCalculate=${typeValueCalculateFetch}&page=${page}&idFirms=${idFirms}`
     const { data } = await api.get(url);
 
     if (!otherComponent) {
@@ -134,7 +131,10 @@ const MonitoringPage = () => {
   useEffect(() => {
     const idFirms = getIdFirmsSelect(firmsForDetalisationStat);
 
-    fetchDataStatDetalisation(typeValue, typeValueCalculate, pageStatDetalisation, idFirms, false).catch(() => {
+    const dateFrom = dayjs(dateFromRef.current.value).subtract(7, 'day').startOf('day').format('YYYY-MM-DD HH:mm:ss');
+    const dateTo = dayjs(dateToRef.current.value).endOf('day').format('YYYY-MM-DD HH:mm:ss');
+
+    fetchDataStatDetalisation(dateFrom, dateTo, typeValue, typeValueCalculate, pageStatDetalisation, idFirms, false).catch(() => {
       toast.warning('Не удалось обновить данные, проверьте подключение к Интернету');
     });
   }, []);
@@ -144,7 +144,7 @@ const MonitoringPage = () => {
   const mainFirm = getMainFirm(firms);
   const products = useSelector(getAllProducts);
 
-  const [date, setDate] = useState(dateFormat);
+  const [date, setDate] = useState(dateToRef.current.value);
   const [isOpenPopupAddGroup, setIsOpenPopupAddGroup] = useState(false);
   const [isOpenPopupAddProduct, setIsOpenPopupAddProduct] = useState(false);
   const [isOpenPopupEditProduct, setIsOpenPopupEditProduct] = useState(false);
@@ -175,18 +175,22 @@ const MonitoringPage = () => {
                 className="date-select__input"
                 name="date-select"
                 type="date"
-                defaultValue={dateFormat}
+                defaultValue={dateFromRef.current}
                 alt="Дата от"
-                onChange={async (evt) => {
+                onChange={async () => {
                   const name = searchTextProductRef.current.value;
+                  const dateFrom = dayjs(dateFromRef.current.value).startOf('day').format('YYYY-MM-DD HH:mm:ss');
+                  const dateTo = dayjs(dateToRef.current.value).endOf('day').format('YYYY-MM-DD HH:mm:ss');
+                  const idFirms = getIdFirmsSelect(firmsForDetalisationStat);
 
                   await dispatch(fetchProductsWithSummaryDetail({
                     idUser: currentUser.id,
                     idParent: currentProduct !== null ? currentProduct.id : null,
                     withStats: 'summary',
-                    dateStart: dayjs(dateFromRef.current.value).startOf('day').format('YYYY-MM-DD'),
-                    dateEnd: dayjs(dateToRef.current.value).endOf('day').format('YYYY-MM-DD')
+                    dateStart: dayjs(dateFromRef.current.value).startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+                    dateEnd: dayjs(dateToRef.current.value).endOf('day').format('YYYY-MM-DD HH:mm:ss')
                   }));
+                  await fetchDataStatDetalisation(dateFrom, dateTo, typeValue, typeValueCalculate, 1, idFirms, false);
               }}
               />
               <span className="date-select__line"></span>
@@ -195,10 +199,13 @@ const MonitoringPage = () => {
                 className="date-select__input"
                 name="date-select"
                 type="date"
-                defaultValue={dateFormat}
+                defaultValue={ dateToRef.current }
                 alt="Дата до"
                 onChange={async (evt) => {
                   const name = searchTextProductRef.current.value;
+                  const dateFrom = dayjs(dateFromRef.current.value).startOf('day').format('YYYY-MM-DD HH:mm:ss');
+                  const dateTo = dayjs(dateToRef.current.value).endOf('day').format('YYYY-MM-DD HH:mm:ss');
+                  const idFirms = getIdFirmsSelect(firmsForDetalisationStat);
 
                   setDate(dateToRef.current.value);
 
@@ -206,9 +213,10 @@ const MonitoringPage = () => {
                     idUser: currentUser.id,
                     idParent: currentProduct !== null ? currentProduct.id : null,
                     withStats: 'summary',
-                    dateStart: dayjs(dateFromRef.current.value).startOf('day').format('YYYY-MM-DD'),
-                    dateEnd: dayjs(dateToRef.current.value).endOf('day').format('YYYY-MM-DD')
+                    dateStart: dayjs(dateFromRef.current.value).startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+                    dateEnd: dayjs(dateToRef.current.value).endOf('day').format('YYYY-MM-DD HH:mm:ss')
                   }));
+                  await fetchDataStatDetalisation(dateFrom, dateTo, typeValue, typeValueCalculate, 1, idFirms, false);
                 }}
               />
             </div>
@@ -260,6 +268,8 @@ const MonitoringPage = () => {
             </div>
 
             <StatDetalisation
+              dateFrom={ dayjs(dateFromRef.current.value).startOf('day').format('YYYY-MM-DD') }
+              dateTo={ dayjs(dateToRef.current.value).endOf('day').format('YYYY-MM-DD') }
               products={ productsWithDetalisationStat }
               firms={ firmsForDetalisationStat }
               typeValue={ typeValue }
@@ -848,6 +858,8 @@ const MonitoringPage = () => {
       {
         isOpenPopupStatDetalisation &&
         <PopupStatDetalisation
+          dateFrom={ dayjs(dateFromRef.current.value).startOf('day').format('YYYY-MM-DD HH:mm:ss') }
+          dateTo={ dayjs(dateToRef.current.value).endOf('day').format('YYYY-MM-DD HH:mm:ss') }
           allFirms={ firms }
           firmsSelect={ firmsForDetalisationStat }
           typeValue={ typeValue }

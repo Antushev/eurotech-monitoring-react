@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import dayjs from 'dayjs';
 import { truncate } from "../../utils/common.js";
 import { Link } from "react-router-dom";
 import { getIdFirmsSelect } from '../../utils/common.js';
@@ -13,6 +14,8 @@ import Preloader from "../preloader/preloader.jsx";
 
 const StatDetalisation = (props) => {
   const {
+    dateFrom,
+    dateTo,
     products,
     firms,
     typeValue,
@@ -37,13 +40,13 @@ const StatDetalisation = (props) => {
             className="goods-stat-detalisation__date label__text"
             htmlFor="date-for-stat"
           >
-            19.05.2025 - 25.05.2025
+            {`${dateFrom} - ${dateTo}`}
           </label>
-          <input
-            id="date-for-stat"
-            className="input visually-hidden"
-            type="date"
-          />
+          {/*<input*/}
+          {/*  id="date-for-stat"*/}
+          {/*  className="input visually-hidden"*/}
+          {/*  type="date"*/}
+          {/*/>*/}
         </div>
 
         <div className="goods-stat-detalisation__settings">
@@ -124,7 +127,7 @@ const StatDetalisation = (props) => {
             setIsLoadNewProduct(true);
             const idFirms = getIdFirmsSelect(firms);
 
-            const newProducts = await fetchProducts(typeValue, typeValueCalculate, page + 1, idFirms, true);
+            const newProducts = await fetchProducts(dateFrom, dateTo, typeValue, typeValueCalculate, page + 1, idFirms, true);
 
             setProducts([...products, ...newProducts]);
             setPage(page + 1);
