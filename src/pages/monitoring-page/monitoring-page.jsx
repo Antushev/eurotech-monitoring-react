@@ -87,7 +87,7 @@ const MonitoringPage = () => {
   const [typeValue, setTypeValue] = useState(defaultSettingsStatDetalisation.typeValue); // price, count
   const [typeValueCalculate, setTypeValueCalculate] = useState(defaultSettingsStatDetalisation.typeValueCalculate); // percent, value
   const [sortStatDetalisation, setSortStatDetalisation] = useState(defaultSettingsStatDetalisation.sort);
-
+  const [pageStatDetalisation, setPageStatDetalisation] = useState(1);
 
 
   useEffect(() => {
@@ -108,16 +108,27 @@ const MonitoringPage = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const fetchDataStatDetalisation = async (typeValueFetch, typeValueCalculateFetch) => {
-    console.log(typeValueFetch, typeValueCalculateFetch);
-    setIsLoadProductWithDetalisationStat(true);
-    const { data } = await api.get(`/stat-detalisation/?dateFrom='2025-05-01'&dateTo='2025-05-28'&sort=${sortStatDetalisation}&typeValue=${typeValueFetch}&typeValueCalculate=${typeValueCalculateFetch}`);
+  const fetchDataStatDetalisation = async (typeValueFetch, typeValueCalculateFetch, page = 1, otherComponent = false) => {
+    if (!otherComponent) {
+      setIsLoadProductWithDetalisationStat(true);
+    }
 
-    setProductsWithDetalisationStat(data);
-    setIsLoadProductWithDetalisationStat(false);
+    const { data } = await api.get(`/stat-detalisation/?dateFrom='2025-05-01'&dateTo='2025-05-28'&sort=${sortStatDetalisation}&typeValue=${typeValueFetch}&typeValueCalculate=${typeValueCalculateFetch}&page=${page}`);
+
+    if (!otherComponent) {
+      setProductsWithDetalisationStat(data);
+      setIsLoadProductWithDetalisationStat(false);
+    }
+
+    if (!data) {
+      return false;
+    }
+
+    return data;
   }
+
   useEffect(() => {
-    fetchDataStatDetalisation(typeValue, typeValueCalculate).catch(() => {
+    fetchDataStatDetalisation(typeValue, typeValueCalculate, pageStatDetalisation, false).catch(() => {
       toast.warning('Не удалось обновить данные, проверьте подключение к Интернету');
     });
   }, []);
@@ -246,8 +257,12 @@ const MonitoringPage = () => {
               products={ productsWithDetalisationStat }
               typeValue={ typeValue }
               typeValueCalculate={ typeValueCalculate }
+              page={ pageStatDetalisation }
               isLoad={ isLoadProductWithDetalisationStat }
+              setProducts={ setProductsWithDetalisationStat }
+              setPage={ setPageStatDetalisation }
               setIsOpenPopup={ setIsOpenPopupStatDetalisation }
+              fetchProducts={ fetchDataStatDetalisation }
             />
           </section>
 
@@ -833,6 +848,7 @@ const MonitoringPage = () => {
           setTypeValue={ setTypeValue }
           setTypeValueCalculate={ setTypeValueCalculate }
           setSortTypeDetalisation={ setSortStatDetalisation }
+          setPage={ setPageStatDetalisation }
           fetchData={ fetchDataStatDetalisation }
         />
       }

@@ -12,6 +12,7 @@ const PopupStatDetalisation = (props) => {
     typeValueCalculate,
     setTypeValue,
     setTypeValueCalculate,
+    setPage,
     setIsOpen,
     fetchData
   } = props;
@@ -145,6 +146,7 @@ const PopupStatDetalisation = (props) => {
             await setTypeValueCalculate(typeValueCalculateInner);
             setLocalStorageStatDetalisationInMonitoringPage(typeValueInner, typeValueCalculateInner, null);
             fetchData(typeValueInner, typeValueCalculateInner);
+            setPage(1);
 
             setIsOpen(false);
           }}

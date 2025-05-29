@@ -242,11 +242,17 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 }
 
 .goods-stat-detalisation__more {
+  width: 100%;
+
   color: #be1622;
 
   text-align: center;
 
   cursor: pointer;
+}
+
+.goods-stat-detalisation__more:disabled {
+  background: none;
 }
 
 .goods-stat-list__item {

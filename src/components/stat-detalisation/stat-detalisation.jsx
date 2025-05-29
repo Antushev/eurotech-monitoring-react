@@ -15,9 +15,15 @@ const StatDetalisation = (props) => {
     products,
     typeValue,
     typeValueCalculate,
+    page,
     isLoad,
-    setIsOpenPopup
+    setProducts,
+    setPage,
+    setIsOpenPopup,
+    fetchProducts
   } = props;
+
+  const [isLoadNewProduct, setIsLoadNewProduct] = useState(false);
 
   return (
     <div className="page-content__detalisation-block goods-stat-detalisation standart-block">
@@ -65,48 +71,71 @@ const StatDetalisation = (props) => {
           :
           <ul className="goods-stat-list goods-stat-detalisation__list">
             {
-              products.map((product) => {
-                return <li className="goods-stat-list__item">
-                  <div className="goods-stat-list__name-block">
-                    <div className="goods-stat-list__name">
-                      <Link className="link-reset" to={`${AppRoute.Monitoring}/${product.idProduct}`}>
-                        { truncate(product.productName, 30) }
-                      </Link>
+              products && products.length > 0 ?
+                products.map((product) => {
+                  return <li className="goods-stat-list__item">
+                    <div className="goods-stat-list__name-block">
+                      <div className="goods-stat-list__name">
+                        <Link className="link-reset" to={`${AppRoute.Monitoring}/${product.idProduct}`}>
+                          { truncate(product.productName, 30) }
+                        </Link>
+                      </div>
+                      <div className="goods-stat-list__firm">
+                        <Link to={`/firm/${product.idFirm}/edit`} className="link-reset">
+                          { product.firmName }
+                        </Link> - { product.parentFolder.name }
+                      </div>
                     </div>
-                    <div className="goods-stat-list__firm">
-                      <Link to={`/firm/${product.idFirm}/edit`} className="link-reset">
-                        { product.firmName }
-                      </Link> - { product.parentFolder.name }
-                    </div>
-                  </div>
 
-                  {
-                    typeValueCalculate === TypeValueCalculateStatDetalisation.PERCENT &&
-                    <div className={`goods-stat-list__stat goods-stat-list__stat--${product.stat.percent > 0 ? 'green' : 'red'}`}>
-                      { product.stat.percent > 0 ? `+${ product.stat.percent }` : product.stat.percent } %
-                    </div>
-                  }
+                    {
+                      typeValueCalculate === TypeValueCalculateStatDetalisation.PERCENT &&
+                      <div className={`goods-stat-list__stat goods-stat-list__stat--${product.stat.percent > 0 ? 'green' : 'red'}`}>
+                        { product.stat.percent > 0 ? `+${ product.stat.percent }` : (product.stat.percent ? product.stat.value : '0') } %
+                      </div>
+                    }
 
-                  {
-                    typeValueCalculate === TypeValueCalculateStatDetalisation.VALUE &&
-                    <div className={`goods-stat-list__stat goods-stat-list__stat--${product.stat.value > 0 ? 'green' : 'red'}`}>
-                      { product.stat.value > 0 ? `+${ product.stat.value }` : product.stat.value }
-                      { typeValue === TypeValueStatDetalisation.PRICE ? ' руб.' : ' шт.'}
-                    </div>
-                  }
+                    {
+                      typeValueCalculate === TypeValueCalculateStatDetalisation.VALUE &&
+                      <div className={`goods-stat-list__stat goods-stat-list__stat--${product.stat.value > 0 ? 'green' : 'red'}`}>
+                        { product.stat.value > 0 ? `+${ product.stat.value }` : (product.stat.value ? product.stat.value : '0')}
+                        { typeValue === TypeValueStatDetalisation.PRICE ? ' руб.' : ' шт.'}
+                      </div>
+                    }
 
-                </li>
-              })
+                  </li>
+                })
+                :
+                'Нет данных для отображения'
             }
           </ul>
       }
 
       {
-        isLoad || products.length <= 10 &&
-        <div className="goods-stat-detalisation__more">Показать больше товаров</div>
+        !isLoad &&
+        <button
+          disabled={ isLoadNewProduct }
+          className="button button--no-background button--text-center goods-stat-detalisation__more"
+          onClick={async () => {
+            setIsLoadNewProduct(true);
+            const newProducts = await fetchProducts(typeValue, typeValueCalculate, page + 1, true);
+
+            setProducts([...products, ...newProducts]);
+            setPage(page + 1);
+            setIsLoadNewProduct(false);
+          }}
+        >
+          {
+            isLoadNewProduct && 'Идёт загрузка...'
+          }
+
+          {
+            !isLoadNewProduct && 'Показать ещё'
+          }
+        </button>
       }
     </div>
   );
 }
 
 export default StatDetalisation;
+
