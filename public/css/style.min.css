@@ -610,12 +610,6 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   border-radius: 10px;
 }
 
-.input--select {
-  padding: 0;
-
-  z-index: 1001;
-}
-
 .input--select-consumers {
   max-width: 100%;
 }
@@ -1075,12 +1069,25 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   margin-bottom: 20px;
 }
 
+.form-block--column {
+  flex-flow: column nowrap;
+  align-items: stretch;
+}
+
+.form-block--space-between {
+  justify-content: space-between;
+}
+
 .input--line {
   margin: 0;
 }
 
 .input--trigger {
   margin-bottom: 0;
+}
+
+.input--margin-bottom {
+  margin-bottom: 5px;
 }
 
 .button--form-line {
@@ -1386,6 +1393,9 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 
 .input--select {
   margin-bottom: 0;
+  padding: 0;
+
+  z-index: 1001;
 }
 
 .notification {

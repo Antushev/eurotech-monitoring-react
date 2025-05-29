@@ -46,28 +46,46 @@ const PopupStatDetalisation = (props) => {
 
         <h2 className="header header--2 header--center header--space-bottom">Параметры блока</h2>
 
-        <label htmlFor="consumers">Выберите конкурентов для расчёта</label>
-        <Select
-          id="consumers"
-          className="input input--select"
-          isClearable
-          cacheOptions
-          isMulti
-          onInputChange
-          closeMenuOnSelect={ false }
-          value={ firmsSelect }
-          options={ getOptionsForFirmsSelect(allFirms) }
-          placeholder="По умолчанию выбраны все фирмы, кроме основной"
-          onChange={(evt) => {
-            const firmsChange = evt.length === 0 ? null : evt;
-            setFirmsSelect(firmsChange);
-            console.log(firmsSelect);
-          }}
-        />
+        <div className="form-block form-block--column">
+          <label className="label input--margin-bottom">
+            <span className="label__text">Выберите конкурентов</span>
+            <Select
+              id="consumers"
+              className="input input--select"
+              isClearable
+              cacheOptions
+              isMulti
+              onInputChange
+              closeMenuOnSelect={ false }
+              value={ firmsSelect }
+              options={ getOptionsForFirmsSelect(allFirms) }
+              placeholder="Выберите фирмы (по умолчанию все фирмы)"
+              onChange={(evt) => {
+                const firmsChange = evt.length === 0 ? null : evt;
+                setFirmsSelect(firmsChange);
+                console.log(firmsSelect);
+              }}
+            />
+          </label>
+          <label className="label">
+            <span className="label__text">Выберите товарные категории</span>
+            <Select
+              id="categories"
+              className="input input--select"
+              isClearable
+              cacheOptions
+              isMulti
+              onInputChange
+              closeMenuOnSelect={ false }
+              placeholder="Выберите категории товаров (по умолчанию все категории)"
+            />
+          </label>
+        </div>
 
-        <div className="form-block form-block--margin-bottom">
+
+        <div className="form-block">
           <div className="form-block__margin-right">
-            <p className="modal__text">
+            <p className="modal__text modal__text--no-margin-top">
               Рассчитываемая величина
             </p>
             <ul className="toggle-data-list">
@@ -93,7 +111,7 @@ const PopupStatDetalisation = (props) => {
           </div>
 
           <div>
-            <p className="modal__text">
+            <p className="modal__text modal__text--no-margin-top">
               Отображаемые значения
             </p>
             <ul className="toggle-data-list">
