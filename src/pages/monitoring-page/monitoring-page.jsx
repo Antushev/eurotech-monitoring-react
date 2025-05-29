@@ -5,6 +5,7 @@ import * as dayjs from 'dayjs';
 import debounce from 'debounce';
 import Highlighter from 'react-highlight-words';
 import { toast } from 'react-toastify';
+import { getIdFirmsSelect } from '../../utils/common.js';
 
 import { getLocalStorageStatDetalisationInMonitoringPage } from '../../services/local-storage.js';
 
@@ -83,6 +84,7 @@ const MonitoringPage = () => {
   // For StatDetalisationComponent
   const defaultSettingsStatDetalisation = getLocalStorageStatDetalisationInMonitoringPage();
   const [productsWithDetalisationStat, setProductsWithDetalisationStat] = useState([]);
+  const [firmsForDetalisationStat, setFirmsForDetalisationStat] = useState(defaultSettingsStatDetalisation.firms);
   const [isLoadProductWithDetalisationStat, setIsLoadProductWithDetalisationStat] = useState(false);
   const [typeValue, setTypeValue] = useState(defaultSettingsStatDetalisation.typeValue); // price, count
   const [typeValueCalculate, setTypeValueCalculate] = useState(defaultSettingsStatDetalisation.typeValueCalculate); // percent, value
@@ -108,12 +110,14 @@ const MonitoringPage = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const fetchDataStatDetalisation = async (typeValueFetch, typeValueCalculateFetch, page = 1, otherComponent = false) => {
+  const fetchDataStatDetalisation = async (typeValueFetch, typeValueCalculateFetch, page = 1, idFirms = null, otherComponent = false) => {
+    console.log(idFirms);
+
     if (!otherComponent) {
       setIsLoadProductWithDetalisationStat(true);
     }
-
-    const { data } = await api.get(`/stat-detalisation/?dateFrom='2025-05-01'&dateTo='2025-05-28'&sort=${sortStatDetalisation}&typeValue=${typeValueFetch}&typeValueCalculate=${typeValueCalculateFetch}&page=${page}`);
+    const url = `/stat-detalisation/?dateFrom='2025-05-01'&dateTo='2025-05-28'&sort=${sortStatDetalisation}&typeValue=${typeValueFetch}&typeValueCalculate=${typeValueCalculateFetch}&page=${page}&idFirms=${idFirms}`
+    const { data } = await api.get(url);
 
     if (!otherComponent) {
       setProductsWithDetalisationStat(data);
@@ -128,7 +132,9 @@ const MonitoringPage = () => {
   }
 
   useEffect(() => {
-    fetchDataStatDetalisation(typeValue, typeValueCalculate, pageStatDetalisation, false).catch(() => {
+    const idFirms = getIdFirmsSelect(firmsForDetalisationStat);
+
+    fetchDataStatDetalisation(typeValue, typeValueCalculate, pageStatDetalisation, idFirms, false).catch(() => {
       toast.warning('Не удалось обновить данные, проверьте подключение к Интернету');
     });
   }, []);
@@ -238,7 +244,7 @@ const MonitoringPage = () => {
                 </li>
 
                 <li className="goods-common-stat__item standart-block">
-                  <h3 className="header header--3">Наличие</h3>
+                  <h3 className="header header--3">Остатки</h3>
                 </li>
 
                 <li className="goods-common-stat__item standart-block">
@@ -255,6 +261,7 @@ const MonitoringPage = () => {
 
             <StatDetalisation
               products={ productsWithDetalisationStat }
+              firms={ firmsForDetalisationStat }
               typeValue={ typeValue }
               typeValueCalculate={ typeValueCalculate }
               page={ pageStatDetalisation }
@@ -841,14 +848,17 @@ const MonitoringPage = () => {
       {
         isOpenPopupStatDetalisation &&
         <PopupStatDetalisation
-          setIsOpen={ setIsOpenPopupStatDetalisation }
+          allFirms={ firms }
+          firmsSelect={ firmsForDetalisationStat }
           typeValue={ typeValue }
           typeValueCalculate={ typeValueCalculate }
           sortType={ sortStatDetalisation }
+          setFirmsSelect={ setFirmsForDetalisationStat }
           setTypeValue={ setTypeValue }
           setTypeValueCalculate={ setTypeValueCalculate }
           setSortTypeDetalisation={ setSortStatDetalisation }
           setPage={ setPageStatDetalisation }
+          setIsOpen={ setIsOpenPopupStatDetalisation }
           fetchData={ fetchDataStatDetalisation }
         />
       }

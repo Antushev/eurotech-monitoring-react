@@ -51,8 +51,6 @@ const App = () => {
     localStorage.setItem(LocalStorageKey.PERIOD, Period.DAY)
   }
 
-  setLocalStorageStatDetalisationInMonitoringPage();
-
   const period = localStorage.getItem(LocalStorageKey.PERIOD);
   dispatch(setPeriod(period));
   const typeShowValue = localStorage.getItem(LocalStorageKey.TYPE_SHOW_VALUE);

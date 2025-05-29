@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
-import AsyncSelect  from 'react-select';
+import Select  from 'react-select';
 import {
   TypeValueStatDetalisation,
   TypeValueCalculateStatDetalisation
 } from '../../const.js';
+import { getIdFirmsSelect } from '../../utils/common.js';
+
 import { setLocalStorageStatDetalisationInMonitoringPage } from '../../services/local-storage.js';
 
 const PopupStatDetalisation = (props) => {
   const {
+    firmsSelect,
+    allFirms,
     typeValue,
     typeValueCalculate,
+    setFirmsSelect,
     setTypeValue,
     setTypeValueCalculate,
     setPage,
@@ -40,12 +45,22 @@ const PopupStatDetalisation = (props) => {
         <h2 className="header header--2 header--center header--space-bottom">Параметры блока</h2>
 
         <label htmlFor="consumers">Выберите конкурентов для расчёта</label>
-        <AsyncSelect
+        <Select
           id="consumers"
           className="input input--select"
           isClearable
           cacheOptions
+          isMulti
+          onInputChange
+          closeMenuOnSelect={ false }
+          value={ firmsSelect }
+          options={ getOptionsForFirmsSelect(allFirms) }
           placeholder="По умолчанию выбраны все фирмы, кроме основной"
+          onChange={(evt) => {
+            const firmsChange = evt.length === 0 ? null : evt;
+            setFirmsSelect(firmsChange);
+            console.log(firmsSelect);
+          }}
         />
 
         <div className="form-block form-block--margin-bottom">
@@ -80,14 +95,6 @@ const PopupStatDetalisation = (props) => {
               Отображаемые значения
             </p>
             <ul className="toggle-data-list">
-              <li className={`toggle-data-list__item
-               ${typeValueCalculateInner === TypeValueCalculateStatDetalisation.PERCENT ? 'toggle-data-list__item--active' : ''}`}
-                onClick={() => {
-                  setTypeValueCalculateInner(TypeValueCalculateStatDetalisation.PERCENT);
-                }}
-              >
-                %
-              </li>
               <li
                 className={`toggle-data-list__item
                 ${typeValueCalculateInner === TypeValueCalculateStatDetalisation.VALUE ? 'toggle-data-list__item--active' : ''}`}
@@ -96,6 +103,15 @@ const PopupStatDetalisation = (props) => {
                 }}
               >
                 руб./шт.
+              </li>
+
+              <li className={`toggle-data-list__item
+               ${typeValueCalculateInner === TypeValueCalculateStatDetalisation.PERCENT ? 'toggle-data-list__item--active' : ''}`}
+                onClick={() => {
+                  setTypeValueCalculateInner(TypeValueCalculateStatDetalisation.PERCENT);
+                }}
+              >
+                %
               </li>
             </ul>
           </div>
@@ -144,8 +160,9 @@ const PopupStatDetalisation = (props) => {
           onClick={async () => {
             setTypeValue(typeValueInner);
             setTypeValueCalculate(typeValueCalculateInner);
-            setLocalStorageStatDetalisationInMonitoringPage(typeValueInner, typeValueCalculateInner, null);
-            fetchData(typeValueInner, typeValueCalculateInner, 1, false);
+            setLocalStorageStatDetalisationInMonitoringPage(typeValueInner, typeValueCalculateInner, null, firmsSelect);
+            const idFirmsSelect = getIdFirmsSelect(firmsSelect);
+            fetchData(typeValueInner, typeValueCalculateInner, 1, idFirmsSelect, false);
             setPage(1);
 
             setIsOpen(false);
@@ -156,6 +173,19 @@ const PopupStatDetalisation = (props) => {
       </div>
     </>
   );
+}
+
+const getOptionsForFirmsSelect = (firms) => {
+  if (!firms) {
+    return [];
+  }
+
+  return firms.map((firm) => {
+    return {
+      label: firm.name,
+      value: firm.id
+    }
+  })
 }
 
 export default PopupStatDetalisation;

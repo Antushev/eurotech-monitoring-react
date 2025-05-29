@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { truncate } from "../../utils/common.js";
 import { Link } from "react-router-dom";
+import { getIdFirmsSelect } from '../../utils/common.js';
 
 import {
   AppRoute,
@@ -13,6 +14,7 @@ import Preloader from "../preloader/preloader.jsx";
 const StatDetalisation = (props) => {
   const {
     products,
+    firms,
     typeValue,
     typeValueCalculate,
     page,
@@ -29,7 +31,7 @@ const StatDetalisation = (props) => {
     <div className="page-content__detalisation-block goods-stat-detalisation standart-block">
       <div className="goods-stat-detalisation__header">
         <div className="goods-stat-detalisation__header-block">
-          <h2 className="header header--2">Динамика изменения цен</h2>
+          <h2 className="header header--2">Динамика</h2>
 
           <label
             className="goods-stat-detalisation__date label__text"
@@ -61,13 +63,16 @@ const StatDetalisation = (props) => {
       </div>
 
       <ul className="detalisation-list goods-stat-detalisation__change-goods">
-        <li className="detalisation-list__item detalisation-list__item--active">Все товары</li>
-        <li className="detalisation-list__item">Избранные товары</li>
+        <li className="detalisation-list__item detalisation-list__item--active">все товары</li>
+        <li className="detalisation-list__item">избранные товары</li>
       </ul>
 
       {
         isLoad ?
-          <Preloader width={25} height={25} color="#000000"/>
+          <>
+            <Preloader width={25} height={25} color="#000000"/>
+          </>
+
           :
           <ul className="goods-stat-list goods-stat-detalisation__list">
             {
@@ -111,13 +116,15 @@ const StatDetalisation = (props) => {
       }
 
       {
-        !isLoad &&
+        (products.length >= 10) &&
         <button
           disabled={ isLoadNewProduct }
           className="button button--no-background button--text-center goods-stat-detalisation__more"
           onClick={async () => {
             setIsLoadNewProduct(true);
-            const newProducts = await fetchProducts(typeValue, typeValueCalculate, page + 1, true);
+            const idFirms = getIdFirmsSelect(firms);
+
+            const newProducts = await fetchProducts(typeValue, typeValueCalculate, page + 1, idFirms, true);
 
             setProducts([...products, ...newProducts]);
             setPage(page + 1);
