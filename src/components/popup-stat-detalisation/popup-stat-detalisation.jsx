@@ -142,10 +142,10 @@ const PopupStatDetalisation = (props) => {
           className="button button--text-center"
           type="button"
           onClick={async () => {
-            await setTypeValue(typeValueInner);
-            await setTypeValueCalculate(typeValueCalculateInner);
+            setTypeValue(typeValueInner);
+            setTypeValueCalculate(typeValueCalculateInner);
             setLocalStorageStatDetalisationInMonitoringPage(typeValueInner, typeValueCalculateInner, null);
-            fetchData(typeValueInner, typeValueCalculateInner);
+            fetchData(typeValueInner, typeValueCalculateInner, 1, false);
             setPage(1);
 
             setIsOpen(false);

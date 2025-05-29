@@ -90,7 +90,7 @@ const StatDetalisation = (props) => {
                     {
                       typeValueCalculate === TypeValueCalculateStatDetalisation.PERCENT &&
                       <div className={`goods-stat-list__stat goods-stat-list__stat--${product.stat.percent > 0 ? 'green' : 'red'}`}>
-                        { product.stat.percent > 0 ? `+${ product.stat.percent }` : (product.stat.percent ? product.stat.value : '0') } %
+                        { product.stat.percent > 0 ? `+${ product.stat.percent }` : (product.stat.percent ? product.stat.percent : '0') } %
                       </div>
                     }
 
