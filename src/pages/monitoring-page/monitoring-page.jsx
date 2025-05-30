@@ -5,6 +5,7 @@ import * as dayjs from 'dayjs';
 import debounce from 'debounce';
 import Highlighter from 'react-highlight-words';
 import { toast } from 'react-toastify';
+
 import { getIdFirmsSelect } from '../../utils/common.js';
 
 import { getLocalStorageStatDetalisationInMonitoringPage } from '../../services/local-storage.js';
@@ -76,8 +77,6 @@ const MonitoringPage = () => {
   const isLoadProducts = useSelector(getStatusLoadProducts);
 
   const searchTextProductRef = useRef(null);
-  const dateFromRef = useRef(dayjs().subtract(7, 'day').format('YYYY-MM-DD'));
-  const dateToRef = useRef(dayjs().format('YYYY-MM-DD'));
 
   // For StatDetalisationComponent
   const defaultSettingsStatDetalisation = getLocalStorageStatDetalisationInMonitoringPage();
@@ -88,6 +87,8 @@ const MonitoringPage = () => {
   const [typeValueCalculate, setTypeValueCalculate] = useState(defaultSettingsStatDetalisation.typeValueCalculate); // percent, value
   const [sortStatDetalisation, setSortStatDetalisation] = useState(defaultSettingsStatDetalisation.sort);
   const [pageStatDetalisation, setPageStatDetalisation] = useState(1);
+  const [dateFromStatDetalisation, setDateFromStatDetalisation] = useState(dayjs().subtract(7, 'day').startOf('day'));
+  const [dateToStatDetalisation, setDateToStatDetalisation] = useState(dayjs().endOf('day'));
 
 
   useEffect(() => {
@@ -113,7 +114,10 @@ const MonitoringPage = () => {
       setIsLoadProductWithDetalisationStat(true);
     }
 
-    const url = `/stat-detalisation/?dateFrom=${dateFrom}&dateTo=${dateTo}&sort=${sortStatDetalisation}&typeValue=${typeValueFetch}&typeValueCalculate=${typeValueCalculateFetch}&page=${page}&idFirms=${idFirms}`
+    const dateToFormat = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    const dateFromFormat = dayjs().format('YYYY-MM-DD HH:mm:ss');
+
+    const url = `/stat-detalisation/?dateFrom=${dateFromFormat}&dateTo=${dateToFormat}&sort=${sortStatDetalisation}&typeValue=${typeValueFetch}&typeValueCalculate=${typeValueCalculateFetch}&page=${page}&idFirms=${idFirms}`
     const { data } = await api.get(url);
 
     if (!otherComponent) {
@@ -131,10 +135,7 @@ const MonitoringPage = () => {
   useEffect(() => {
     const idFirms = getIdFirmsSelect(firmsForDetalisationStat);
 
-    const dateFrom = dayjs(dateFromRef.current.value).subtract(7, 'day').startOf('day').format('YYYY-MM-DD HH:mm:ss');
-    const dateTo = dayjs(dateToRef.current.value).endOf('day').format('YYYY-MM-DD HH:mm:ss');
-
-    fetchDataStatDetalisation(dateFrom, dateTo, typeValue, typeValueCalculate, pageStatDetalisation, idFirms, false).catch(() => {
+    fetchDataStatDetalisation(dateFromStatDetalisation, dateToStatDetalisation, typeValue, typeValueCalculate, pageStatDetalisation, idFirms, false).catch(() => {
       toast.warning('Не удалось обновить данные, проверьте подключение к Интернету');
     });
   }, []);
@@ -144,7 +145,7 @@ const MonitoringPage = () => {
   const mainFirm = getMainFirm(firms);
   const products = useSelector(getAllProducts);
 
-  const [date, setDate] = useState(dateToRef.current.value);
+  const [dateProductsTable, setDateProductsTable] = useState(dayjs());
   const [isOpenPopupAddGroup, setIsOpenPopupAddGroup] = useState(false);
   const [isOpenPopupAddProduct, setIsOpenPopupAddProduct] = useState(false);
   const [isOpenPopupEditProduct, setIsOpenPopupEditProduct] = useState(false);
@@ -169,58 +170,6 @@ const MonitoringPage = () => {
           <h1 className="header header--1">Мониторинг</h1>
 
           <div className="page-content__header-block">
-            <div className="date-select date-select--margin-right">
-             <input
-                ref={dateFromRef}
-                className="date-select__input"
-                name="date-select"
-                type="date"
-                defaultValue={dateFromRef.current}
-                alt="Дата от"
-                onChange={async () => {
-                  const name = searchTextProductRef.current.value;
-                  const dateFrom = dayjs(dateFromRef.current.value).startOf('day').format('YYYY-MM-DD HH:mm:ss');
-                  const dateTo = dayjs(dateToRef.current.value).endOf('day').format('YYYY-MM-DD HH:mm:ss');
-                  const idFirms = getIdFirmsSelect(firmsForDetalisationStat);
-
-                  await dispatch(fetchProductsWithSummaryDetail({
-                    idUser: currentUser.id,
-                    idParent: currentProduct !== null ? currentProduct.id : null,
-                    withStats: 'summary',
-                    dateStart: dayjs(dateFromRef.current.value).startOf('day').format('YYYY-MM-DD HH:mm:ss'),
-                    dateEnd: dayjs(dateToRef.current.value).endOf('day').format('YYYY-MM-DD HH:mm:ss')
-                  }));
-                  await fetchDataStatDetalisation(dateFrom, dateTo, typeValue, typeValueCalculate, 1, idFirms, false);
-              }}
-              />
-              <span className="date-select__line"></span>
-              <input
-                ref={dateToRef}
-                className="date-select__input"
-                name="date-select"
-                type="date"
-                defaultValue={ dateToRef.current }
-                alt="Дата до"
-                onChange={async (evt) => {
-                  const name = searchTextProductRef.current.value;
-                  const dateFrom = dayjs(dateFromRef.current.value).startOf('day').format('YYYY-MM-DD HH:mm:ss');
-                  const dateTo = dayjs(dateToRef.current.value).endOf('day').format('YYYY-MM-DD HH:mm:ss');
-                  const idFirms = getIdFirmsSelect(firmsForDetalisationStat);
-
-                  setDate(dateToRef.current.value);
-
-                  await dispatch(fetchProductsWithSummaryDetail({
-                    idUser: currentUser.id,
-                    idParent: currentProduct !== null ? currentProduct.id : null,
-                    withStats: 'summary',
-                    dateStart: dayjs(dateFromRef.current.value).startOf('day').format('YYYY-MM-DD HH:mm:ss'),
-                    dateEnd: dayjs(dateToRef.current.value).endOf('day').format('YYYY-MM-DD HH:mm:ss')
-                  }));
-                  await fetchDataStatDetalisation(dateFrom, dateTo, typeValue, typeValueCalculate, 1, idFirms, false);
-                }}
-              />
-            </div>
-
             <div className="notifications icon-block">
               <svg
                 className={`icon ${isShowNotifications ? 'icon--active' : ''}`}
@@ -268,8 +217,8 @@ const MonitoringPage = () => {
             </div>
 
             <StatDetalisation
-              dateFrom={ dayjs(dateFromRef.current.value).startOf('day').format('YYYY-MM-DD') }
-              dateTo={ dayjs(dateToRef.current.value).endOf('day').format('YYYY-MM-DD') }
+              dateFrom={ dateFromStatDetalisation }
+              dateTo={ dateToStatDetalisation }
               products={ productsWithDetalisationStat }
               firms={ firmsForDetalisationStat }
               typeValue={ typeValue }
@@ -287,7 +236,7 @@ const MonitoringPage = () => {
             <div className="goods-block__header">
               <div className="goods-block__header-block">
                 <h2 className="header header--2">
-                  Таблица {typeShowValue === TypeShowValue.PRICE ? 'цен' : 'остатков'} на {dayjs(date).format('DD.MM.YYYY')}
+                  Таблица {typeShowValue === TypeShowValue.PRICE ? 'цен' : 'остатков'} на {dayjs(dateProductsTable).format('DD.MM.YYYY')}
                 </h2>
 
                 <ul className="detalisation-list">
@@ -334,7 +283,7 @@ const MonitoringPage = () => {
                       Добавить товар
                     </button>
                   </li>
-                  <li className="buttons-list">
+                  <li className="buttons-list__item">
                     <div className="search">
                       <input
                         disabled={isLoadSearch}
@@ -352,8 +301,8 @@ const MonitoringPage = () => {
                             idParent: typeSearch === TypeSearch.GROUP ? (currentProduct ? currentProduct.id : null) : (name !== '' ? false : currentProduct.id),
                             withStats: 'summary',
                             name: name && name !== '' ? name : null,
-                            dateStart: dayjs(date).startOf('day'),
-                            dateEnd: dayjs(date).endOf('day')
+                            dateStart: dayjs(dateProductsTable).startOf('day'),
+                            dateEnd: dayjs(dateProductsTable).endOf('day')
                           }));
 
                           setIsLoadSearch(false);
@@ -406,8 +355,8 @@ const MonitoringPage = () => {
                               idParent: currentProduct ? currentProduct.id : null,
                               withStats: 'summary',
                               name: name && name !== '' ? name : null,
-                              dateStart: dayjs(date).startOf('day'),
-                              dateEnd: dayjs(date).endOf('day')
+                              dateStart: dayjs(dateProductsTable).startOf('day'),
+                              dateEnd: dayjs(dateProductsTable).endOf('day')
                             }));
 
                             setIsLoadSearch(false);
@@ -429,8 +378,8 @@ const MonitoringPage = () => {
                               idParent: name ? (name !== '' ? false : null) : (currentProduct ? currentProduct.id : null),
                               withStats: 'summary',
                               name: name && name !== '' ? name : null,
-                              dateStart: dayjs(date).startOf('day'),
-                              dateEnd: dayjs(date).endOf('day')
+                              dateStart: dayjs(dateProductsTable).startOf('day'),
+                              dateEnd: dayjs(dateProductsTable).endOf('day')
                             }));
 
                             setIsLoadSearch(false);
@@ -440,6 +389,31 @@ const MonitoringPage = () => {
                         </li>
                       </ul>
 
+                    </div>
+                  </li>
+
+                  <li className="buttons-list__item">
+                    <div className="date-select date-select--margin-right">
+                      <input
+                        className="date-select__input"
+                        name="date-select"
+                        type="date"
+                        defaultValue={ dayjs(dateProductsTable).format('YYYY-MM-DD') }
+                        alt="Дата до"
+                        onChange={async (evt) => {
+                          const name = searchTextProductRef.current.value;
+
+                          setDateProductsTable(evt.target.value);
+
+                          await dispatch(fetchProductsWithSummaryDetail({
+                            idUser: currentUser.id,
+                            idParent: currentProduct !== null ? currentProduct.id : null,
+                            withStats: 'summary',
+                            dateStart: dayjs(dateProductsTable).startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+                            dateEnd: dayjs(dateProductsTable).endOf('day').format('YYYY-MM-DD HH:mm:ss'),
+                          }));
+                        }}
+                      />
                     </div>
                   </li>
                 </ul>
@@ -458,7 +432,7 @@ const MonitoringPage = () => {
                             <svg className="goods-table__th-icon" width="15" height="14" viewBox="0 0 15 14">
                               <path d="M6.69533 0.487005L4.86449 4.10687L0.768236 4.68922C0.0336581 4.79311 -0.260734 5.67621 0.271975 6.182L3.23552 8.99806L2.53459 12.9761C2.40842 13.6951 3.18505 14.2337 3.83552 13.8975L7.5 12.0192L11.1645 13.8975C11.8149 14.231 12.5916 13.6951 12.4654 12.9761L11.7645 8.99806L14.728 6.182C15.2607 5.67621 14.9663 4.79311 14.2318 4.68922L10.1355 4.10687L8.30467 0.487005C7.97664 -0.158228 7.02617 -0.16643 6.69533 0.487005Z" fill="#ffffff"/>
                             </svg>
-                            {firm.name}
+                            {firm.name}w
                           </th>
                         }
 
@@ -487,8 +461,8 @@ const MonitoringPage = () => {
                           idParent: currentProduct.idParent,
                           withStats: 'summary',
                           name: name && name !== '' ? name : null,
-                          dateStart: dayjs(date).startOf('day'),
-                          dateEnd: dayjs(date).endOf('day')
+                          dateStart: dayjs(dateProductsTable).startOf('day'),
+                          dateEnd: dayjs(dateProductsTable).endOf('day')
                         }));
 
                         setIdLoadGroup(null);
@@ -552,8 +526,8 @@ const MonitoringPage = () => {
                               idParent: product.id,
                               name: name && name !== '' ? name : null,
                               withStats: 'summary',
-                              dateStart: dayjs(date).startOf('day'),
-                              dateEnd: dayjs(date).endOf('day')
+                              dateStart: dayjs(dateProductsTable).startOf('day'),
+                              dateEnd: dayjs(dateProductsTable).endOf('day')
                             }));
 
                             await dispatch(setCurrentProduct(product));

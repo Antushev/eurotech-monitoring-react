@@ -28,6 +28,9 @@ const StatDetalisation = (props) => {
     fetchProducts
   } = props;
 
+  const dateFromFormat = dayjs(dateFrom).format('DD.MM.YYYY');
+  const dateToFormat = dayjs(dateTo).format('DD.MM.YYYY');
+
   const [isLoadNewProduct, setIsLoadNewProduct] = useState(false);
 
   return (
@@ -40,7 +43,7 @@ const StatDetalisation = (props) => {
             className="goods-stat-detalisation__date label__text"
             htmlFor="date-for-stat"
           >
-            {`${dateFrom} - ${dateTo}`}
+            {`${ dateFromFormat } - ${ dateToFormat }`}
           </label>
           {/*<input*/}
           {/*  id="date-for-stat"*/}
