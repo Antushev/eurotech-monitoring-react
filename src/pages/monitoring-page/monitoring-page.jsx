@@ -87,8 +87,8 @@ const MonitoringPage = () => {
   const [typeValueCalculate, setTypeValueCalculate] = useState(defaultSettingsStatDetalisation.typeValueCalculate); // percent, value
   const [sortStatDetalisation, setSortStatDetalisation] = useState(defaultSettingsStatDetalisation.sort);
   const [pageStatDetalisation, setPageStatDetalisation] = useState(1);
-  const [dateFromStatDetalisation, setDateFromStatDetalisation] = useState(dayjs().subtract(7, 'day').startOf('day'));
-  const [dateToStatDetalisation, setDateToStatDetalisation] = useState(dayjs().endOf('day'));
+  const [dateFromStatDetalisation, setDateFromStatDetalisation] = useState(dayjs().subtract(7, 'day'));
+  const [dateToStatDetalisation, setDateToStatDetalisation] = useState(dayjs());
 
 
   useEffect(() => {
@@ -114,8 +114,8 @@ const MonitoringPage = () => {
       setIsLoadProductWithDetalisationStat(true);
     }
 
-    const dateToFormat = dayjs().format('YYYY-MM-DD HH:mm:ss');
-    const dateFromFormat = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    const dateFromFormat = dayjs(dateFrom).startOf('day').format('YYYY-MM-DD HH:mm:ss');
+    const dateToFormat = dayjs(dateTo).endOf('day').format('YYYY-MM-DD HH:mm:ss');
 
     const url = `/stat-detalisation/?dateFrom=${dateFromFormat}&dateTo=${dateToFormat}&sort=${sortStatDetalisation}&typeValue=${typeValueFetch}&typeValueCalculate=${typeValueCalculateFetch}&page=${page}&idFirms=${idFirms}`
     const { data } = await api.get(url);
