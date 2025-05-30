@@ -832,8 +832,8 @@ const MonitoringPage = () => {
       {
         isOpenPopupStatDetalisation &&
         <PopupStatDetalisation
-          dateFrom={ dayjs(dateFromRef.current.value).startOf('day').format('YYYY-MM-DD HH:mm:ss') }
-          dateTo={ dayjs(dateToRef.current.value).endOf('day').format('YYYY-MM-DD HH:mm:ss') }
+          dateFrom={ dateFromStatDetalisation }
+          dateTo={ dateToStatDetalisation }
           allFirms={ firms }
           firmsSelect={ firmsForDetalisationStat }
           typeValue={ typeValue }
