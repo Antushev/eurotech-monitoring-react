@@ -87,7 +87,7 @@ const MonitoringPage = () => {
   const [typeValueCalculate, setTypeValueCalculate] = useState(defaultSettingsStatDetalisation.typeValueCalculate); // percent, value
   const [sortStatDetalisation, setSortStatDetalisation] = useState(defaultSettingsStatDetalisation.sort);
   const [pageStatDetalisation, setPageStatDetalisation] = useState(1);
-  const [dateFromStatDetalisation, setDateFromStatDetalisation] = useState(dayjs().subtract(7, 'day'));
+  const [dateFromStatDetalisation, setDateFromStatDetalisation] = useState(dayjs().subtract(1, 'month'));
   const [dateToStatDetalisation, setDateToStatDetalisation] = useState(dayjs());
 
 
@@ -111,6 +111,7 @@ const MonitoringPage = () => {
 
   const fetchDataStatDetalisation = async (dateFrom, dateTo, typeValueFetch, typeValueCalculateFetch, sort, page = 1, idFirms = null, otherComponent = false) => {
     if (!otherComponent) {
+      setProductsWithDetalisationStat([]);
       setIsLoadProductWithDetalisationStat(true);
     }
 

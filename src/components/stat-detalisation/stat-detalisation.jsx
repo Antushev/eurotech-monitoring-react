@@ -80,7 +80,8 @@ const StatDetalisation = (props) => {
               onClick={async () => {
                 if (!isLoad) {
                   setSort(SortType.ASC);
-                  await fetchProducts(dateFrom, dateTo, typeValue, typeValueCalculate, SortType.ASC, page, idFirms, false);
+                  setPage(1);
+                  await fetchProducts(dateFrom, dateTo, typeValue, typeValueCalculate, SortType.ASC, 1, idFirms, false);
                 }
               }}
             >
@@ -98,7 +99,8 @@ const StatDetalisation = (props) => {
               onClick={async () => {
                 if (!isLoad) {
                   setSort(SortType.DESC);
-                  await fetchProducts(dateFrom, dateTo, typeValue, typeValueCalculate, SortType.DESC, page, idFirms, false);
+                  setPage(1);
+                  await fetchProducts(dateFrom, dateTo, typeValue, typeValueCalculate, SortType.DESC, 1, idFirms, false);
                 }
               }}
             >
