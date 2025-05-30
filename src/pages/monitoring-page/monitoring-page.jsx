@@ -12,6 +12,8 @@ import { getLocalStorageStatDetalisationInMonitoringPage } from '../../services/
 
 import { api } from '../../store/index.js';
 
+import Calendar from '../../components/calendar/calendar.jsx';
+
 import {
   AppRoute,
   TypeShowValue,
@@ -87,8 +89,12 @@ const MonitoringPage = () => {
   const [typeValueCalculate, setTypeValueCalculate] = useState(defaultSettingsStatDetalisation.typeValueCalculate); // percent, value
   const [sortStatDetalisation, setSortStatDetalisation] = useState(defaultSettingsStatDetalisation.sort);
   const [pageStatDetalisation, setPageStatDetalisation] = useState(1);
-  const [dateFromStatDetalisation, setDateFromStatDetalisation] = useState(dayjs().subtract(1, 'month'));
-  const [dateToStatDetalisation, setDateToStatDetalisation] = useState(dayjs());
+  const [dateForStatDetalisation, setDateForStatDetalisation] = useState({
+    from: dayjs().subtract(1, 'month'),
+    to: dayjs()
+  });
+
+  console.log(dateForStatDetalisation);
 
 
   useEffect(() => {
@@ -136,7 +142,7 @@ const MonitoringPage = () => {
   useEffect(() => {
     const idFirms = getIdFirmsSelect(firmsForDetalisationStat);
 
-    fetchDataStatDetalisation(dateFromStatDetalisation, dateToStatDetalisation, typeValue, typeValueCalculate, sortStatDetalisation, pageStatDetalisation, idFirms, false).catch(() => {
+    fetchDataStatDetalisation(dateForStatDetalisation.from, dateForStatDetalisation.to, typeValue, typeValueCalculate, sortStatDetalisation, pageStatDetalisation, idFirms, false).catch(() => {
       toast.warning('Не удалось обновить данные, проверьте подключение к Интернету');
     });
   }, []);
@@ -218,8 +224,7 @@ const MonitoringPage = () => {
             </div>
 
             <StatDetalisation
-              dateFrom={ dateFromStatDetalisation }
-              dateTo={ dateToStatDetalisation }
+              date={ dateForStatDetalisation }
               products={ productsWithDetalisationStat }
               firms={ firmsForDetalisationStat }
               typeValue={ typeValue }
@@ -229,6 +234,7 @@ const MonitoringPage = () => {
               isLoad={ isLoadProductWithDetalisationStat }
               setProducts={ setProductsWithDetalisationStat }
               setSort={ setSortStatDetalisation }
+              setDate={ setDateForStatDetalisation }
               setPage={ setPageStatDetalisation }
               setIsOpenPopup={ setIsOpenPopupStatDetalisation }
               fetchProducts={ fetchDataStatDetalisation }
@@ -835,8 +841,7 @@ const MonitoringPage = () => {
       {
         isOpenPopupStatDetalisation &&
         <PopupStatDetalisation
-          dateFrom={ dateFromStatDetalisation }
-          dateTo={ dateToStatDetalisation }
+          date={ dateForStatDetalisation }
           allFirms={ firms }
           firmsSelect={ firmsForDetalisationStat }
           typeValue={ typeValue }

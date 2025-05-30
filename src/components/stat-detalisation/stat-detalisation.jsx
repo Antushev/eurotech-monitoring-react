@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import dayjs from 'dayjs';
+import debounce from 'debounce';
 import { truncate } from "../../utils/common.js";
 import { Link } from "react-router-dom";
 import { SortType } from '../../const.js';
@@ -11,12 +12,12 @@ import {
   TypeValueCalculateStatDetalisation
 } from "../../const.js";
 
+import Calendar from '../calendar/calendar.jsx';
 import Preloader from "../preloader/preloader.jsx";
 
 const StatDetalisation = (props) => {
   const {
-    dateFrom,
-    dateTo,
+    date,
     products,
     firms,
     typeValue,
@@ -26,16 +27,23 @@ const StatDetalisation = (props) => {
     isLoad,
     setProducts,
     setSort,
+    setDate,
     setPage,
     setIsOpenPopup,
     fetchProducts
   } = props;
 
-  const dateFromFormat = dayjs(dateFrom).format('DD.MM.YYYY');
-  const dateToFormat = dayjs(dateTo).format('DD.MM.YYYY');
+  const dateFromFormat = dayjs(date.from).format('DD.MM.YYYY');
+  const dateToFormat = dayjs(date.to).format('DD.MM.YYYY');
   const idFirms = getIdFirmsSelect(firms);
 
   const [isLoadNewProduct, setIsLoadNewProduct] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
+
+  const handleChangeDateCalendar = async (evt) => {
+    setDate(evt);
+    await fetchProducts(evt.from, evt.to, typeValue, typeValueCalculate, sort, 1, idFirms, false);
+  }
 
   return (
     <div className="page-content__detalisation-block goods-stat-detalisation standart-block">
@@ -46,6 +54,9 @@ const StatDetalisation = (props) => {
           <label
             className="goods-stat-detalisation__date label__text"
             htmlFor="date-for-stat"
+            onClick={() => {
+              setShowCalendar(!showCalendar);
+            }}
           >
             {`${ dateFromFormat } - ${ dateToFormat }`}
           </label>
@@ -54,6 +65,17 @@ const StatDetalisation = (props) => {
           {/*  className="input visually-hidden"*/}
           {/*  type="date"*/}
           {/*/>*/}
+
+          {
+            showCalendar &&
+            <div className="calendar goods-stat-detalisation__calendar">
+              <Calendar
+                date={date}
+                setDate={ handleChangeDateCalendar }
+                mode="range"
+              />
+            </div>
+          }
         </div>
 
         <div className="goods-stat-detalisation__settings">
@@ -81,7 +103,7 @@ const StatDetalisation = (props) => {
                 if (!isLoad) {
                   setSort(SortType.ASC);
                   setPage(1);
-                  await fetchProducts(dateFrom, dateTo, typeValue, typeValueCalculate, SortType.ASC, 1, idFirms, false);
+                  await fetchProducts(date.from, date.to, typeValue, typeValueCalculate, SortType.ASC, 1, idFirms, false);
                 }
               }}
             >
@@ -100,7 +122,7 @@ const StatDetalisation = (props) => {
                 if (!isLoad) {
                   setSort(SortType.DESC);
                   setPage(1);
-                  await fetchProducts(dateFrom, dateTo, typeValue, typeValueCalculate, SortType.DESC, 1, idFirms, false);
+                  await fetchProducts(date.from, date.to, typeValue, typeValueCalculate, SortType.DESC, 1, idFirms, false);
                 }
               }}
             >
@@ -174,7 +196,7 @@ const StatDetalisation = (props) => {
             setIsLoadNewProduct(true);
             const idFirms = getIdFirmsSelect(firms);
 
-            const newProducts = await fetchProducts(dateFrom, dateTo, typeValue, typeValueCalculate, sort, page + 1, idFirms, true);
+            const newProducts = await fetchProducts(date.from, date.to, typeValue, typeValueCalculate, sort, page + 1, idFirms, true);
 
             setProducts([...products, ...newProducts]);
             setPage(page + 1);

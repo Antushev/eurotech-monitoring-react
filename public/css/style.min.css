@@ -205,12 +205,16 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 }
 
 .goods-stat-detalisation__header {
+  position: relative;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .goods-stat-detalisation__date {
+  position: relative;
+
   font-size: 14px;
 
   color: #be1622;
@@ -228,6 +232,19 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 
 .goods-stat-detalisation__change-goods {
   margin-bottom: 10px !important;
+}
+
+.goods-stat-detalisation__calendar {
+  z-index: 1000;
+  position: absolute;
+
+  padding: 10px;
+
+  background: #ffffff;
+
+  border-radius: 10px;
+
+  border: 1px solid #d9d9d9;
 }
 
 .goods-stat-list {
@@ -1885,6 +1902,11 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 .info-list__link-text {
   margin-right: 3px;
 }
+
+.product-monitor__toggle-data-list {
+  margin-right: 15px;
+}
+
 
 @keyframes rotation {
   0% {
