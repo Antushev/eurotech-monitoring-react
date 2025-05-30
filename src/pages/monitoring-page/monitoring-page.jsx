@@ -109,7 +109,7 @@ const MonitoringPage = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const fetchDataStatDetalisation = async (dateFrom, dateTo, typeValueFetch, typeValueCalculateFetch, page = 1, idFirms = null, otherComponent = false) => {
+  const fetchDataStatDetalisation = async (dateFrom, dateTo, typeValueFetch, typeValueCalculateFetch, sort, page = 1, idFirms = null, otherComponent = false) => {
     if (!otherComponent) {
       setIsLoadProductWithDetalisationStat(true);
     }
@@ -117,11 +117,11 @@ const MonitoringPage = () => {
     const dateFromFormat = dayjs(dateFrom).startOf('day').format('YYYY-MM-DD HH:mm:ss');
     const dateToFormat = dayjs(dateTo).endOf('day').format('YYYY-MM-DD HH:mm:ss');
 
-    const url = `/stat-detalisation/?dateFrom=${dateFromFormat}&dateTo=${dateToFormat}&sort=${sortStatDetalisation}&typeValue=${typeValueFetch}&typeValueCalculate=${typeValueCalculateFetch}&page=${page}&idFirms=${idFirms}`
+    const url = `/stat-detalisation/?dateFrom=${dateFromFormat}&dateTo=${dateToFormat}&sort=${sort}&typeValue=${typeValueFetch}&typeValueCalculate=${typeValueCalculateFetch}&page=${page}&idFirms=${idFirms}`
     const { data } = await api.get(url);
 
     if (!otherComponent) {
-      setProductsWithDetalisationStat(data);
+      await setProductsWithDetalisationStat(data);
       setIsLoadProductWithDetalisationStat(false);
     }
 
@@ -135,7 +135,7 @@ const MonitoringPage = () => {
   useEffect(() => {
     const idFirms = getIdFirmsSelect(firmsForDetalisationStat);
 
-    fetchDataStatDetalisation(dateFromStatDetalisation, dateToStatDetalisation, typeValue, typeValueCalculate, pageStatDetalisation, idFirms, false).catch(() => {
+    fetchDataStatDetalisation(dateFromStatDetalisation, dateToStatDetalisation, typeValue, typeValueCalculate, sortStatDetalisation, pageStatDetalisation, idFirms, false).catch(() => {
       toast.warning('Не удалось обновить данные, проверьте подключение к Интернету');
     });
   }, []);
@@ -223,9 +223,11 @@ const MonitoringPage = () => {
               firms={ firmsForDetalisationStat }
               typeValue={ typeValue }
               typeValueCalculate={ typeValueCalculate }
+              sort={ sortStatDetalisation }
               page={ pageStatDetalisation }
               isLoad={ isLoadProductWithDetalisationStat }
               setProducts={ setProductsWithDetalisationStat }
+              setSort={ setSortStatDetalisation }
               setPage={ setPageStatDetalisation }
               setIsOpenPopup={ setIsOpenPopupStatDetalisation }
               fetchProducts={ fetchDataStatDetalisation }
@@ -838,6 +840,7 @@ const MonitoringPage = () => {
           firmsSelect={ firmsForDetalisationStat }
           typeValue={ typeValue }
           typeValueCalculate={ typeValueCalculate }
+          sort={ sortStatDetalisation }
           sortType={ sortStatDetalisation }
           setFirmsSelect={ setFirmsForDetalisationStat }
           setTypeValue={ setTypeValue }

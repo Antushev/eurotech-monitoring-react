@@ -34,6 +34,8 @@ export const SortType = {
   TOTAL_SHOW_DESC: 'TOTAL_SHOW_DESC',
   NAME_ASC: 'NAME_ASC',
   NAME_DESC: 'NAME_DESC',
+  DESC: 'DESC',
+  ASC: 'ASC'
 }
 
 export const LocalStorageKey = {
