@@ -71,7 +71,7 @@ const PopupStatDetalisation = (props) => {
             <span className="label__text">Выберите товарные категории</span>
             <Select
               id="categories"
-              className="input input--select"
+              className="input input--select-no-z-index"
               isClearable
               cacheOptions
               isMulti
