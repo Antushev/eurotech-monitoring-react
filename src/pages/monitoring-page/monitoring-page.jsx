@@ -53,6 +53,7 @@ import PopupEditLink from '../../components/popup-edit-link/popup-edit-link.jsx'
 import PopupStatDetalisation from '../../components/popup-stat-detalisation/popup-stat-detalisation.jsx';
 import DialogWindowProduct from '../../components/dialog-window-product/dialog-window-product.jsx';
 import DialogWindowEditLink from '../../components/dialog-window-edit-link/dialog-window-edit-link.jsx';
+import Help from '../../components/help/help.jsx';
 import Preloader from '../../components/preloader/preloader.jsx';
 
 const SET_INTERVAL_FETCH_DATA = 15000;
@@ -128,6 +129,8 @@ const MonitoringPage = () => {
   // For StatIndexPrice
   const [statIndexPrice, setStatIndexPrice] = useState();
   const [isLoadStatIndexPrice, setIsLoadStatIndexPrice] = useState(false);
+  const [isShowHelpIndexPrice, setIsShowHelpIndexPrice] = useState(false);
+
   const fetchDataIndexPrice = async () => {
     setIsLoadStatIndexPrice(true);
 
@@ -244,7 +247,16 @@ const MonitoringPage = () => {
                   <h2 className="header header--2">Индекс роста цен за 2025 год</h2>
 
                   <div className="goods-index-block__icons">
-
+                    <Help
+                      isShow={ isShowHelpIndexPrice }
+                      setIsShow={ setIsShowHelpIndexPrice }
+                    >
+                      <h4 className="header header--3">Алгоритм расчёта</h4>
+                      <ul className="help__list">
+                        <li>1) В качестве базовой точки отcчёта выбирается начало года 01.01 число - за данное число  выссчитывается средняя цена по всем товарам;</li>
+                        <li>2) Индекс роста цен для всех последующих дней рассчитывается по следующей формуле: ((средняя цена на определённый день - средняя базовая цена на начало года) / средняя базовая цена на начало года) * 100.</li>
+                      </ul>
+                    </Help>
                   </div>
                 </div>
                 <div className="graph goods-index-block__graph">

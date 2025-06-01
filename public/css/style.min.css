@@ -779,6 +779,8 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 }
 
 .goods-index-block__header {
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 20px;
 }
 
@@ -1917,6 +1919,30 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   margin-right: 15px;
 }
 
+.help {
+  position: relative;
+}
+
+.help__text-block {
+  z-index: 1000;
+  position: absolute;
+
+  width: 400px;
+  padding: 10px;
+
+  background-color: #ffffff;
+
+  border: 1px solid #d9d9d9;
+
+  border-radius: 10px;
+}
+
+.help__list {
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+}
 
 @keyframes rotation {
   0% {
