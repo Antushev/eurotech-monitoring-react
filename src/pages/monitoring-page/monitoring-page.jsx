@@ -12,7 +12,7 @@ import { getLocalStorageStatDetalisationInMonitoringPage } from '../../services/
 
 import { api } from '../../store/index.js';
 
-import Calendar from '../../components/calendar/calendar.jsx';
+import Graph from '../../components/graph/graph.jsx';
 
 import {
   AppRoute,
@@ -94,27 +94,6 @@ const MonitoringPage = () => {
     to: dayjs()
   });
 
-  console.log(dateForStatDetalisation);
-
-
-  useEffect(() => {
-    dispatch(fetchFirmsByIdUser(currentUser.id));
-    dispatch(fetchProductsWithSummaryDetail({
-      idUser: currentUser.id,
-      idParent: currentProduct !== null ? currentProduct.id : null,
-      withStats: 'summary',
-      dateStart: dayjs().startOf('day'),
-      dateEnd: dayjs().endOf('day')
-    }));
-    dispatch(fetchReports());
-
-    const interval = setInterval(() => {
-      dispatch(fetchReports());
-    }, SET_INTERVAL_FETCH_DATA);
-
-    return () => clearInterval(interval);
-  }, []);
-
   const fetchDataStatDetalisation = async (dateFrom, dateTo, typeValueFetch, typeValueCalculateFetch, sort, page = 1, idFirms = null, otherComponent = false) => {
     if (!otherComponent) {
       setProductsWithDetalisationStat([]);
@@ -138,7 +117,6 @@ const MonitoringPage = () => {
 
     return data;
   }
-
   useEffect(() => {
     const idFirms = getIdFirmsSelect(firmsForDetalisationStat);
 
@@ -147,6 +125,51 @@ const MonitoringPage = () => {
     });
   }, []);
 
+  // For StatIndexPrice
+  const [statIndexPrice, setStatIndexPrice] = useState();
+  const [isLoadStatIndexPrice, setIsLoadStatIndexPrice] = useState(false);
+  const fetchDataIndexPrice = async () => {
+    setIsLoadStatIndexPrice(true);
+
+    const url = `/stat/index-price/base-start-year`;
+
+    const { data } = await api.get(url);
+
+    const result = data.map((priceIndex) => {
+      return {
+        index: Math.round(priceIndex.index * 100) / 100,
+        date: dayjs(priceIndex.dateCalculate).format('DD.MM')
+      }
+    });
+
+    setStatIndexPrice(result);
+    setIsLoadStatIndexPrice(false);
+
+    return data;
+  }
+  useEffect(() => {
+    fetchDataIndexPrice().catch(() => {
+      toast.warning('Не удалось загрузить данные, проверьте подключение к Интернету')
+    });
+  }, []);
+
+  useEffect(() => {
+    dispatch(fetchFirmsByIdUser(currentUser.id));
+    dispatch(fetchProductsWithSummaryDetail({
+      idUser: currentUser.id,
+      idParent: currentProduct !== null ? currentProduct.id : null,
+      withStats: 'summary',
+      dateStart: dayjs().startOf('day'),
+      dateEnd: dayjs().endOf('day')
+    }));
+    dispatch(fetchReports());
+
+    const interval = setInterval(() => {
+      dispatch(fetchReports());
+    }, SET_INTERVAL_FETCH_DATA);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const firms = useSelector(getAllFirms);
   const mainFirm = getMainFirm(firms);
@@ -219,6 +242,22 @@ const MonitoringPage = () => {
               <div className="goods-index-block standart-block page-content__goods-index-block">
                 <div className="goods-index-block__header">
                   <h2 className="header header--2">Индекс роста цен за 2025 год</h2>
+
+                  <div className="goods-index-block__icons">
+
+                  </div>
+                </div>
+                <div className="graph goods-index-block__graph">
+                  {
+                    isLoadStatIndexPrice && <Preloader width={25} height={25} color="#000000" />
+                  }
+
+                  {
+                    !isLoadStatIndexPrice &&
+                      <Graph
+                        data={statIndexPrice}
+                      />
+                  }
                 </div>
               </div>
             </div>

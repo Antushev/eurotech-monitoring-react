@@ -724,6 +724,8 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 
 .page-content__goods-index-block {
   flex: 1 0 auto;
+  display: flex;
+  flex-flow: column nowrap;
 }
 
 .page-content__detalisation-block {
@@ -774,6 +776,14 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 .product-monitor__settings {
   display: flex;
   align-items: center;
+}
+
+.goods-index-block__header {
+  margin-bottom: 20px;
+}
+
+.goods-index-block__graph {
+  flex: 1 0 auto;
 }
 
 .toggle-data-list {
