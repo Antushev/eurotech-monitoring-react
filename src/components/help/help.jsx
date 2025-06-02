@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const Help = (props) => {
   const {
-    children,
-    isShow,
-    setIsShow
+    children
   } = props;
+
+  const [isShow, setIsShow] = useState(false);
 
   return (
     <div className="help">

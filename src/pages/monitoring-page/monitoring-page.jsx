@@ -130,7 +130,6 @@ const MonitoringPage = () => {
   // For StatIndexPrice
   const [statIndexPrice, setStatIndexPrice] = useState();
   const [isLoadStatIndexPrice, setIsLoadStatIndexPrice] = useState(false);
-  const [isShowHelpIndexPrice, setIsShowHelpIndexPrice] = useState(false);
 
   const fetchDataIndexPrice = async () => {
     setIsLoadStatIndexPrice(true);
@@ -247,10 +246,7 @@ const MonitoringPage = () => {
                 <div className="goods-index-block__header">
                   <div className="header-block">
                     <h2 className="header header--2 header--margin-right">Индекс роста цен за 2025 год</h2>
-                    <Help
-                      isShow={ isShowHelpIndexPrice }
-                      setIsShow={ setIsShowHelpIndexPrice }
-                    >
+                    <Help>
                       <h4 className="header header--3">Алгоритм расчёта</h4>
                       <ul className="help__list">
                         <li>1) В качестве базовой точки отcчёта выбирается начало года 01.01 число - за данное число  выссчитывается средняя цена по всем товарам;</li>
