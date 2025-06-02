@@ -42,6 +42,7 @@ import {
   getStatusLoadProducts
 } from '../../store/app-data/selectors.js';
 
+import Select  from 'react-select';
 import LastActionNotification from '../../components/last-action/last-action.jsx';
 import StatDetalisation from '../../components/stat-detalisation/stat-detalisation.jsx';
 import PopupAddGroup from '../../components/popup-add-group/popup-add-group.jsx';
@@ -244,9 +245,8 @@ const MonitoringPage = () => {
 
               <div className="goods-index-block standart-block page-content__goods-index-block">
                 <div className="goods-index-block__header">
-                  <h2 className="header header--2">Индекс роста цен за 2025 год</h2>
-
-                  <div className="goods-index-block__icons">
+                  <div className="header-block">
+                    <h2 className="header header--2 header--margin-right">Индекс роста цен за 2025 год</h2>
                     <Help
                       isShow={ isShowHelpIndexPrice }
                       setIsShow={ setIsShowHelpIndexPrice }
@@ -257,6 +257,29 @@ const MonitoringPage = () => {
                         <li>2) Индекс роста цен для всех последующих дней рассчитывается по следующей формуле: ((средняя цена на определённый день - средняя базовая цена на начало года) / средняя базовая цена на начало года) * 100.</li>
                       </ul>
                     </Help>
+                  </div>
+
+
+                  <div className="goods-index-block__icons">
+                    <Select
+                      className="input input--select"
+                      defaultValue={{ label: "2025", value: 2025 }}
+                      options={[
+                        {
+                          label: "2025",
+                          value: 2025
+                        },
+                        {
+                          label: "2024",
+                          value: 2024
+                        }
+
+                      ]}
+                      placeholder="Год"
+                    >
+                      <option value="2024">2024</option>
+                      <option value="2025">2025</option>
+                    </Select>
                   </div>
                 </div>
                 <div className="graph goods-index-block__graph">

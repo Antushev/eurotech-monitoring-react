@@ -716,7 +716,7 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 }
 
 .page-content__common-block {
-  flex: 7 0 auto;
+  flex: 7 1 auto;
   display: flex;
   flex-flow: column nowrap;
   margin-right: 25px;
@@ -729,7 +729,7 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 }
 
 .page-content__detalisation-block {
-  flex: 1 1 500px;
+  flex: 1 1 600px;
 }
 
 .page-content__goods-common-stat {
@@ -782,6 +782,11 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
+}
+
+.goods-index-block__icons {
+  display: flex;
+  align-items: center;
 }
 
 .goods-index-block__graph {
@@ -1921,12 +1926,17 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 
 .help {
   position: relative;
+
+  display: flex;
+  align-items: center;
 }
 
 .help__text-block {
   z-index: 1000;
   position: absolute;
+  top: 30px;
 
+  align-self: flex-start;
   width: 400px;
   padding: 10px;
 

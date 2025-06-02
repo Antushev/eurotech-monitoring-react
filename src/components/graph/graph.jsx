@@ -13,9 +13,10 @@ import {
 } from 'recharts'
 
 const Graph = (props) => {
-  const { data } = props;
+  const {
+    data,
 
-  console.log(data);
+  } = props;
 
   return (
     <ResponsiveContainer width="100%" height="100%">
