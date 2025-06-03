@@ -1436,7 +1436,7 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
   margin-bottom: 0;
   padding: 0;
 
-  z-index: 0;
+  z-index: 10;
 }
 
 .notification {

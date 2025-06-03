@@ -255,10 +255,10 @@ const MonitoringPage = () => {
                     </Help>
                   </div>
 
-
+                  // WIP: Доделать график и расчёт индекса со стороны серверной части
                   <div className="goods-index-block__icons">
                     <Select
-                      className="input input--select"
+                      className="input input--select input--select-no-z-index"
                       defaultValue={{ label: "2025", value: 2025 }}
                       options={[
                         {

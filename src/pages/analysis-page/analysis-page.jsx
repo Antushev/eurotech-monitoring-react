@@ -55,9 +55,7 @@ const AnalysisPage = (props) => {
             </Help>
           </div>
 
-
-
-          <div class="header__buttons">
+          <div className="header__buttons">
             <button
               className="button button--no-background button--text-blue header__button--clear"
               type="button"
