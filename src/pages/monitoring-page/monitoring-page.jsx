@@ -821,7 +821,7 @@ const MonitoringPage = () => {
                         }
                       </td>
                   </tr> :
-                  products.map((product, index) => {
+                  products?.map((product, index) => {
                     if (product.isGroup) {
                       return (
                         <tr
