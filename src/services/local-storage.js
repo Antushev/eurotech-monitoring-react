@@ -50,3 +50,13 @@ export const getLocalStorageStatDetalisationInMonitoringPage = () => {
 
   return JSON.parse(localStorage.getItem(LocalStorageKey.SETTINGS_DETALISATION_IN_MONITORING_PAGE));
 }
+
+export const setLocalStorageFavoriteChangeProductsTable = (favoriteChange) => {
+  const currentFavoriteChange = localStorage.getItem(LocalStorageKey.FAVORITE_CHANGE_PRODUCTS_TABLE);
+
+  localStorage.setItem(LocalStorageKey.FAVORITE_CHANGE_PRODUCTS_TABLE, favoriteChange);
+}
+
+export const getLocalStorageFavoriteChangeProductsTable = () => {
+ return localStorage.getItem(LocalStorageKey.FAVORITE_CHANGE_PRODUCTS_TABLE);
+}

@@ -2,10 +2,11 @@ import React, {useEffect, useRef} from 'react';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { deleteProduct, updateProduct } from '../../store/api-actions.js';
+import { deleteProduct, updateProduct, fetchProductsWithSummaryDetail } from '../../store/api-actions.js';
 import { getStatusLoadProduct } from '../../store/app-data/selectors.js';
 
 import Preloader from '../../components/preloader/preloader.jsx';
+import * as dayjs from "dayjs";
 
 const WIDTH_PRELOADER = 20;
 const HEIGHT_PRELOADER = 20;

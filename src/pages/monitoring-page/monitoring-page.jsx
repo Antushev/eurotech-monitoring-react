@@ -8,7 +8,11 @@ import { toast } from 'react-toastify';
 
 import { getIdFirmsSelect } from '../../utils/common.js';
 
-import { getLocalStorageStatDetalisationInMonitoringPage } from '../../services/local-storage.js';
+import {
+  getLocalStorageStatDetalisationInMonitoringPage,
+  setLocalStorageFavoriteChangeProductsTable,
+  getLocalStorageFavoriteChangeProductsTable
+} from '../../services/local-storage.js';
 
 import { api } from '../../store/index.js';
 
@@ -84,6 +88,7 @@ const MonitoringPage = () => {
 
   // For StatDetalisationComponent
   const defaultSettingsStatDetalisation = getLocalStorageStatDetalisationInMonitoringPage();
+  const defaultFavoriteChangeProductsTable = getLocalStorageFavoriteChangeProductsTable();
   const [productsWithDetalisationStat, setProductsWithDetalisationStat] = useState([]);
   const [firmsForDetalisationStat, setFirmsForDetalisationStat] = useState(defaultSettingsStatDetalisation.firms);
   const [isLoadProductWithDetalisationStat, setIsLoadProductWithDetalisationStat] = useState(false);
@@ -95,6 +100,7 @@ const MonitoringPage = () => {
     from: dayjs().subtract(1, 'month'),
     to: dayjs()
   });
+  const [isFavoriteChangeProductsTable, setIsFavoriteChangeProductsTable] = useState(defaultFavoriteChangeProductsTable);
 
   const fetchDataStatDetalisation = async (dateFrom, dateTo, typeValueFetch, typeValueCalculateFetch, sort, page = 1, idFirms = null, otherComponent = false) => {
     if (!otherComponent) {
@@ -195,7 +201,8 @@ const MonitoringPage = () => {
       idParent: currentProduct !== null ? currentProduct.id : null,
       withStats: 'summary',
       dateStart: dayjs().startOf('day'),
-      dateEnd: dayjs().endOf('day')
+      dateEnd: dayjs().endOf('day'),
+      isFavorite: isFavoriteChangeProductsTable
     }));
     dispatch(fetchReports());
 
@@ -502,8 +509,43 @@ const MonitoringPage = () => {
                 </h2>
 
                 <ul className="detalisation-list">
-                  <li className="detalisation-list__item detalisation-list__item--active">все товары</li>
-                  <li className="detalisation-list__item">избранные товары</li>
+                  <li
+                    className={`detalisation-list__item ${ !isFavoriteChangeProductsTable ? 'detalisation-list__item--active' : ''}`}
+                    onClick={() => {
+                      setIsFavoriteChangeProductsTable(false);
+                      setLocalStorageFavoriteChangeProductsTable(false);
+
+                      dispatch(fetchProductsWithSummaryDetail({
+                        idUser: currentUser.id,
+                        idParent: currentProduct !== null ? currentProduct.id : null,
+                        withStats: 'summary',
+                        dateStart: dayjs(dateProductsTable).startOf('day'),
+                        dateEnd: dayjs(dateProductsTable).endOf('day'),
+                        isFavorite: false
+                      }));
+                    }}
+                  >
+                    все товары
+                  </li>
+                  <li
+                    className={`detalisation-list__item ${ isFavoriteChangeProductsTable ? 'detalisation-list__item--active' : '' }`}
+                    onClick={() => {
+                      setIsFavoriteChangeProductsTable(true);
+                      setLocalStorageFavoriteChangeProductsTable(true);
+                      dispatch(setCurrentProduct(null));
+
+                      dispatch(fetchProductsWithSummaryDetail({
+                        idUser: currentUser.id,
+                        idParent: currentProduct !== null ? currentProduct.id : null,
+                        withStats: 'summary',
+                        dateStart: dayjs(dateProductsTable).startOf('day'),
+                        dateEnd: dayjs(dateProductsTable).endOf('day'),
+                        isFavorite: true
+                      }));
+                    }}
+                  >
+                    избранные товары
+                  </li>
                 </ul>
               </div>
 
@@ -564,7 +606,8 @@ const MonitoringPage = () => {
                             withStats: 'summary',
                             name: name && name !== '' ? name : null,
                             dateStart: dayjs(dateProductsTable).startOf('day'),
-                            dateEnd: dayjs(dateProductsTable).endOf('day')
+                            dateEnd: dayjs(dateProductsTable).endOf('day'),
+                            isFavorite: isFavoriteChangeProductsTable
                           }));
 
                           setIsLoadSearch(false);
@@ -610,7 +653,7 @@ const MonitoringPage = () => {
 
                             setIsLoadSearch(true);
 
-                            const name = searchTextProductRef.current.value;
+                            const name = searchTextProductRef?.current.value;
 
                             await dispatch(fetchProductsWithSummaryDetail({
                               idUser: currentUser.id,
@@ -633,7 +676,7 @@ const MonitoringPage = () => {
 
                             setIsLoadSearch(true);
 
-                            const name = searchTextProductRef.current.value;
+                            const name = searchTextProductRef?.current.value;
 
                             await dispatch(fetchProductsWithSummaryDetail({
                               idUser: currentUser.id,
@@ -663,7 +706,7 @@ const MonitoringPage = () => {
                         defaultValue={ dayjs(dateProductsTable).format('YYYY-MM-DD') }
                         alt="Дата до"
                         onChange={async (evt) => {
-                          const name = searchTextProductRef.current.value;
+                          const name = searchTextProductRef?.current.value;
 
                           setDateProductsTable(evt.target.value);
 
@@ -714,7 +757,7 @@ const MonitoringPage = () => {
                     <td
                       className="goods-table__td"
                       onClick={async () => {
-                        const name = searchTextProductRef.current.value;
+                        const name = searchTextProductRef?.current?.value;
 
                         setIdLoadGroup(currentProduct.id);
 
@@ -724,7 +767,7 @@ const MonitoringPage = () => {
                           withStats: 'summary',
                           name: name && name !== '' ? name : null,
                           dateStart: dayjs(dateProductsTable).startOf('day'),
-                          dateEnd: dayjs(dateProductsTable).endOf('day')
+                          dateEnd: dayjs(dateProductsTable).endOf('day'),
                         }));
 
                         setIdLoadGroup(null);
@@ -781,7 +824,7 @@ const MonitoringPage = () => {
                           onClick={async () => {
                             setIdLoadGroup(product.id)
 
-                            const name = searchTextProductRef.current.value;
+                            const name = searchTextProductRef?.current?.value;
 
                             await dispatch(fetchProductsWithSummaryDetail({
                               idUser: currentUser.id,
@@ -862,7 +905,7 @@ const MonitoringPage = () => {
                         >
                           <Link className="goods-table__link" to={`${AppRoute.Monitoring}/${product.id}`}>
                             {
-                              searchTextProductRef.current.value ?
+                              searchTextProductRef?.current?.value ?
                                 <Highlighter
                                   highlightClassName="highlighter"
                                   searchWords={[searchTextProductRef?.current?.value]}
@@ -870,13 +913,13 @@ const MonitoringPage = () => {
                                   textToHighlight={product?.name}
                                 />
                                 : <>
-                                  <span className="goods-table__product-name">{ product.name }</span>
                                   {
                                     product.isFavorite &&
-                                      <svg className="icon icon--active" width="11" height="11" viewBox="0 0 11 11">
-                                        <path d="M4.90991 0.382647L3.56729 3.22683L0.563373 3.68439C0.0246826 3.76602 -0.191205 4.45988 0.199449 4.85729L2.37272 7.06991L1.8587 10.1955C1.76617 10.7605 2.33571 11.1837 2.81272 10.9194L5.5 9.44364L8.18729 10.9194C8.66429 11.1815 9.23383 10.7605 9.1413 10.1955L8.62728 7.06991L10.8006 4.85729C11.1912 4.45988 10.9753 3.76602 10.4366 3.68439L7.43271 3.22683L6.09009 0.382647C5.84953 -0.124322 5.15252 -0.130766 4.90991 0.382647Z" fill="black"/>
-                                      </svg>
+                                    <svg className="icon icon--active icon--margin-right" width="11" height="11" viewBox="0 0 11 11">
+                                      <path d="M4.90991 0.382647L3.56729 3.22683L0.563373 3.68439C0.0246826 3.76602 -0.191205 4.45988 0.199449 4.85729L2.37272 7.06991L1.8587 10.1955C1.76617 10.7605 2.33571 11.1837 2.81272 10.9194L5.5 9.44364L8.18729 10.9194C8.66429 11.1815 9.23383 10.7605 9.1413 10.1955L8.62728 7.06991L10.8006 4.85729C11.1912 4.45988 10.9753 3.76602 10.4366 3.68439L7.43271 3.22683L6.09009 0.382647C5.84953 -0.124322 5.15252 -0.130766 4.90991 0.382647Z" fill="black"/>
+                                    </svg>
                                   }
+                                  <span className="goods-table__product-name">{ product.name }</span>
                                 </>
                             }
 
