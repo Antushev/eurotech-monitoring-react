@@ -12,8 +12,6 @@ import { getLocalStorageStatDetalisationInMonitoringPage } from '../../services/
 
 import { api } from '../../store/index.js';
 
-import Graph from '../../components/graph/graph.jsx';
-
 import {
   AppRoute,
   TypeShowValue,
@@ -55,6 +53,8 @@ import PopupStatDetalisation from '../../components/popup-stat-detalisation/popu
 import DialogWindowProduct from '../../components/dialog-window-product/dialog-window-product.jsx';
 import DialogWindowEditLink from '../../components/dialog-window-edit-link/dialog-window-edit-link.jsx';
 import Help from '../../components/help/help.jsx';
+import Graph from '../../components/graph/graph.jsx';
+import PieChartGraph from '../../components/pie-chart/pie-chart.jsx';
 import Preloader from '../../components/preloader/preloader.jsx';
 
 const SET_INTERVAL_FETCH_DATA = 15000;
@@ -128,13 +128,18 @@ const MonitoringPage = () => {
   }, []);
 
   // For StatIndexPrice
-  const [statIndexPrice, setStatIndexPrice] = useState();
+  const [statIndexPrice, setStatIndexPrice] = useState([]);
   const [isLoadStatIndexPrice, setIsLoadStatIndexPrice] = useState(false);
+  const [yearStatIndexPrice, setYearStatIndexPrice] = useState({
+    label: dayjs().format('YYYY'),
+    value: dayjs().format('YYYY')
+  });
+  const fetchDataIndexPrice = async (year, otherComponent = false) => {
+    if (!otherComponent) {
+      setIsLoadStatIndexPrice(true);
+    }
 
-  const fetchDataIndexPrice = async () => {
-    setIsLoadStatIndexPrice(true);
-
-    const url = `/stat/index-price/base-start-year`;
+    const url = `/stat/index-price/base-start-year/${year}`;
 
     const { data } = await api.get(url);
 
@@ -146,13 +151,40 @@ const MonitoringPage = () => {
     });
 
     setStatIndexPrice(result);
-    setIsLoadStatIndexPrice(false);
+
+    if (!otherComponent) {
+      setIsLoadStatIndexPrice(false);
+    }
 
     return data;
   }
   useEffect(() => {
-    fetchDataIndexPrice().catch(() => {
+    fetchDataIndexPrice(yearStatIndexPrice.value).catch(() => {
       toast.warning('Не удалось загрузить данные, проверьте подключение к Интернету')
+    });
+  }, []);
+
+  // For CommonStats
+  const [pricesCommonStat, setPricesCommonStat] = useState(null);
+  const [countsCommonStat, setCountsCommonStat] = useState(null);
+  const [completionCommonStat, setCompletionCommonStat] = useState(null);
+  const [isLoadCommonStat, setIsLoadCommonStat] = useState(false);
+  const fetchDataCommonStats = async () => {
+    setIsLoadCommonStat(true);
+
+    const { data } = await api.get('/stat/common-stat/');
+
+    console.log(data);
+
+    setPricesCommonStat(data.prices);
+    setCountsCommonStat(data.counts);
+    setCompletionCommonStat(data.completion);
+
+    setIsLoadCommonStat(false);
+  }
+  useEffect(() => {
+    fetchDataCommonStats().catch(() => {
+      toast.warning('Не удалось загрузить сводную статистику. Проверьте подключение к Интернету.');
     });
   }, []);
 
@@ -230,22 +262,164 @@ const MonitoringPage = () => {
             <div className="page-content__common-block goods-index-block">
               <ul className="goods-common-stat page-content__goods-common-stat">
                 <li className="goods-common-stat__item standart-block">
-                  <h3 className="header header--3">Цены</h3>
+                  <div className="header-block header-block--space-between">
+                    <h3 className="header header--3">Цены на товары</h3>
+
+                    <Help>
+                      <h3 className="header header--3">Сводная статистика цен</h3>
+                      <p>В сводную статистику попадают только те товары, у которых есть две или более ссылки на сайты-конкурентов.</p>
+                      <ul className="help__list">
+                        <li className="help__item">
+                          <b>Ниже</b> - это количество товаров, у которых цена основной фирмы ({mainFirm?.name}) ниже всех цен конкурентов того же товара;
+                        </li>
+                        <li className="help__item">
+                          <b>Смешано</b> - это количество товаров, у которых есть цены конкурентов ниже или выше, чем у основной фирмы ({mainFirm?.name});
+                        </li>
+                        <li className="help__item">
+                          <b>Выше</b> - это количество товаров, у которых цена основной фирмы ({ mainFirm?.name }) выше всех цен конкурентов.
+                        </li>
+                      </ul>
+                    </Help>
+                  </div>
+
+                  {
+                    isLoadCommonStat ?
+                      <Preloader width={25} height={25} color="#000000" /> :
+                       <div className="goods-common-stat__pie-block">
+                        <ul className="goods-common-stat__pie-text-list">
+                          {
+                            pricesCommonStat &&
+                            pricesCommonStat?.map((price) => {
+                              return (
+                                <li className="goods-common-stat__pie-text-item" key={price.name}>
+                                  {price.value} шт.
+                                </li>
+                              );
+                            })
+                          }
+                        </ul>
+
+                        <div className="goods-common-stat__pie-chart">
+                          {
+                            pricesCommonStat ?
+                            <PieChartGraph
+                              data={ pricesCommonStat }
+                            />
+                              : <div className="goods-common-stat__not-data">Нет данных</div>
+                          }
+                        </div>
+                      </div>
+                  }
+
                 </li>
 
                 <li className="goods-common-stat__item standart-block">
-                  <h3 className="header header--3">Остатки</h3>
+                  <div className="header-block header-block--space-between">
+                    <h3 className="header header--3">Остатки товаров</h3>
+
+                    <Help>
+                      <h3 className="header header--3">Сводная статистика остатков</h3>
+                      <p>В сводную статистику попадают только те товары, у которых есть две или более ссылки на сайты-конкурентов.</p>
+
+                      <ul className="help__list">
+                        <li className="help__item">
+                          <b>Выше</b> - это количество товаров, у которых остатков основной фирмы ({mainFirm?.name}) больше, чем у всех конкурентов, на сайты которыйх есть ссылки;
+                        </li>
+                        <li className="help__item">
+                          <b>Смешано</b> - это количество товаров, у которых остатки компаний-конкурентов ниже или выше, чем у основной фирмы ({mainFirm?.name});
+                        </li>
+                        <li className="help__item">
+                          <b>Ниже</b> - это количество товаров, у которых остатков основной фирмы ({mainFirm?.name}) больше, чем у всех конкурентов.
+                        </li>
+                      </ul>
+
+                    </Help>
+                  </div>
+                  {
+                    isLoadCommonStat ?
+                      <Preloader width={25} height={25} color="#000000" />
+                      :
+                      <div className="goods-common-stat__pie-block">
+                        <ul className="goods-common-stat__pie-text-list">
+                          {
+                            countsCommonStat &&
+                              countsCommonStat.map((count) => {
+                                return (
+                                  <li className="goods-common-stat__pie-text-item">
+                                    { count.value } шт.
+                                  </li>
+                                )
+                              })
+                          }
+                        </ul>
+
+                        <div className="goods-common-stat__pie-chart">
+                          {
+                            countsCommonStat ?
+                              <PieChartGraph
+                                data={ countsCommonStat }
+                              />
+                              : <div className="goods-common-stat__not-data">Нет данных</div>
+                          }
+                        </div>
+                      </div>
+                  }
+
                 </li>
 
                 <li className="goods-common-stat__item standart-block">
-                  <h3 className="header header--3">Заполнение</h3>
+                  <div className="header-block header-block--space-between">
+                    <h3 className="header header--3">Заполнение</h3>
+
+                    <Help>
+                      <h3 className="header header--3 header--space-bottom">Ссылки на сайты-конкурентов</h3>
+
+                      <ul className="help__list">
+                        <li className="help__item">
+                          <b>Зап.</b> - это товары, у которых есть две или более ссылки на сайты-конкурентов;
+                        </li>
+                        <li className="help__item">
+                          <b>Не зап.</b> - это товары, у которых нет ни одной ссылки на сайт-конкурента.
+                        </li>
+                      </ul>
+                    </Help>
+                  </div>
+
+                  {
+                    isLoadCommonStat ?
+                      <Preloader width={25} height={25} color="#000000" />
+                      :
+                      <div className="goods-common-stat__pie-block">
+                        <ul className="goods-common-stat__pie-text-list">
+                          {
+                            completionCommonStat &&
+                            completionCommonStat.map((completion) => {
+                              return (
+                                <li key={completion.label} className="goods-common-stat__pie-text-item">
+                                  { completion.value } шт.
+                                </li>
+                              );
+                            })
+                          }
+                        </ul>
+                        {
+                          completionCommonStat ?
+                            <div className="goods-common-stat__pie-chart">
+                              <PieChartGraph
+                                data={ completionCommonStat }
+                              />
+                            </div>
+                            : <div className="goods-common-stat__not-data">Нет данных</div>
+                        }
+                      </div>
+                  }
                 </li>
               </ul>
 
               <div className="goods-index-block standart-block page-content__goods-index-block">
                 <div className="goods-index-block__header">
                   <div className="header-block">
-                    <h2 className="header header--2 header--margin-right">Индекс роста цен за 2025 год</h2>
+                    <h2 className="header header--2 header--margin-right">Индекс роста цен за {  yearStatIndexPrice.value } год</h2>
                     <Help>
                       <h4 className="header header--3">Алгоритм расчёта</h4>
                       <ul className="help__list">
@@ -255,12 +429,16 @@ const MonitoringPage = () => {
                     </Help>
                   </div>
 
-                  // WIP: Доделать график и расчёт индекса со стороны серверной части
+                  {/* WIP: Доделать график и расчёт индекса со стороны серверной части */}
                   <div className="goods-index-block__icons">
                     <Select
                       className="input input--select input--select-no-z-index"
                       defaultValue={{ label: "2025", value: 2025 }}
                       options={[
+                        {
+                          label: "2026",
+                          value: 2026
+                        },
                         {
                           label: "2025",
                           value: 2025
@@ -271,7 +449,12 @@ const MonitoringPage = () => {
                         }
 
                       ]}
+                      value={yearStatIndexPrice}
                       placeholder="Год"
+                      onChange={async (evt) => {
+                        setYearStatIndexPrice(evt);
+                        await fetchDataIndexPrice(evt.value);
+                      }}
                     >
                       <option value="2024">2024</option>
                       <option value="2025">2025</option>
@@ -284,7 +467,7 @@ const MonitoringPage = () => {
                   }
 
                   {
-                    !isLoadStatIndexPrice &&
+                    !isLoadStatIndexPrice && statIndexPrice &&
                       <Graph
                         data={statIndexPrice}
                       />
