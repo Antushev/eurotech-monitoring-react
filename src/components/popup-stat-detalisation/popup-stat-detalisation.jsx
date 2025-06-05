@@ -56,6 +56,7 @@ const PopupStatDetalisation = (props) => {
               cacheOptions
               isMulti
               onInputChange
+              maxMenuHeight={150}
               closeMenuOnSelect={ false }
               value={ firmsSelect }
               options={ getOptionsForFirmsSelect(allFirms) }
@@ -67,19 +68,19 @@ const PopupStatDetalisation = (props) => {
               }}
             />
           </label>
-          <label className="label">
-            <span className="label__text">Выберите товарные категории</span>
-            <Select
-              id="categories"
-              className="input input--select-no-z-index"
-              isClearable
-              cacheOptions
-              isMulti
-              onInputChange
-              closeMenuOnSelect={ false }
-              placeholder="Выберите категории товаров (по умолчанию все категории)"
-            />
-          </label>
+          {/*<label className="label">*/}
+          {/*  <span className="label__text">Выберите товарные категории</span>*/}
+          {/*  <Select*/}
+          {/*    id="categories"*/}
+          {/*    className="input input--select-no-z-index"*/}
+          {/*    isClearable*/}
+          {/*    cacheOptions*/}
+          {/*    isMulti*/}
+          {/*    onInputChange*/}
+          {/*    closeMenuOnSelect={ false }*/}
+          {/*    placeholder="Выберите категории товаров (по умолчанию все категории)"*/}
+          {/*  />*/}
+          {/*</label>*/}
         </div>
 
 
@@ -137,41 +138,41 @@ const PopupStatDetalisation = (props) => {
           </div>
         </div>
 
-        <div>Метод рассчёта:</div>
-        <div className="form-block form-block--radio">
-          <div className="form-block__radio-block">
-            <input
-              checked
-              id="method-calculate-default"
-              className="input input--radio input--margin-right"
-              type="radio"
-              name="method-calculate"
-            />
-            <label
-              className="label label--radio"
-              htmlFor="method-calculate-default"
-            >
-              для каждого товара каждой фирмы относительно данных предыдущего периода того же товара той же фирмы
-            </label>
-          </div>
-        </div>
+        {/*<div>Метод рассчёта:</div>*/}
+        {/*<div className="form-block form-block--radio">*/}
+        {/*  <div className="form-block__radio-block">*/}
+        {/*    <input*/}
+        {/*      checked*/}
+        {/*      id="method-calculate-default"*/}
+        {/*      className="input input--radio input--margin-right"*/}
+        {/*      type="radio"*/}
+        {/*      name="method-calculate"*/}
+        {/*    />*/}
+        {/*    <label*/}
+        {/*      className="label label--radio"*/}
+        {/*      htmlFor="method-calculate-default"*/}
+        {/*    >*/}
+        {/*      для каждого товара каждой фирмы относительно данных предыдущего периода того же товара той же фирмы*/}
+        {/*    </label>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
 
-        <div className="form-block form-block--radio form-block--margin-bottom">
-          <div className="form-block__radio-block">
-            <input
-              id="method-calculate-with-main-firm"
-              className="input input--radio input--margin-right"
-              type="radio"
-              name="method-calculate"
-            />
-            <label
-              className="label label--radio"
-              htmlFor="method-calculate-with-main-firm"
-            >
-              для каждого товара каждой фирмы относительно данных предыдущего периода того же товара основной фирмы (ООО ЕВРОТЕК)
-            </label>
-          </div>
-        </div>
+        {/*<div className="form-block form-block--radio form-block--margin-bottom">*/}
+        {/*  <div className="form-block__radio-block">*/}
+        {/*    <input*/}
+        {/*      id="method-calculate-with-main-firm"*/}
+        {/*      className="input input--radio input--margin-right"*/}
+        {/*      type="radio"*/}
+        {/*      name="method-calculate"*/}
+        {/*    />*/}
+        {/*    <label*/}
+        {/*      className="label label--radio"*/}
+        {/*      htmlFor="method-calculate-with-main-firm"*/}
+        {/*    >*/}
+        {/*      для каждого товара каждой фирмы относительно данных предыдущего периода того же товара основной фирмы (ООО ЕВРОТЕК)*/}
+        {/*    </label>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
 
 
         <button
