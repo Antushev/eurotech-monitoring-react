@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
+import { truncate } from '../../utils/common.js';
 import {
   AppRoute,
   LocalStorageKey,
@@ -151,7 +152,7 @@ const ProductMonitorPage = () => {
                 }));
               }}
             />
-            <span> - </span>
+            <span className="date-select__line"></span>
             <input
               className="date-select__input date-select__to"
               name="date-select"
@@ -831,10 +832,6 @@ const getFirmColor = (idFirm, firms) => {
 
 const getFirmName = (idFirm, firms) => {
   return firms.find((firm) => firm.id === idFirm).name;
-}
-
-const truncate = (text, truncateLength = 50) => {
-  return text?.length > truncateLength ? text.substring(0, truncateLength) + '...' : text;
 }
 
 export default ProductMonitorPage;

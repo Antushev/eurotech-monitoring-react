@@ -279,7 +279,7 @@ const IntegrationPage = () => {
                           Повторяемость
                           <select
                             ref={selectPeriodRef}
-                            className="input input--select"
+                            className="input input--no-margin-bottom"
                             id="bitrix-integration-period"
                             name="bitrix-integration-period"
                           >
@@ -294,7 +294,7 @@ const IntegrationPage = () => {
                           Время повтора
                           <select
                             ref={selectTimeRef}
-                            className="input input--select"
+                            className="input input--no-margin-bottom"
                             id="bitrix-integration-period"
                             name="bitrix-integration-period"
                           >

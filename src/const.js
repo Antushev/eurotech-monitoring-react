@@ -34,12 +34,17 @@ export const SortType = {
   TOTAL_SHOW_DESC: 'TOTAL_SHOW_DESC',
   NAME_ASC: 'NAME_ASC',
   NAME_DESC: 'NAME_DESC',
+  DESC: 'DESC',
+  ASC: 'ASC'
 }
 
 export const LocalStorageKey = {
   TYPE_SHOW_VALUE: 'type-show-value',
   TYPE_SHOW_CONDITION_VALUE: 'type-show-condition-value',
-  PERIOD: 'period'
+  PERIOD: 'period',
+  FAVORITE_CHANGE_PRODUCTS_TABLE: 'favorite-change-products-table',
+  FAVORITE_CHANGE_STAT_DETALISATION: 'favorite-change-stata-detalisation',
+  SETTINGS_DETALISATION_IN_MONITORING_PAGE: 'settings-detalisation-in-monitoring-page'
 }
 
 export const TypeShowValue = {
@@ -80,4 +85,14 @@ export const toastSettings = {
   pauseOnHover: true,
   theme: 'light',
   transition: 'flip'
+}
+
+export const TypeValueStatDetalisation = {
+  PRICE: 'PRICE',
+  COUNT: 'COUNT'
+}
+
+export const TypeValueCalculateStatDetalisation = {
+  PERCENT: 'PERCENT',
+  VALUE: 'VALUE'
 }

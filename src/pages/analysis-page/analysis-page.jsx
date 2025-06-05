@@ -12,6 +12,7 @@ import ProductsList from './../../components/products-list/products-list.jsx';
 import ProductAnalysisInfo from './../../components/product-analysis-info/product-analysis-info.jsx';
 import PopupAddMarks from '../../components/popup-add-marks/popup-add-marks.jsx';
 import PopupReports from './../../components/popup-reports/popup-reports.jsx';
+import Help from './../../components/help/help.jsx';
 import Preloader from './../../components/preloader/preloader.jsx';
 
 const WIDTH_PRELOADER = 15;
@@ -46,10 +47,15 @@ const AnalysisPage = (props) => {
     <>
       <section className="page-content page__content">
         <header className="page-content__header standart-block">
-          <h1 className="header header--1">Анализ спроса</h1>
+          <div className="header-block">
+            <h1 className="header header--1 header--margin-right">Анализ спроса</h1>
 
+            <Help>
+              <p>Данные по показам в столбце "Показы" выводятся за месяц с момента запроса из сервиса Яндекс Wordstat.</p>
+            </Help>
+          </div>
 
-          <div class="header__buttons">
+          <div className="header__buttons">
             <button
               className="button button--no-background button--text-blue header__button--clear"
               type="button"
@@ -81,7 +87,12 @@ const AnalysisPage = (props) => {
 
         <div className="page-content__inner page-content__inner--analyse">
           <section className="products standart-block page-content__products">
-            <h2 className="header header--2 header--space-bottom">Маркировки</h2>
+            <div className="header-block">
+              <h2 className="header header--2 header--space-bottom">Маркировки</h2>
+
+
+            </div>
+
 
             <button
               className="button button--add-excel products__add-button"

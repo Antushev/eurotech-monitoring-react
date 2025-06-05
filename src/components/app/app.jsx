@@ -9,8 +9,12 @@ import {
   LocalStorageKey,
   TypeShowValue,
   TypeShowConditionValue,
-  Period
+  Period,
+  TypeValueStatDetalisation,
+  TypeValueCalculateStatDetalisation
 } from '../../const';
+
+import { setLocalStorageStatDetalisationInMonitoringPage } from '../../services/local-storage.js';
 
 import {
   setTypeShowValue,

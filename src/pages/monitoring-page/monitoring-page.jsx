@@ -4,6 +4,18 @@ import { Link } from 'react-router-dom';
 import * as dayjs from 'dayjs';
 import debounce from 'debounce';
 import Highlighter from 'react-highlight-words';
+import { toast } from 'react-toastify';
+
+import { getIdFirmsSelect } from '../../utils/common.js';
+
+import {
+  getLocalStorageStatDetalisationInMonitoringPage,
+  setLocalStorageFavoriteChangeProductsTable,
+  getLocalStorageFavoriteChangeProductsTable,
+  getLocalStorageFavoriteChangeStatDetalisation
+} from '../../services/local-storage.js';
+
+import { api } from '../../store/index.js';
 
 import {
   AppRoute,
@@ -33,15 +45,21 @@ import {
   getStatusLoadProducts
 } from '../../store/app-data/selectors.js';
 
+import Select  from 'react-select';
 import LastActionNotification from '../../components/last-action/last-action.jsx';
+import StatDetalisation from '../../components/stat-detalisation/stat-detalisation.jsx';
 import PopupAddGroup from '../../components/popup-add-group/popup-add-group.jsx';
 import PopupAddProduct from '../../components/popup-add-product/popup-add-product.jsx';
 import PopupEditProduct from '../../components/popup-edit-product/popup-edit-product.jsx';
 import PopupSelectConsumers from '../../components/popup-select-consumers/popup-select-consumers.jsx';
 import PopupAddLink from '../../components/popup-add-link/popup-add-link.jsx';
 import PopupEditLink from '../../components/popup-edit-link/popup-edit-link.jsx';
+import PopupStatDetalisation from '../../components/popup-stat-detalisation/popup-stat-detalisation.jsx';
 import DialogWindowProduct from '../../components/dialog-window-product/dialog-window-product.jsx';
 import DialogWindowEditLink from '../../components/dialog-window-edit-link/dialog-window-edit-link.jsx';
+import Help from '../../components/help/help.jsx';
+import Graph from '../../components/graph/graph.jsx';
+import PieChartGraph from '../../components/pie-chart/pie-chart.jsx';
 import Preloader from '../../components/preloader/preloader.jsx';
 
 const SET_INTERVAL_FETCH_DATA = 15000;
@@ -69,6 +87,116 @@ const MonitoringPage = () => {
 
   const searchTextProductRef = useRef(null);
 
+  // For StatDetalisationComponent
+  const defaultSettingsStatDetalisation = getLocalStorageStatDetalisationInMonitoringPage();
+  const defaultFavoriteChangeProductsTable = getLocalStorageFavoriteChangeProductsTable();
+  const [productsWithDetalisationStat, setProductsWithDetalisationStat] = useState([]);
+  const [firmsForDetalisationStat, setFirmsForDetalisationStat] = useState(defaultSettingsStatDetalisation.firms);
+  const [isLoadProductWithDetalisationStat, setIsLoadProductWithDetalisationStat] = useState(false);
+  const [typeValue, setTypeValue] = useState(defaultSettingsStatDetalisation.typeValue); // price, count
+  const [typeValueCalculate, setTypeValueCalculate] = useState(defaultSettingsStatDetalisation.typeValueCalculate); // percent, value
+  const [sortStatDetalisation, setSortStatDetalisation] = useState(defaultSettingsStatDetalisation.sort);
+  const [pageStatDetalisation, setPageStatDetalisation] = useState(1);
+  const [dateForStatDetalisation, setDateForStatDetalisation] = useState({
+    from: dayjs().subtract(1, 'month'),
+    to: dayjs()
+  });
+  const [isFavoriteChangeStatDetalisation, setIsFavoriteChangeStatDetalisation] = useState(getLocalStorageFavoriteChangeStatDetalisation());
+
+  const fetchDataStatDetalisation = async (dateFrom, dateTo, typeValueFetch, typeValueCalculateFetch, sort, page = 1, idFirms = null, otherComponent = false, isFavoriteChange) => {
+    if (!otherComponent) {
+      setProductsWithDetalisationStat([]);
+      setIsLoadProductWithDetalisationStat(true);
+    }
+
+    const dateFromFormat = dayjs(dateFrom).startOf('day').format('YYYY-MM-DD HH:mm:ss');
+    const dateToFormat = dayjs(dateTo).endOf('day').format('YYYY-MM-DD HH:mm:ss');
+
+    const url = `/stat-detalisation/?dateFrom=${dateFromFormat}&dateTo=${dateToFormat}&sort=${sort}&typeValue=${typeValueFetch}&typeValueCalculate=${typeValueCalculateFetch}&page=${page}&idFirms=${idFirms}&isFavoriteChange=${isFavoriteChange}`
+    const { data } = await api.get(url);
+
+    console.log('DETALISATION-STAT: ', data);
+
+    if (!otherComponent) {
+      await setProductsWithDetalisationStat(data);
+      setIsLoadProductWithDetalisationStat(false);
+    }
+
+    if (!data) {
+      return false;
+    }
+
+    return data;
+  }
+  useEffect(() => {
+    const idFirms = getIdFirmsSelect(firmsForDetalisationStat);
+
+    fetchDataStatDetalisation(dateForStatDetalisation.from, dateForStatDetalisation.to, typeValue, typeValueCalculate, sortStatDetalisation, pageStatDetalisation, idFirms, false, isFavoriteChangeStatDetalisation).catch(() => {
+      toast.warning('Не удалось обновить данные, проверьте подключение к Интернету');
+    });
+  }, []);
+
+  // For StatIndexPrice
+  const [statIndexPrice, setStatIndexPrice] = useState([]);
+  const [isLoadStatIndexPrice, setIsLoadStatIndexPrice] = useState(false);
+  const [yearStatIndexPrice, setYearStatIndexPrice] = useState({
+    label: dayjs().format('YYYY'),
+    value: dayjs().format('YYYY')
+  });
+  const fetchDataIndexPrice = async (year, otherComponent = false) => {
+    if (!otherComponent) {
+      setIsLoadStatIndexPrice(true);
+    }
+
+    const url = `/stat/index-price/base-start-year/${year}`;
+
+    const { data } = await api.get(url);
+
+    const result = data.map((priceIndex) => {
+      return {
+        index: Math.round(priceIndex.index * 100) / 100,
+        date: dayjs(priceIndex.dateCalculate).format('DD.MM')
+      }
+    });
+
+    setStatIndexPrice(result);
+
+    if (!otherComponent) {
+      setIsLoadStatIndexPrice(false);
+    }
+
+    return data;
+  }
+  useEffect(() => {
+    fetchDataIndexPrice(yearStatIndexPrice.value).catch(() => {
+      toast.warning('Не удалось загрузить данные, проверьте подключение к Интернету')
+    });
+  }, []);
+
+  // For CommonStats
+  const [pricesCommonStat, setPricesCommonStat] = useState(null);
+  const [countsCommonStat, setCountsCommonStat] = useState(null);
+  const [completionCommonStat, setCompletionCommonStat] = useState(null);
+  const [isLoadCommonStat, setIsLoadCommonStat] = useState(false);
+  const fetchDataCommonStats = async () => {
+    setIsLoadCommonStat(true);
+
+    const { data } = await api.get('/stat/common-stat/');
+
+    console.log(data);
+
+    setPricesCommonStat(data.prices);
+    setCountsCommonStat(data.counts);
+    setCompletionCommonStat(data.completion);
+
+    setIsLoadCommonStat(false);
+  }
+  useEffect(() => {
+    fetchDataCommonStats().catch(() => {
+      toast.warning('Не удалось загрузить сводную статистику. Проверьте подключение к Интернету.');
+    });
+  }, []);
+
   useEffect(() => {
     dispatch(fetchFirmsByIdUser(currentUser.id));
     dispatch(fetchProductsWithSummaryDetail({
@@ -76,7 +204,8 @@ const MonitoringPage = () => {
       idParent: currentProduct !== null ? currentProduct.id : null,
       withStats: 'summary',
       dateStart: dayjs().startOf('day'),
-      dateEnd: dayjs().endOf('day')
+      dateEnd: dayjs().endOf('day'),
+      isFavorite: isFavoriteChangeProductsTable
     }));
     dispatch(fetchReports());
 
@@ -87,21 +216,18 @@ const MonitoringPage = () => {
     return () => clearInterval(interval);
   }, []);
 
-
   const firms = useSelector(getAllFirms);
   const mainFirm = getMainFirm(firms);
   const products = useSelector(getAllProducts);
 
-  const dateFormat = dayjs().format('YYYY-MM-DD')
-  const dateRef = useRef(dateFormat);
-
-  const [date, setDate] = useState(dateFormat);
+  const [dateProductsTable, setDateProductsTable] = useState(dayjs());
   const [isOpenPopupAddGroup, setIsOpenPopupAddGroup] = useState(false);
   const [isOpenPopupAddProduct, setIsOpenPopupAddProduct] = useState(false);
   const [isOpenPopupEditProduct, setIsOpenPopupEditProduct] = useState(false);
   const [isOpenPopupSelectConsumers, setIsOpenPopupSelectConsumers] = useState(false);
   const [isOpenPopupAddLink, setIsOpenPopupAddLink] = useState(false);
   const [isOpenPopupEditLink, setIsOpenPopupEditLink] = useState(false);
+  const [isOpenPopupStatDetalisation, setIsOpenPopupStatDetalisation] = useState(false);
   const [selectProductAddLink, setSelectProductAddLink] = useState(null);
   const [selectFirmAddLink, setSelectFirmAddLink] = useState(null);
   const [selectProductForDialog, setSelectProductForDialog] = useState({});
@@ -109,6 +235,7 @@ const MonitoringPage = () => {
   const [idLoadGroup, setIdLoadGroup] = useState(null);
   const [typeSearch, setTypeSearch] = useState(TypeSearch.GROUP);
   const [isLoadSearch, setIsLoadSearch] = useState(false);
+  const [isFavoriteChangeProductsTable, setIsFavoriteChangeProductsTable] = useState(defaultFavoriteChangeProductsTable);
 
   return (
     <>
@@ -119,30 +246,6 @@ const MonitoringPage = () => {
           <h1 className="header header--1">Мониторинг</h1>
 
           <div className="page-content__header-block">
-            <div className="date-select date-select--margin-right">
-              <input
-                ref={dateRef}
-                className="date-select__input"
-                name="date-select"
-                type="date"
-                defaultValue={dateFormat}
-                alt="Дата до"
-                onChange={async (evt) => {
-                  const name = searchTextProductRef.current.value;
-
-                  setDate(dateRef.current.value);
-
-                  await dispatch(fetchProductsWithSummaryDetail({
-                    idUser: currentUser.id,
-                    idParent: currentProduct !== null ? currentProduct.id : null,
-                    withStats: 'summary',
-                    dateStart: dayjs(evt.target.value).startOf('day'),
-                    dateEnd: dayjs(evt.target.value).endOf('day')
-                  }));
-                }}
-              />
-            </div>
-
             <div className="notifications icon-block">
               <svg
                 className={`icon ${isShowNotifications ? 'icon--active' : ''}`}
@@ -167,171 +270,288 @@ const MonitoringPage = () => {
         </header>
         <div className="page-content__inner page-content__inner--main">
           <section className="page-content__inline-blocks page-content__inline-blocks--margin-bottom">
-            <div className="page-content__index-block goods-index-block standart-block">
-              <div className="goods-index-block__header">
-                <h2 className="header header--2">Сводная статистика</h2>
+            <div className="page-content__common-block goods-index-block">
+              <ul className="goods-common-stat page-content__goods-common-stat">
+                <li className="goods-common-stat__item standart-block">
+                  <div className="header-block header-block--space-between">
+                    <h3 className="header header--3">Цены на товары</h3>
+
+                    <Help>
+                      <h3 className="header header--3">Сводная статистика цен</h3>
+                      <p>В сводную статистику попадают только те товары, у которых есть две или более ссылки на сайты-конкурентов.</p>
+                      <ul className="help__list">
+                        <li className="help__item">
+                          <b>Ниже</b> - это количество товаров, у которых цена основной фирмы ({mainFirm?.name}) ниже всех цен конкурентов того же товара;
+                        </li>
+                        <li className="help__item">
+                          <b>Смешано</b> - это количество товаров, у которых есть цены конкурентов ниже или выше, чем у основной фирмы ({mainFirm?.name});
+                        </li>
+                        <li className="help__item">
+                          <b>Выше</b> - это количество товаров, у которых цена основной фирмы ({ mainFirm?.name }) выше всех цен конкурентов.
+                        </li>
+                      </ul>
+                    </Help>
+                  </div>
+
+                  {
+                    isLoadCommonStat ?
+                      <Preloader width={25} height={25} color="#000000" /> :
+                       <div className="goods-common-stat__pie-block">
+                        <ul className="goods-common-stat__pie-text-list">
+                          {
+                            pricesCommonStat &&
+                            pricesCommonStat?.map((price) => {
+                              return (
+                                <li className="goods-common-stat__pie-text-item" key={price.name}>
+                                  {price.value} шт.
+                                </li>
+                              );
+                            })
+                          }
+                        </ul>
+
+                        <div className="goods-common-stat__pie-chart">
+                          {
+                            pricesCommonStat ?
+                            <PieChartGraph
+                              data={ pricesCommonStat }
+                            />
+                              : <div className="goods-common-stat__not-data">Нет данных</div>
+                          }
+                        </div>
+                      </div>
+                  }
+
+                </li>
+
+                <li className="goods-common-stat__item standart-block">
+                  <div className="header-block header-block--space-between">
+                    <h3 className="header header--3">Остатки товаров</h3>
+
+                    <Help>
+                      <h3 className="header header--3">Сводная статистика остатков</h3>
+                      <p>В сводную статистику попадают только те товары, у которых есть две или более ссылки на сайты-конкурентов.</p>
+
+                      <ul className="help__list">
+                        <li className="help__item">
+                          <b>Выше</b> - это количество товаров, у которых остатков основной фирмы ({mainFirm?.name}) больше, чем у всех конкурентов, на сайты которыйх есть ссылки;
+                        </li>
+                        <li className="help__item">
+                          <b>Смешано</b> - это количество товаров, у которых остатки компаний-конкурентов ниже или выше, чем у основной фирмы ({mainFirm?.name});
+                        </li>
+                        <li className="help__item">
+                          <b>Ниже</b> - это количество товаров, у которых остатков основной фирмы ({mainFirm?.name}) больше, чем у всех конкурентов.
+                        </li>
+                      </ul>
+
+                    </Help>
+                  </div>
+                  {
+                    isLoadCommonStat ?
+                      <Preloader width={25} height={25} color="#000000" />
+                      :
+                      <div className="goods-common-stat__pie-block">
+                        <ul className="goods-common-stat__pie-text-list">
+                          {
+                            countsCommonStat &&
+                              countsCommonStat.map((count) => {
+                                return (
+                                  <li className="goods-common-stat__pie-text-item">
+                                    { count.value } шт.
+                                  </li>
+                                )
+                              })
+                          }
+                        </ul>
+
+                        <div className="goods-common-stat__pie-chart">
+                          {
+                            countsCommonStat ?
+                              <PieChartGraph
+                                data={ countsCommonStat }
+                              />
+                              : <div className="goods-common-stat__not-data">Нет данных</div>
+                          }
+                        </div>
+                      </div>
+                  }
+
+                </li>
+
+                <li className="goods-common-stat__item standart-block">
+                  <div className="header-block header-block--space-between">
+                    <h3 className="header header--3">Заполнение</h3>
+
+                    <Help>
+                      <h3 className="header header--3 header--space-bottom">Ссылки на сайты-конкурентов</h3>
+
+                      <ul className="help__list">
+                        <li className="help__item">
+                          <b>Зап.</b> - это товары, у которых есть две или более ссылки на сайты-конкурентов;
+                        </li>
+                        <li className="help__item">
+                          <b>Не зап.</b> - это товары, у которых нет ни одной ссылки на сайт-конкурента.
+                        </li>
+                      </ul>
+                    </Help>
+                  </div>
+
+                  {
+                    isLoadCommonStat ?
+                      <Preloader width={25} height={25} color="#000000" />
+                      :
+                      <div className="goods-common-stat__pie-block">
+                        <ul className="goods-common-stat__pie-text-list">
+                          {
+                            completionCommonStat &&
+                            completionCommonStat.map((completion) => {
+                              return (
+                                <li key={completion.label} className="goods-common-stat__pie-text-item">
+                                  { completion.value } шт.
+                                </li>
+                              );
+                            })
+                          }
+                        </ul>
+                        {
+                          completionCommonStat ?
+                            <div className="goods-common-stat__pie-chart">
+                              <PieChartGraph
+                                data={ completionCommonStat }
+                              />
+                            </div>
+                            : <div className="goods-common-stat__not-data">Нет данных</div>
+                        }
+                      </div>
+                  }
+                </li>
+              </ul>
+
+              <div className="goods-index-block standart-block page-content__goods-index-block">
+                <div className="goods-index-block__header">
+                  <div className="header-block">
+                    <h2 className="header header--2 header--margin-right">Индекс роста цен за {  yearStatIndexPrice.value } год</h2>
+                    <Help>
+                      <h4 className="header header--3">Алгоритм расчёта</h4>
+                      <ul className="help__list">
+                        <li>1) В качестве базовой точки отcчёта выбирается начало года 01.01 число - за данное число  выссчитывается средняя цена по всем товарам;</li>
+                        <li>2) Индекс роста цен для всех последующих дней рассчитывается по следующей формуле: ((средняя цена на определённый день - средняя базовая цена на начало года) / средняя базовая цена на начало года) * 100.</li>
+                      </ul>
+                    </Help>
+                  </div>
+
+                  {/* WIP: Доделать график и расчёт индекса со стороны серверной части */}
+                  <div className="goods-index-block__icons">
+                    <Select
+                      className="input input--select input--select-no-z-index"
+                      defaultValue={{ label: "2025", value: 2025 }}
+                      options={[
+                        {
+                          label: "2026",
+                          value: 2026
+                        },
+                        {
+                          label: "2025",
+                          value: 2025
+                        },
+                        {
+                          label: "2024",
+                          value: 2024
+                        }
+
+                      ]}
+                      value={yearStatIndexPrice}
+                      placeholder="Год"
+                      onChange={async (evt) => {
+                        setYearStatIndexPrice(evt);
+                        await fetchDataIndexPrice(evt.value);
+                      }}
+                    >
+                      <option value="2024">2024</option>
+                      <option value="2025">2025</option>
+                    </Select>
+                  </div>
+                </div>
+                <div className="graph goods-index-block__graph">
+                  {
+                    isLoadStatIndexPrice && <Preloader width={25} height={25} color="#000000" />
+                  }
+
+                  {
+                    !isLoadStatIndexPrice && statIndexPrice &&
+                      <Graph
+                        data={statIndexPrice}
+                      />
+                  }
+                </div>
               </div>
             </div>
 
-            <div className="page-content__detalisation-block goods-stat-detalisation standart-block">
-              <div className="goods-stat-detalisation__header">
-                <div className="goods-stat-detalisation__header-block">
-                  <h2 className="header header--2">Динамика</h2>
-
-                  <label
-                    className="goods-stat-detalisation__date label__text"
-                    htmlFor="date-for-stat"
-                  >
-                    19.05.2025 - 25.05.2025
-                  </label>
-                  <input
-                    id="date-for-stat"
-                    className="input visually-hidden"
-                    type="date"
-                  />
-                </div>
-
-                <div className="goods-stat-detalisation__settings">
-                  <svg className="icon" width="26" height="26" viewBox="0 0 26 26" fill="none">
-                    <path d="M24.7133 16.1242L22.4674 14.8347C22.6941 13.6185 22.6941 12.371 22.4674 11.1548L24.7133 9.86533C24.9717 9.71856 25.0877 9.41453 25.0033 9.13147C24.4181 7.26534 23.4217 5.57745 22.1195 4.17261C21.9191 3.9577 21.5922 3.90528 21.3392 4.05205L19.0933 5.34156C18.1496 4.53431 17.0635 3.91052 15.8878 3.50165V0.927868C15.8878 0.634321 15.6822 0.377467 15.3922 0.314564C13.4574 -0.115273 11.4751 -0.0943054 9.6351 0.314564C9.34514 0.377467 9.13952 0.634321 9.13952 0.927868V3.50689C7.96912 3.921 6.88306 4.54479 5.93408 5.3468L3.69343 4.05729C3.4351 3.91052 3.1135 3.9577 2.91316 4.17786C1.61095 5.57745 0.614523 7.26534 0.0293192 9.13671C-0.0603066 9.41977 0.0609519 9.7238 0.319285 9.87058L2.5652 11.1601C2.3385 12.3762 2.3385 13.6238 2.5652 14.8399L0.319285 16.1294C0.0609519 16.2762 -0.0550345 16.5802 0.0293192 16.8633C0.614523 18.7294 1.61095 20.4173 2.91316 21.8221C3.1135 22.0371 3.44037 22.0895 3.69343 21.9427L5.93935 20.6532C6.88306 21.4605 7.96912 22.0842 9.1448 22.4931V25.0721C9.1448 25.3657 9.35041 25.6225 9.64037 25.6854C11.5752 26.1153 13.5576 26.0943 15.3975 25.6854C15.6875 25.6225 15.8931 25.3657 15.8931 25.0721V22.4931C17.0635 22.079 18.1496 21.4552 19.0985 20.6532L21.3445 21.9427C21.6028 22.0895 21.9244 22.0423 22.1247 21.8221C23.4269 20.4226 24.4234 18.7347 25.0086 16.8633C25.0877 16.575 24.9717 16.271 24.7133 16.1242ZM12.5137 17.1883C10.1887 17.1883 8.29599 15.3064 8.29599 12.9948C8.29599 10.6831 10.1887 8.80123 12.5137 8.80123C14.8387 8.80123 16.7314 10.6831 16.7314 12.9948C16.7314 15.3064 14.8387 17.1883 12.5137 17.1883Z" fill="#BE1622"/>
-                  </svg>
-                </div>
-              </div>
-
-              <ul className="detalisation-list goods-stat-detalisation__change-goods">
-                <li className="detalisation-list__item detalisation-list__item--active">Все товары</li>
-                <li className="detalisation-list__item">Избранные товары</li>
-              </ul>
-
-              <ul className="goods-stat-list goods-stat-detalisation__list">
-                <li className="goods-stat-list__item">
-                  <div className="goods-stat-list__name-block">
-                    <div className="goods-stat-list__name">Гидромоток BMH-250</div>
-                    <div className="goods-stat-list__firm">
-                      Аркаим - Насосы и моторы
-                    </div>
-                  </div>
-
-                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
-                    +43,14%
-                  </div>
-                </li>
-
-                <li className="goods-stat-list__item">
-                  <div className="goods-stat-list__name-block">
-                    <div className="goods-stat-list__name">Распределитель 1P40</div>
-                    <div className="goods-stat-list__firm">
-                      Промснаб - Распределители и клапаны
-                    </div>
-                  </div>
-
-                  <div className="goods-stat-list__stat goods-stat-list__stat--red">
-                    -9,83%
-                  </div>
-                </li>
-
-                <li className="goods-stat-list__item">
-                  <div className="goods-stat-list__name-block">
-                    <div className="goods-stat-list__name">Маслоохладитель CSL1</div>
-                    <div className="goods-stat-list__firm">
-                      А1Гидро - Маслоохладители
-                    </div>
-                  </div>
-
-                  <div className="goods-stat-list__stat goods-stat-list__stat--red">
-                    -54,01%
-                  </div>
-                </li>
-
-                <li className="goods-stat-list__item">
-                  <div className="goods-stat-list__name-block">
-                    <div className="goods-stat-list__name">Реле давления 54764VDFSO</div>
-                    <div className="goods-stat-list__firm">
-                      ООО ТЕХНОКОМ - Измерительная аппаратура
-                    </div>
-                  </div>
-
-                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
-                    +1,75%
-                  </div>
-                </li>
-
-                <li className="goods-stat-list__item">
-                  <div className="goods-stat-list__name-block">
-                    <div className="goods-stat-list__name">Реле давления 54764VDFSO</div>
-                    <div className="goods-stat-list__firm">
-                      ООО ТЕХНОКОМ - Измерительная аппаратура
-                    </div>
-                  </div>
-
-                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
-                    +1,75%
-                  </div>
-                </li>
-                <li className="goods-stat-list__item">
-                  <div className="goods-stat-list__name-block">
-                    <div className="goods-stat-list__name">Реле давления 54764VDFSO</div>
-                    <div className="goods-stat-list__firm">
-                      ООО ТЕХНОКОМ - Измерительная аппаратура
-                    </div>
-                  </div>
-
-                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
-                    +1,75%
-                  </div>
-                </li>
-                <li className="goods-stat-list__item">
-                  <div className="goods-stat-list__name-block">
-                    <div className="goods-stat-list__name">Реле давления 54764VDFSO</div>
-                    <div className="goods-stat-list__firm">
-                      ООО ТЕХНОКОМ - Измерительная аппаратура
-                    </div>
-                  </div>
-
-                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
-                    +1,75%
-                  </div>
-                </li>
-                <li className="goods-stat-list__item">
-                  <div className="goods-stat-list__name-block">
-                    <div className="goods-stat-list__name">Реле давления 54764VDFSO</div>
-                    <div className="goods-stat-list__firm">
-                      ООО ТЕХНОКОМ - Измерительная аппаратура
-                    </div>
-                  </div>
-
-                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
-                    +1,75%
-                  </div>
-                </li>
-                <li className="goods-stat-list__item">
-                  <div className="goods-stat-list__name-block">
-                    <div className="goods-stat-list__name">Реле давления 54764VDFSO</div>
-                    <div className="goods-stat-list__firm">
-                      ООО ТЕХНОКОМ - Измерительная аппаратура
-                    </div>
-                  </div>
-
-                  <div className="goods-stat-list__stat goods-stat-list__stat--green">
-                    +1,75%
-                  </div>
-                </li>
-              </ul>
-
-              <div className="goods-stat-detalisation__more">Показать больше товаров</div>
-            </div>
+            <StatDetalisation
+              date={ dateForStatDetalisation }
+              products={ productsWithDetalisationStat }
+              firms={ firmsForDetalisationStat }
+              typeValue={ typeValue }
+              typeValueCalculate={ typeValueCalculate }
+              sort={ sortStatDetalisation }
+              page={ pageStatDetalisation }
+              isFavoriteChange={ isFavoriteChangeStatDetalisation }
+              setIsFavoriteChange={ setIsFavoriteChangeStatDetalisation }
+              isLoad={ isLoadProductWithDetalisationStat }
+              setProducts={ setProductsWithDetalisationStat }
+              setSort={ setSortStatDetalisation }
+              setDate={ setDateForStatDetalisation }
+              setPage={ setPageStatDetalisation }
+              setIsOpenPopup={ setIsOpenPopupStatDetalisation }
+              fetchProducts={ fetchDataStatDetalisation }
+            />
           </section>
 
           <section className="goods-block standart-block">
             <div className="goods-block__header">
               <div className="goods-block__header-block">
                 <h2 className="header header--2">
-                  Таблица {typeShowValue === TypeShowValue.PRICE ? 'цен' : 'остатков'} на {dayjs(date).format('DD.MM.YYYY')}
+                  Таблица {typeShowValue === TypeShowValue.PRICE ? 'цен' : 'остатков'} на {dayjs(dateProductsTable).format('DD.MM.YYYY')}
                 </h2>
 
                 <ul className="detalisation-list">
-                  <li className="detalisation-list__item detalisation-list__item--active">все товары</li>
-                  <li className="detalisation-list__item">избранные товары</li>
+                  <li
+                    className={`detalisation-list__item ${ !isFavoriteChangeProductsTable ? 'detalisation-list__item--active' : ''}`}
+                    onClick={() => {
+                      setIsFavoriteChangeProductsTable(false);
+                      setLocalStorageFavoriteChangeProductsTable(false);
+
+                      dispatch(fetchProductsWithSummaryDetail({
+                        idUser: currentUser.id,
+                        idParent: currentProduct !== null ? currentProduct.id : null,
+                        withStats: 'summary',
+                        dateStart: dayjs(dateProductsTable).startOf('day'),
+                        dateEnd: dayjs(dateProductsTable).endOf('day'),
+                        isFavorite: false
+                      }));
+                    }}
+                  >
+                    все товары
+                  </li>
+                  <li
+                    className={`detalisation-list__item ${ isFavoriteChangeProductsTable ? 'detalisation-list__item--active' : '' }`}
+                    onClick={() => {
+                      setIsFavoriteChangeProductsTable(true);
+                      setLocalStorageFavoriteChangeProductsTable(true);
+                      dispatch(setCurrentProduct(null));
+
+                      dispatch(fetchProductsWithSummaryDetail({
+                        idUser: currentUser.id,
+                        idParent: currentProduct !== null ? currentProduct.id : null,
+                        withStats: 'summary',
+                        dateStart: dayjs(dateProductsTable).startOf('day'),
+                        dateEnd: dayjs(dateProductsTable).endOf('day'),
+                        isFavorite: true
+                      }));
+                    }}
+                  >
+                    избранные товары
+                  </li>
                 </ul>
               </div>
 
@@ -373,7 +593,7 @@ const MonitoringPage = () => {
                       Добавить товар
                     </button>
                   </li>
-                  <li className="buttons-list">
+                  <li className="buttons-list__item">
                     <div className="search">
                       <input
                         disabled={isLoadSearch}
@@ -391,8 +611,9 @@ const MonitoringPage = () => {
                             idParent: typeSearch === TypeSearch.GROUP ? (currentProduct ? currentProduct.id : null) : (name !== '' ? false : currentProduct.id),
                             withStats: 'summary',
                             name: name && name !== '' ? name : null,
-                            dateStart: dayjs(date).startOf('day'),
-                            dateEnd: dayjs(date).endOf('day')
+                            dateStart: dayjs(dateProductsTable).startOf('day'),
+                            dateEnd: dayjs(dateProductsTable).endOf('day'),
+                            isFavorite: isFavoriteChangeProductsTable
                           }));
 
                           setIsLoadSearch(false);
@@ -438,15 +659,15 @@ const MonitoringPage = () => {
 
                             setIsLoadSearch(true);
 
-                            const name = searchTextProductRef.current.value;
+                            const name = searchTextProductRef?.current.value;
 
                             await dispatch(fetchProductsWithSummaryDetail({
                               idUser: currentUser.id,
                               idParent: currentProduct ? currentProduct.id : null,
                               withStats: 'summary',
                               name: name && name !== '' ? name : null,
-                              dateStart: dayjs(date).startOf('day'),
-                              dateEnd: dayjs(date).endOf('day')
+                              dateStart: dayjs(dateProductsTable).startOf('day'),
+                              dateEnd: dayjs(dateProductsTable).endOf('day')
                             }));
 
                             setIsLoadSearch(false);
@@ -461,15 +682,15 @@ const MonitoringPage = () => {
 
                             setIsLoadSearch(true);
 
-                            const name = searchTextProductRef.current.value;
+                            const name = searchTextProductRef?.current.value;
 
                             await dispatch(fetchProductsWithSummaryDetail({
                               idUser: currentUser.id,
                               idParent: name ? (name !== '' ? false : null) : (currentProduct ? currentProduct.id : null),
                               withStats: 'summary',
                               name: name && name !== '' ? name : null,
-                              dateStart: dayjs(date).startOf('day'),
-                              dateEnd: dayjs(date).endOf('day')
+                              dateStart: dayjs(dateProductsTable).startOf('day'),
+                              dateEnd: dayjs(dateProductsTable).endOf('day')
                             }));
 
                             setIsLoadSearch(false);
@@ -479,6 +700,31 @@ const MonitoringPage = () => {
                         </li>
                       </ul>
 
+                    </div>
+                  </li>
+
+                  <li className="buttons-list__item">
+                    <div className="date-select date-select--margin-right">
+                      <input
+                        className="date-select__input"
+                        name="date-select"
+                        type="date"
+                        defaultValue={ dayjs(dateProductsTable).format('YYYY-MM-DD') }
+                        alt="Дата до"
+                        onChange={async (evt) => {
+                          const name = searchTextProductRef?.current.value;
+
+                          setDateProductsTable(evt.target.value);
+
+                          await dispatch(fetchProductsWithSummaryDetail({
+                            idUser: currentUser.id,
+                            idParent: currentProduct !== null ? currentProduct.id : null,
+                            withStats: 'summary',
+                            dateStart: dayjs(dateProductsTable).startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+                            dateEnd: dayjs(dateProductsTable).endOf('day').format('YYYY-MM-DD HH:mm:ss'),
+                          }));
+                        }}
+                      />
                     </div>
                   </li>
                 </ul>
@@ -517,7 +763,7 @@ const MonitoringPage = () => {
                     <td
                       className="goods-table__td"
                       onClick={async () => {
-                        const name = searchTextProductRef.current.value;
+                        const name = searchTextProductRef?.current?.value;
 
                         setIdLoadGroup(currentProduct.id);
 
@@ -526,8 +772,8 @@ const MonitoringPage = () => {
                           idParent: currentProduct.idParent,
                           withStats: 'summary',
                           name: name && name !== '' ? name : null,
-                          dateStart: dayjs(date).startOf('day'),
-                          dateEnd: dayjs(date).endOf('day')
+                          dateStart: dayjs(dateProductsTable).startOf('day'),
+                          dateEnd: dayjs(dateProductsTable).endOf('day'),
                         }));
 
                         setIdLoadGroup(null);
@@ -584,15 +830,15 @@ const MonitoringPage = () => {
                           onClick={async () => {
                             setIdLoadGroup(product.id)
 
-                            const name = searchTextProductRef.current.value;
+                            const name = searchTextProductRef?.current?.value;
 
                             await dispatch(fetchProductsWithSummaryDetail({
                               idUser: currentUser.id,
                               idParent: product.id,
                               name: name && name !== '' ? name : null,
                               withStats: 'summary',
-                              dateStart: dayjs(date).startOf('day'),
-                              dateEnd: dayjs(date).endOf('day')
+                              dateStart: dayjs(dateProductsTable).startOf('day'),
+                              dateEnd: dayjs(dateProductsTable).endOf('day')
                             }));
 
                             await dispatch(setCurrentProduct(product));
@@ -624,12 +870,12 @@ const MonitoringPage = () => {
                                 </svg>
                             }
                             <span className="goods-table__text">
-                              <Highlighter
-                                highlightClassName="highlighter"
-                                searchWords={[searchTextProductRef?.current?.value]}
-                                autoEscape={true}
-                                textToHighlight={product?.name}
-                              />
+                                <Highlighter
+                                  highlightClassName="highlighter"
+                                  searchWords={[searchTextProductRef?.current?.value]}
+                                  autoEscape={true}
+                                  textToHighlight={product?.name}
+                                />
                             </span>
 
                             {
@@ -664,12 +910,25 @@ const MonitoringPage = () => {
                           }}
                         >
                           <Link className="goods-table__link" to={`${AppRoute.Monitoring}/${product.id}`}>
-                            <Highlighter
-                              highlightClassName="highlighter"
-                              searchWords={[searchTextProductRef?.current?.value]}
-                              autoEscape={true}
-                              textToHighlight={product?.name}
-                            />
+                            {
+                              searchTextProductRef?.current?.value ?
+                                <Highlighter
+                                  highlightClassName="highlighter"
+                                  searchWords={[searchTextProductRef?.current?.value]}
+                                  autoEscape={true}
+                                  textToHighlight={product?.name}
+                                />
+                                : <>
+                                  {
+                                    product.isFavorite &&
+                                    <svg className="icon icon--active icon--margin-right" width="11" height="11" viewBox="0 0 11 11">
+                                      <path d="M4.90991 0.382647L3.56729 3.22683L0.563373 3.68439C0.0246826 3.76602 -0.191205 4.45988 0.199449 4.85729L2.37272 7.06991L1.8587 10.1955C1.76617 10.7605 2.33571 11.1837 2.81272 10.9194L5.5 9.44364L8.18729 10.9194C8.66429 11.1815 9.23383 10.7605 9.1413 10.1955L8.62728 7.06991L10.8006 4.85729C11.1912 4.45988 10.9753 3.76602 10.4366 3.68439L7.43271 3.22683L6.09009 0.382647C5.84953 -0.124322 5.15252 -0.130766 4.90991 0.382647Z" fill="black"/>
+                                    </svg>
+                                  }
+                                  <span className="goods-table__product-name">{ product.name }</span>
+                                </>
+                            }
+
                           </Link>
                           {
                             selectProductForDialog.id === product.id
@@ -892,6 +1151,27 @@ const MonitoringPage = () => {
             stats={selectLinkForDialog}
             setIsOpen={setIsOpenPopupEditLink}
           />
+      }
+
+      {
+        isOpenPopupStatDetalisation &&
+        <PopupStatDetalisation
+          date={ dateForStatDetalisation }
+          allFirms={ firms }
+          firmsSelect={ firmsForDetalisationStat }
+          typeValue={ typeValue }
+          typeValueCalculate={ typeValueCalculate }
+          sort={ sortStatDetalisation }
+          sortType={ sortStatDetalisation }
+          isFavoriteChange={ isFavoriteChangeStatDetalisation }
+          setFirmsSelect={ setFirmsForDetalisationStat }
+          setTypeValue={ setTypeValue }
+          setTypeValueCalculate={ setTypeValueCalculate }
+          setSortTypeDetalisation={ setSortStatDetalisation }
+          setPage={ setPageStatDetalisation }
+          setIsOpen={ setIsOpenPopupStatDetalisation }
+          fetchData={ fetchDataStatDetalisation }
+        />
       }
 
     </>

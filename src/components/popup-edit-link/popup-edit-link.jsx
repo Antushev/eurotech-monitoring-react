@@ -177,7 +177,7 @@ const PopupAddLink = (props) => {
   return (
     <>
       <div className="background-black" />
-      <div className="modal">
+      <div className="modal modal--link">
         <div
           className="modal__close"
           onClick={() => {
