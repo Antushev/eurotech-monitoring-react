@@ -52,11 +52,17 @@ export const getLocalStorageStatDetalisationInMonitoringPage = () => {
 }
 
 export const setLocalStorageFavoriteChangeProductsTable = (favoriteChange) => {
-  const currentFavoriteChange = localStorage.getItem(LocalStorageKey.FAVORITE_CHANGE_PRODUCTS_TABLE);
-
   localStorage.setItem(LocalStorageKey.FAVORITE_CHANGE_PRODUCTS_TABLE, favoriteChange);
 }
 
 export const getLocalStorageFavoriteChangeProductsTable = () => {
  return localStorage.getItem(LocalStorageKey.FAVORITE_CHANGE_PRODUCTS_TABLE);
+}
+
+export const setLocalStorageFavoriteChangeStatDetalisation = (favoriteChange) => {
+  localStorage.setItem(LocalStorageKey.FAVORITE_CHANGE_STAT_DETALISATION, favoriteChange);
+}
+
+export const getLocalStorageFavoriteChangeStatDetalisation = () => {
+  return localStorage.getItem(LocalStorageKey.FAVORITE_CHANGE_STAT_DETALISATION);
 }

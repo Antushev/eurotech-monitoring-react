@@ -12,6 +12,8 @@ import {
   TypeValueCalculateStatDetalisation
 } from "../../const.js";
 
+import { setLocalStorageFavoriteChangeStatDetalisation } from '../../services/local-storage.js';
+
 import Calendar from '../calendar/calendar.jsx';
 import Preloader from "../preloader/preloader.jsx";
 
@@ -24,6 +26,8 @@ const StatDetalisation = (props) => {
     typeValueCalculate,
     sort,
     page,
+    isFavoriteChange,
+    setIsFavoriteChange,
     isLoad,
     setProducts,
     setSort,
@@ -103,7 +107,7 @@ const StatDetalisation = (props) => {
                 if (!isLoad) {
                   setSort(SortType.ASC);
                   setPage(1);
-                  await fetchProducts(date.from, date.to, typeValue, typeValueCalculate, SortType.ASC, 1, idFirms, false);
+                  await fetchProducts(date.from, date.to, typeValue, typeValueCalculate, SortType.ASC, 1, idFirms, false, isFavoriteChange);
                 }
               }}
             >
@@ -122,7 +126,7 @@ const StatDetalisation = (props) => {
                 if (!isLoad) {
                   setSort(SortType.DESC);
                   setPage(1);
-                  await fetchProducts(date.from, date.to, typeValue, typeValueCalculate, SortType.DESC, 1, idFirms, false);
+                  await fetchProducts(date.from, date.to, typeValue, typeValueCalculate, SortType.DESC, 1, idFirms, false, isFavoriteChange);
                 }
               }}
             >
@@ -135,8 +139,33 @@ const StatDetalisation = (props) => {
       </div>
 
       <ul className="detalisation-list goods-stat-detalisation__change-goods">
-        <li className="detalisation-list__item detalisation-list__item--active">все товары</li>
-        <li className="detalisation-list__item">избранные товары</li>
+        <li
+          disabled={ isLoad }
+          className={`detalisation-list__item ${ !isFavoriteChange ? 'detalisation-list__item--active' : '' }`}
+          onClick={async () => {
+            setIsFavoriteChange(false);
+            setLocalStorageFavoriteChangeStatDetalisation(false);
+
+            const newProducts = await fetchProducts(date.from, date.to, typeValue, typeValueCalculate, sort, 1, idFirms, false, false);
+
+            setProducts(newProducts);
+          }}
+        >
+          все товары
+        </li>
+        <li
+          className={`detalisation-list__item ${ isFavoriteChange ? 'detalisation-list__item--active' : '' }`}
+          onClick={async () => {
+            setIsFavoriteChange(true);
+            setLocalStorageFavoriteChangeStatDetalisation(true);
+
+            const newProducts = await fetchProducts(date.from, date.to, typeValue, typeValueCalculate, sort, 1, idFirms, false, true);
+
+            setProducts(newProducts);
+          }}
+        >
+          избранные товары
+        </li>
       </ul>
 
       {
@@ -196,7 +225,7 @@ const StatDetalisation = (props) => {
             setIsLoadNewProduct(true);
             const idFirms = getIdFirmsSelect(firms);
 
-            const newProducts = await fetchProducts(date.from, date.to, typeValue, typeValueCalculate, sort, page + 1, idFirms, true);
+            const newProducts = await fetchProducts(date.from, date.to, typeValue, typeValueCalculate, sort, page + 1, idFirms, true, isFavoriteChange);
 
             setProducts([...products, ...newProducts]);
             setPage(page + 1);

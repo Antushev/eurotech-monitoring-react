@@ -16,6 +16,7 @@ const PopupStatDetalisation = (props) => {
     typeValue,
     typeValueCalculate,
     sort,
+    isFavoriteChange,
     setFirmsSelect,
     setTypeValue,
     setTypeValueCalculate,
@@ -183,7 +184,7 @@ const PopupStatDetalisation = (props) => {
             setTypeValueCalculate(typeValueCalculateInner);
             setLocalStorageStatDetalisationInMonitoringPage(typeValueInner, typeValueCalculateInner, null, firmsSelect);
             const idFirmsSelect = getIdFirmsSelect(firmsSelect);
-            fetchData(date.from, date.to, typeValueInner, typeValueCalculateInner, sort, 1, idFirmsSelect, false);
+            fetchData(date.from, date.to, typeValueInner, typeValueCalculateInner, sort, 1, idFirmsSelect, false, isFavoriteChange);
             setPage(1);
 
             setIsOpen(false);

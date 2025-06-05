@@ -11,7 +11,8 @@ import { getIdFirmsSelect } from '../../utils/common.js';
 import {
   getLocalStorageStatDetalisationInMonitoringPage,
   setLocalStorageFavoriteChangeProductsTable,
-  getLocalStorageFavoriteChangeProductsTable
+  getLocalStorageFavoriteChangeProductsTable,
+  getLocalStorageFavoriteChangeStatDetalisation
 } from '../../services/local-storage.js';
 
 import { api } from '../../store/index.js';
@@ -100,9 +101,9 @@ const MonitoringPage = () => {
     from: dayjs().subtract(1, 'month'),
     to: dayjs()
   });
-  const [isFavoriteChangeProductsTable, setIsFavoriteChangeProductsTable] = useState(defaultFavoriteChangeProductsTable);
+  const [isFavoriteChangeStatDetalisation, setIsFavoriteChangeStatDetalisation] = useState(getLocalStorageFavoriteChangeStatDetalisation());
 
-  const fetchDataStatDetalisation = async (dateFrom, dateTo, typeValueFetch, typeValueCalculateFetch, sort, page = 1, idFirms = null, otherComponent = false) => {
+  const fetchDataStatDetalisation = async (dateFrom, dateTo, typeValueFetch, typeValueCalculateFetch, sort, page = 1, idFirms = null, otherComponent = false, isFavoriteChange) => {
     if (!otherComponent) {
       setProductsWithDetalisationStat([]);
       setIsLoadProductWithDetalisationStat(true);
@@ -111,8 +112,10 @@ const MonitoringPage = () => {
     const dateFromFormat = dayjs(dateFrom).startOf('day').format('YYYY-MM-DD HH:mm:ss');
     const dateToFormat = dayjs(dateTo).endOf('day').format('YYYY-MM-DD HH:mm:ss');
 
-    const url = `/stat-detalisation/?dateFrom=${dateFromFormat}&dateTo=${dateToFormat}&sort=${sort}&typeValue=${typeValueFetch}&typeValueCalculate=${typeValueCalculateFetch}&page=${page}&idFirms=${idFirms}`
+    const url = `/stat-detalisation/?dateFrom=${dateFromFormat}&dateTo=${dateToFormat}&sort=${sort}&typeValue=${typeValueFetch}&typeValueCalculate=${typeValueCalculateFetch}&page=${page}&idFirms=${idFirms}&isFavoriteChange=${isFavoriteChange}`
     const { data } = await api.get(url);
+
+    console.log('DETALISATION-STAT: ', data);
 
     if (!otherComponent) {
       await setProductsWithDetalisationStat(data);
@@ -128,7 +131,7 @@ const MonitoringPage = () => {
   useEffect(() => {
     const idFirms = getIdFirmsSelect(firmsForDetalisationStat);
 
-    fetchDataStatDetalisation(dateForStatDetalisation.from, dateForStatDetalisation.to, typeValue, typeValueCalculate, sortStatDetalisation, pageStatDetalisation, idFirms, false).catch(() => {
+    fetchDataStatDetalisation(dateForStatDetalisation.from, dateForStatDetalisation.to, typeValue, typeValueCalculate, sortStatDetalisation, pageStatDetalisation, idFirms, false, isFavoriteChangeStatDetalisation).catch(() => {
       toast.warning('Не удалось обновить данные, проверьте подключение к Интернету');
     });
   }, []);
@@ -232,6 +235,7 @@ const MonitoringPage = () => {
   const [idLoadGroup, setIdLoadGroup] = useState(null);
   const [typeSearch, setTypeSearch] = useState(TypeSearch.GROUP);
   const [isLoadSearch, setIsLoadSearch] = useState(false);
+  const [isFavoriteChangeProductsTable, setIsFavoriteChangeProductsTable] = useState(defaultFavoriteChangeProductsTable);
 
   return (
     <>
@@ -491,6 +495,8 @@ const MonitoringPage = () => {
               typeValueCalculate={ typeValueCalculate }
               sort={ sortStatDetalisation }
               page={ pageStatDetalisation }
+              isFavoriteChange={ isFavoriteChangeStatDetalisation }
+              setIsFavoriteChange={ setIsFavoriteChangeStatDetalisation }
               isLoad={ isLoadProductWithDetalisationStat }
               setProducts={ setProductsWithDetalisationStat }
               setSort={ setSortStatDetalisation }
@@ -1157,6 +1163,7 @@ const MonitoringPage = () => {
           typeValueCalculate={ typeValueCalculate }
           sort={ sortStatDetalisation }
           sortType={ sortStatDetalisation }
+          isFavoriteChange={ isFavoriteChangeStatDetalisation }
           setFirmsSelect={ setFirmsForDetalisationStat }
           setTypeValue={ setTypeValue }
           setTypeValueCalculate={ setTypeValueCalculate }

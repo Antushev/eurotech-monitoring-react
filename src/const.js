@@ -43,6 +43,7 @@ export const LocalStorageKey = {
   TYPE_SHOW_CONDITION_VALUE: 'type-show-condition-value',
   PERIOD: 'period',
   FAVORITE_CHANGE_PRODUCTS_TABLE: 'favorite-change-products-table',
+  FAVORITE_CHANGE_STAT_DETALISATION: 'favorite-change-stata-detalisation',
   SETTINGS_DETALISATION_IN_MONITORING_PAGE: 'settings-detalisation-in-monitoring-page'
 }
 
