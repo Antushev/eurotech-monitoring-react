@@ -821,12 +821,12 @@ const MonitoringPage = () => {
                                 </svg>
                             }
                             <span className="goods-table__text">
-                              <Highlighter
-                                highlightClassName="highlighter"
-                                searchWords={[searchTextProductRef?.current?.value]}
-                                autoEscape={true}
-                                textToHighlight={product?.name}
-                              />
+                                <Highlighter
+                                  highlightClassName="highlighter"
+                                  searchWords={[searchTextProductRef?.current?.value]}
+                                  autoEscape={true}
+                                  textToHighlight={product?.name}
+                                />
                             </span>
 
                             {
@@ -861,12 +861,25 @@ const MonitoringPage = () => {
                           }}
                         >
                           <Link className="goods-table__link" to={`${AppRoute.Monitoring}/${product.id}`}>
-                            <Highlighter
-                              highlightClassName="highlighter"
-                              searchWords={[searchTextProductRef?.current?.value]}
-                              autoEscape={true}
-                              textToHighlight={product?.name}
-                            />
+                            {
+                              searchTextProductRef.current.value ?
+                                <Highlighter
+                                  highlightClassName="highlighter"
+                                  searchWords={[searchTextProductRef?.current?.value]}
+                                  autoEscape={true}
+                                  textToHighlight={product?.name}
+                                />
+                                : <>
+                                  <span className="goods-table__product-name">{ product.name }</span>
+                                  {
+                                    product.isFavorite &&
+                                      <svg className="icon icon--active" width="11" height="11" viewBox="0 0 11 11">
+                                        <path d="M4.90991 0.382647L3.56729 3.22683L0.563373 3.68439C0.0246826 3.76602 -0.191205 4.45988 0.199449 4.85729L2.37272 7.06991L1.8587 10.1955C1.76617 10.7605 2.33571 11.1837 2.81272 10.9194L5.5 9.44364L8.18729 10.9194C8.66429 11.1815 9.23383 10.7605 9.1413 10.1955L8.62728 7.06991L10.8006 4.85729C11.1912 4.45988 10.9753 3.76602 10.4366 3.68439L7.43271 3.22683L6.09009 0.382647C5.84953 -0.124322 5.15252 -0.130766 4.90991 0.382647Z" fill="black"/>
+                                      </svg>
+                                  }
+                                </>
+                            }
+
                           </Link>
                           {
                             selectProductForDialog.id === product.id

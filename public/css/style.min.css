@@ -463,11 +463,16 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;box-sizing:border-box}body{m
 }
 
 .goods-table__link {
-  display: inline-block;
+  display: flex;
+  align-items: center;
 
   color: #000000;
 
   z-index: 10;
+}
+
+.goods-table__product-name {
+  margin-right: 5px;
 }
 
 .goods-table__button {

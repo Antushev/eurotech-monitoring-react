@@ -1,7 +1,8 @@
 import React, {useEffect, useRef} from 'react';
+import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { deleteProduct } from '../../store/api-actions.js';
+import { deleteProduct, updateProduct } from '../../store/api-actions.js';
 import { getStatusLoadProduct } from '../../store/app-data/selectors.js';
 
 import Preloader from '../../components/preloader/preloader.jsx';
@@ -104,6 +105,44 @@ const DialogWindowProduct = (props) => {
               />
           }
         </li>
+        {
+          !product?.isGroup &&
+            <li
+              className="dialog-list__item"
+              onClick={async () => {
+                await dispatch(updateProduct({product: { id: product.id, isFavorite: !product.isFavorite }}));
+
+                if (product.isFavorite) {
+                  toast.success(`Товар ${product.name} убран из Избранного`);
+                }
+
+                if (!product.isFavorite) {
+                  toast.success(`Товар ${product.name} добавлен в Избранное`);
+                }
+              }}
+            >
+              <div className="dialog-list__icon-block">
+                <svg className="dialog-list__icon" width="12" height="12" viewBox="0 0 11 11">
+                  <path d="M4.90991 0.382647L3.56729 3.22683L0.563373 3.68439C0.0246826 3.76602 -0.191205 4.45988 0.199449 4.85729L2.37272 7.06991L1.8587 10.1955C1.76617 10.7605 2.33571 11.1837 2.81272 10.9194L5.5 9.44364L8.18729 10.9194C8.66429 11.1815 9.23383 10.7605 9.1413 10.1955L8.62728 7.06991L10.8006 4.85729C11.1912 4.45988 10.9753 3.76602 10.4366 3.68439L7.43271 3.22683L6.09009 0.382647C5.84953 -0.124322 5.15252 -0.130766 4.90991 0.382647Z" fill="black"/>
+                </svg>
+              </div>
+
+              <span className="dialog-list__text">
+                {
+                  !product?.isFavorite ? 'Добавить в избранное' : 'Убрать из избранного'
+                }
+              </span>
+
+              {
+                isLoadProduct &&
+                <Preloader
+                  width={WIDTH_PRELOADER}
+                  height={HEIGHT_PRELOADER}
+                  color={COLOR_PRELOADER}
+                />
+              }
+            </li>
+        }
       </ul>
     </div>
   );
