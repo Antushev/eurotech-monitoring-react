@@ -69,8 +69,11 @@ const IntegrationPage = () => {
     typePeriod,
     time,
     isDeleteProducts,
+    isSetBestPriceMarkersForBitrix,
     isActive
   } = settingsSyncBitrix;
+  console.log(isSetBestPriceMarkersForBitrix);
+
   const isSaveSettings = useSelector(getStatusLoadSettingsSyncBitrix);
   const reportsIntegrations = useSelector(getReportsIntegrations);
 
@@ -79,7 +82,8 @@ const IntegrationPage = () => {
   const inputLinkRef = useRef();
   const selectPeriodRef = useRef();
   const selectTimeRef = useRef();
-  const checkboxDeleteProductsRef = useRef();
+  const checkboxDeleteProductsRef = useRef(isDeleteProducts);
+  const checkboxSetBestPriceMarkersForBitrixRef = useRef(isSetBestPriceMarkersForBitrix);
 
   const styleCheckButton = {
     backgroundColor: '#6ace34'
@@ -312,7 +316,8 @@ const IntegrationPage = () => {
                       <div className="form-block form-block--radio">
                         <div className="form-block__radio-block">
                           <input
-                            ref={checkboxDeleteProductsRef}
+                            ref={ checkboxDeleteProductsRef }
+                            defaultChecked={ isDeleteProducts }
                             className="input input--radio"
                             id="bitrix-integration-parameter-delete"
                             name="bitrix-integration-parameter-delete"
@@ -325,6 +330,26 @@ const IntegrationPage = () => {
                           htmlFor="bitrix-integration-parameter-delete"
                         >
                           Удалять существующие товары, которых нет в выгрузке
+                        </label>
+                      </div>
+
+                      <div className="form-block form-block--radio">
+                        <div className="form-block__radio-block">
+                          <input
+                            ref={checkboxSetBestPriceMarkersForBitrixRef}
+                            defaultChecked={ isSetBestPriceMarkersForBitrix }
+                            className="input input--radio"
+                            id="bitrix-integration-parameter-delete"
+                            name="bitrix-integration-parameter-delete"
+                            type="checkbox"
+                          />
+                        </div>
+
+                        <label
+                          className="label label--radio"
+                          htmlFor="bitrix-integration-parameter-delete"
+                        >
+                          Выгружать стикеры Лучшая цена для товаров с минимальной ценой фирмы ООО ЕВРОТЕК на сайт eurotechspb.com (период выгрузки: каждый день в 9:00)
                         </label>
                       </div>
                     </li>
@@ -342,6 +367,7 @@ const IntegrationPage = () => {
                             const typePeriod = selectPeriodRef.current.value;
                             const time = selectTimeRef.current.value;
                             const isDeleteProducts = checkboxDeleteProductsRef.current.checked;
+                            const isSetBestPriceMarkersForBitrix = checkboxSetBestPriceMarkersForBitrixRef.current.checked;
 
                             if (!dataCheckUrl.productsCount) {
                               setIsErrorInputLink(true);
@@ -359,6 +385,7 @@ const IntegrationPage = () => {
                                 typePeriod: typePeriod,
                                 time: time,
                                 isDeleteProducts: isDeleteProducts,
+                                isSetBestPriceMarkersForBitrix: isSetBestPriceMarkersForBitrix,
                                 isActive: true
                               }
                             }));
